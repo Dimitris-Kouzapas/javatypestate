@@ -1,0 +1,95 @@
+aspect LookupMethod {
+	inh MethodDecl MethodAccess.lookupMethod(String methodID, String[] ParameterType);
+	syn lazy String[] MethodAccess.getParameterTypes() {
+		String [] ParameterType = new String[getNumArg()];
+		for(int i = 0; i < getNumArg(); i++)
+			ParameterType[i] = getArg(i).typeID();
+		return ParameterType;
+	}
+
+	syn lazy MethodDecl MethodAccess.lookupMethod() = lookupMethod(getID(), getParameterTypes());
+	syn MethodDecl MethodAccess.lookupMethod(CompilationUnit u) = u != null ? u.lookupMethod(getID(), getParameterTypes()) : null;
+
+	syn lazy String MethodAccess.signature() = lookupMethod() != null ? lookupMethod().signature() : null;
+	syn String MethodAccess.signature(CompilationUnit u) {
+		MethodDecl md = lookupMethod(u);
+		return (md != null) ? md.signature() : null;
+	}
+
+	syn lazy String MethodAccess.typeAccessID() = lookupMethod() != null ? lookupMethod().typeAccessID() : null;
+	syn String MethodAccess.typeAccessID(CompilationUnit u) {
+		MethodDecl md = lookupMethod(u);
+		return (md != null) ? md.typeAccessID() : null;
+	}
+
+	syn String MethodAccess.typeID(CompilationUnit u) {
+		MethodDecl md = lookupMethod(u);
+		return (md != null) ? md.typeID() : null;
+	}
+
+	syn lazy CompilationUnit MethodAccess.lookupMethodType() = typeAccessID() != null ? lookupType(typeAccessID()) : null;
+	syn CompilationUnit MethodAccess.lookupMethodType(CompilationUnit u) {
+		MethodDecl md = lookupMethod(u);
+		return md != null ? lookupType(md.typeAccessID()) : null;
+	}
+
+	syn lazy boolean MethodAccess.isTypestateMethod() {
+		if(signature() != null) {
+			TypestateDecl td = getCompilationUnitParent().getTypestate();
+			if(td != null)
+				return td.getMethodSignatures().contains(signature());
+		}
+		return false;
+	}
+	syn boolean MethodAccess.isTypestateMethod(CompilationUnit u) {
+		if(u != null && signature(u) != null) {
+			TypestateDecl td = u.getTypestate();
+			if(td != null)
+				return td.getMethodSignatures().contains(signature(u));
+		}
+		return false;
+	}
+
+	//for consistency
+	eq CompilationUnit.getImportDecl(int i).lookupMethod(String methodID, String[] ParameterType) = null;
+	eq ClassDecl.getBodyDecl(int k).lookupMethod(String methodID, String[] ParameterType) = lookupMethod(methodID, ParameterType);
+
+	syn MethodDecl ClassDecl.lookupMethod(String methodID, String[] ParameterType) {
+		ArrayList<MethodDecl> l = getMethodDeclarations(methodID, ParameterType);
+		return (l.size() == 1) ? l.get(0) : null;
+	}
+
+	syn MethodDecl TypeDecl.lookupMethod(String methodID, String[] ParameterType) = (this instanceof ClassDecl) ?
+											((ClassDecl) this).lookupMethod(methodID, ParameterType) :
+											null;
+
+	syn MethodDecl CompilationUnit.lookupMethod(String methodID, String[] ParameterType) =
+										getTypeDecl().lookupMethod(methodID, ParameterType);
+
+
+	inh ArrayList<MethodDecl> MethodAccess.getMethodDeclarations(String methodID, String[] ParameterType);
+	eq CompilationUnit.getImportDecl(int i).getMethodDeclarations(String methodID, String[] ParameterType) = null;
+	eq ClassDecl.getBodyDecl(int i).getMethodDeclarations(String methodID, String[] ParameterType) =
+										getMethodDeclarations(methodID, ParameterType);
+
+	syn ArrayList<MethodDecl> TypeDecl.getMethodDeclarations(String methodID, String[] ParameterType) =
+									(this instanceof ClassDecl) ?
+									((ClassDecl) this).getMethodDeclarations(methodID, ParameterType) :
+									null;
+
+	syn ArrayList<MethodDecl> CompilationUnit.getMethodDeclarations(String methodID, String[] ParameterType) =
+									getTypeDecl().getMethodDeclarations(methodID, ParameterType);
+
+
+	syn MethodDecl CompilationUnit.getMethod(String signature) =
+						getTypeDecl() instanceof ClassDecl ? ((ClassDecl) getTypeDecl()).getMethod(signature) : null;	
+	syn MethodDecl ClassDecl.getMethod(String signature) {
+		for(Iterator it = getMethodDeclarations().iterator(); it.hasNext();) {
+			MethodDecl md = (MethodDecl) it.next();
+			if(md.signature().equals(signature))
+				return md;
+		}
+
+		return null;
+	}
+}

@@ -1,0 +1,6 @@
+//TODO list
+
+- Rewrite the Access nodes (AbstracDot nodes)
+- add ByteCodeReader
+- 
+

@@ -1,0 +1,74 @@
+import java.util.*;
+
+aspect typestateSemanticCheck {
+
+	public void State.semanticCheck() {
+		if(isDuplicate())
+			addSemanticError("Duplicate State: " + getID() + ".");
+		if(!isReachable())
+			addWarning("State not reachable: " + getID() + ".");
+
+		String path;
+		if((path = getCircularPath()) != null)
+			addWarning("Circular-referenced state definition: " + path + ".");
+	}
+
+	public void TypestateLabel.semanticCheck() {
+		if(getTarget() == null)
+			addSemanticError("No Definition for state: " + getLabel());
+	}
+
+	public void TTypestate.semanticCheck() {
+		TypeDecl t = getAccess().lookupType();
+
+		if(!t.isTypestateClassDeclType())
+			addSemanticError("Type " + getAccess().toString() + " is not a typestate class type.");
+		else if(t.getTypestateClassDecl().existsTypestateDecl())
+			; //TODO Check if getTypestate() is a postfix of cu.getClassDecl().getTypestateDecl() 
+
+		if(getAccess().hasDims())
+			addSemanticError("Typestate type " + getAccess().toString() + " should not be an array type.");
+	}
+
+	public void TType.semanticCheck() {
+		TypeDecl t = getAccess().lookupType();
+		if(t.isTypestateDeclType())
+			addSemanticError(getAccess().toString() + " is not a proper type.");
+		else if(t.isTypestateClassDeclType())
+			addSemanticError("Class Type " + getAccess().toString() + " has a typestate type.");
+	}
+
+	public void TypestateSwitch.semanticCheck() {
+		for(int i = 0; i < getNumTypestateSwitchCase(); i++)
+			for(int j = i + 1; j < getNumTypestateSwitchCase(); j++)
+				if(getTypestateSwitchCase(i).getLabel().equals(getTypestateSwitchCase(j).getLabel()))
+					addSemanticError("Duplicate case label: " + getTypestateSwitchCase(i).getLabel() + ".");
+	}
+
+	public void TypestateMethod.semanticCheck() {
+		TypeDecl t;
+		if(getTypestate() instanceof TypestateSwitch) {
+			t = getTType().getAccess().lookupType();
+			if(!t.isEnumDeclType())
+				addSemanticError("Method " + signature() + " should return an enumeration type.");
+			else
+				for(String s : ((TypestateSwitch) getTypestate()).getLabels()) {
+					if(!t.getEnumDecl().getEnumLabels().contains(s))
+						addSemanticError("Label " + s + " is not defined in the enumeration type " + t.getEnumDecl().getID() + ".");
+					//TODO Masterpiece for Ornela ==> do the other way around!
+				}
+		}
+	}
+
+	public void TypestateMethodList.semanticCheck() {
+		for(int i = 0; i < getNumTypestateMethod(); i++) {
+			TypestateMethod tm1 = getTypestateMethod(i);
+			for(int j = i + 1; j < getNumTypestateMethod(); j++) {
+				TypestateMethod tm2 = getTypestateMethod(j);
+				if(tm1.signature().equals(tm2.signature()))
+					addSemanticError("Duplicate method signature: " + tm1.signature() + ".");
+			}
+		}
+	}
+}
+

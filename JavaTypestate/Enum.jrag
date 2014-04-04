@@ -1,0 +1,131 @@
+aspect Enum {
+
+	EnumDecl ClassDecl.enumDecl = null;
+
+	rewrite EnumDecl {
+		to ClassDecl {
+			ClassDecl c = toClassDecl();
+			c.enumDecl = this;
+			return c;
+		}
+	}
+	
+	syn lazy ClassDecl EnumDecl.toClassDecl() {
+		List<BodyDecl> bodyD = new List<BodyDecl>();
+
+		Modifiers modifiers = new Modifiers(
+			new List<Modifier>().
+				add(new Modifier("public")).
+				add(new Modifier("static")).
+				add(new Modifier("final"))
+		);
+
+		List<VariableDecl> Vlist = new List<VariableDecl>();
+
+		for(int i = 0; i < getNumBodyDecl(); i++) {
+			EnumConstant e = (EnumConstant) getBodyDecl(i);
+			IntegerLiteral il = new IntegerLiteral("" + (i + 1));
+			il.setStart(e.getStart());
+			il.setEnd(e.getEnd());
+			Vlist.add(
+				new VariableDecl(
+					e.getEnumID(), 
+					new List<Dims>(), 
+					new Opt(il)
+				)
+			);
+		}
+		/* Add enumerations
+			private static final int A = 1, B = 2, ....;
+		*/
+		bodyD.add(
+			new FieldDecl(modifiers, new PrimitiveTypeAccess("int"), Vlist)
+		);
+
+		/* field declaration
+			private final int enum;
+		*/
+		modifiers = new Modifiers(
+			new List<Modifier>().
+				add(new Modifier("private")).
+				add(new Modifier("final"))
+		);
+		Vlist = new List<VariableDecl>().
+			add(
+				new VariableDecl("enumValue", new List<Dims>(), new Opt())
+			);
+
+		bodyD.add(
+			new FieldDecl(modifiers, new PrimitiveTypeAccess("int"), Vlist)
+		);
+
+		/* Constructor Declaration
+			public E(int e) { enum = e; }
+		*/
+		modifiers = new Modifiers(
+			new List<Modifier>().
+				add(new Modifier("public"))
+		);
+
+		ParameterDeclaration par = new ParameterDeclaration(new Modifiers(), new PrimitiveTypeAccess("int"), "e");
+		List<Stmt> bodyStmt = new List<Stmt>().
+			add(new ExprStmt(
+				new AssignSimpleExpr(new ParseName("enumValue"), new ParseName("e")))
+		);
+
+		Block block = new Block(bodyStmt);
+		bodyD.add(
+			new ConstructorDecl(
+				modifiers, 
+				getID(), 
+				new List<ParameterDeclaration>().add(par), 
+				new List<Access>(), 
+				new Opt(),
+				block
+			)
+		);
+
+		/* Enum getter declaration
+			public int getEnum() { return enum; }
+		*/
+		modifiers = new Modifiers(
+			new List<Modifier>().
+				add(new Modifier("public"))
+		);
+
+		bodyStmt = new List<Stmt>().
+			add(
+				new ReturnStmt(
+					new Opt(new ParseName("enumValue"))
+				)
+			);
+
+		block = new Block(bodyStmt);
+
+		bodyD.add(
+			new MethodDecl(
+				modifiers, 
+				new PrimitiveTypeAccess("int"), 
+				"getEnum", 
+				new List<ParameterDeclaration>(), 
+				new List<Access>(), 
+				new Opt(block))
+		);
+
+		return new ClassDecl(new Modifiers(), getID(), new Opt(), new List(), bodyD);
+	}
+
+	coll Set<String> EnumDecl.getEnumLabels() [new HashSet<String>()] with add root EnumDecl;
+	EnumConstant contributes getEnumID() to EnumDecl.getEnumLabels() for getEnumDeclAncestor();
+
+	syn lazy Set<String> EnumDecl.getEnums() {
+		Set<String> s = new HashSet<String>();
+		for(String l : getEnumLabels())
+			s.add(getID() + "." + l);
+
+		return s;
+	}
+	inh EnumDecl EnumConstant.getEnumDeclAncestor();
+	eq EnumDecl.getBodyDecl(int i).getEnumDeclAncestor() = this;
+	eq TypeDecl.getBodyDecl(int i).getEnumDeclAncestor() = null;
+}

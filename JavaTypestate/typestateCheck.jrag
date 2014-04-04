@@ -1,0 +1,29 @@
+aspect typestateCheck {
+	public void ClassDecl.typestateCheck() {
+		getGraph();
+	}
+
+	public void MethodDecl.typestateCheck() {
+	}
+
+	public void VariableDecl.typestateCheck() {
+		//TODO check for typestate typing
+/*		System.out.println(getID());
+		if(typestate != null) {
+			for(int i = 0; i < typestate.startTypestate.size(); i++) {
+				System.out.println("------------------");
+				typestate.startTypestate.get(i).normalise().printPaths();
+			}
+			for(int i = 0; i < typestate.errorTypestate.size(); i++) {
+				System.out.println("*******************");
+				typestate.errorTypestate.get(i).normalise().printPaths();
+			}
+
+		}
+*/	}
+
+	public void ParameterDeclaration.typestateCheck() {
+		//TODO 
+	}
+
+}

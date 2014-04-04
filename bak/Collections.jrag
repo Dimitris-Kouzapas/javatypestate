@@ -1,0 +1,44 @@
+aspect Collections {
+	coll Set<MethodDecl> ClassDecl.getMethodDeclarations() [new HashSet<MethodDecl>()] with add root ClassDecl;
+	MethodDecl contributes this to ClassDecl.getMethodDeclarations() for getClassDeclParent();
+
+	coll Set<VariableDecl> Block.getLocalVariables() [new HashSet<VariableDecl>()] with add root Block; 
+	VariableDecl contributes this to Block.getLocalVariables() for getBlockParent();
+
+	coll Set<VariableDecl> ClassDecl.getFieldVariables() [new HashSet<VariableDecl>()] with add root ClassDecl;
+	VariableDecl contributes this to ClassDecl.getFieldVariables() for getClassDeclParent();
+
+	coll Set<TypestateFunc> TypestateFunc.successors() [new HashSet<TypestateFunc>()] with add root TypestateFunc;
+	LabelTBlock contributes getTarget() when getTarget() != null to TypestateFunc.successors() for getTypestateFuncParent();
+
+	coll Set<String> ClassDecl.getMethodSignatures() [new HashSet<String>()] with add root ClassDecl;
+	MethodDecl contributes signature() to ClassDecl.getMethodSignatures() for getClassDeclParent();
+
+	coll Set<String> TypestateDecl.getMethodSignatures() [new TreeSet<String>()] with add root TypestateDecl;
+	MethodTBlock contributes signature() when isReachable() to TypestateDecl.getMethodSignatures() for getTypestateDeclParent();
+
+	coll Set<String> Block.getLocalVariableIDs() [new HashSet<String>()] with add root Block; 
+	VariableDecl contributes getID() to Block.getLocalVariableIDs() for getBlockParent();
+
+	syn ArrayList<MethodDecl> ClassDecl.getMethodDeclarations(String methodID, String[] ParameterType) {
+		ArrayList<MethodDecl> s = new ArrayList<MethodDecl>();
+		for(Iterator i = getMethodDeclarations().iterator(); i.hasNext(); ) {
+			MethodDecl md = (MethodDecl) i.next();
+			if(methodID.equals(md.getID()) && ParameterType.length == md.getNumParameter()) {
+				boolean b = true;
+				for(int j = 0; j < ParameterType.length; j++) {
+					if(ParameterType[j] != null && !(ParameterType[j].equals(md.getParameter(j).getTypeAccess().toString()))) {
+						b = false;
+						break;
+					}
+				}
+				if(b == true)
+					s.add(md);
+			}
+		}
+		return s;
+	}
+
+	coll Set<Expr> MethodDecl.getReturnExpr() [new HashSet<Expr>()] with add root MethodDecl;
+	ReturnStmt contributes getResult() when hasResult() to MethodDecl.getReturnExpr() for getMethodDeclParent();
+}

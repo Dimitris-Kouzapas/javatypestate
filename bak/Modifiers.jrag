@@ -1,0 +1,15 @@
+aspect Modifiers {
+
+	private boolean Modifiers.isModifier(String mod) {
+		for(int i = 0; i < getNumModifier(); i++)
+			if(getModifier(i).getID().equals(mod))
+				return true;
+		return false;
+	}
+
+	syn lazy boolean Modifiers.isPublic() = isModifier("public");
+	syn lazy boolean Modifiers.isProtected() = isModifier("protected");
+	syn lazy boolean Modifiers.isPrivate() = isModifier("private");
+	syn lazy boolean Modifiers.isStatic() = isModifier("static");
+	syn lazy boolean Modifiers.isFinal() = isModifier("final");
+}

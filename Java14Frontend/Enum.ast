@@ -1,0 +1,5 @@
+EnumDecl : TypeDecl;
+
+EnumConstant : BodyDecl		::=	<EnumID: String>;
+
+

@@ -1,0 +1,32 @@
+TypeDecl type_declaration		=
+						enum_declaration.e
+						{:
+							return e;
+						:}
+					;
+
+EnumDecl enum_declaration		=
+						ENUM IDENTIFIER.i enum_body.e
+						{:
+							return new EnumDecl(new Modifiers(), i, e);	//TODO erase Modifiers
+						:}
+					;
+
+List enum_body			=
+						LBRACE enum_list.e SEMICOLON RBRACE
+						{:
+							return e;
+						:}
+					;
+
+List enum_list			=
+						IDENTIFIER.i
+						{:
+							return new List<EnumConstant>().add(new EnumConstant(i));
+						:}
+					|
+						enum_list.l COMMA IDENTIFIER.i
+						{:
+							return l.add(new EnumConstant(i));
+						:}
+					;

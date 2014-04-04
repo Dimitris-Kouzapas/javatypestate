@@ -1,0 +1,223 @@
+/*Algorithm for getting the type of an Expression/Access
+ * Each non-qualified exrpession has a type
+ * - ParseName: looks up the code hierarchy for block variables,
+ *   method/constructor parameters, fields (and super classes).
+ * - Method Access looks up in the hierarcy for matching class
+ *   method signatures and (super classes).
+ *
+ * Qualified types are evaluated access by access on the AbstractDot
+ * class. Method getQualifiedType gets recursively the parent type
+ * of each access of the abstract dot so it can pass it as an argument
+ * to method getType(TypeDecl t) to evaluate its own type.
+ * - ParseName searches the class of its qualified type.
+ *   Note that in the case a ParseName does not have a qualified
+ *   type it searches the hierarchy as the unqualified parse name.
+ * - MethodAccess searches the qualifiedType for matching method
+ *   signatures. 
+*/
+
+//TODO consider changing the name from getType() to getExprType()
+aspect Type {
+	syn lazy TypeDecl Expr.getType();
+
+	eq VarAccess.getType() = null;						//not used
+	eq PackageOrTypeAccess.getType() = null;				//not used
+	eq PackageAccess.getType() = null;					//not used
+	eq AmbiguousAccess.getType() = null;					//not used
+
+	eq AssignExpr.getType() = getDest().getType();
+	eq ConditionalExpr.getType() = getTrueExpr().getType() != null ? getTrueExpr().getType() : getFalseExpr().getType();
+	eq Binary.getType() = getLeftOperand().getType() != null ? getLeftOperand().getType() : getRightOperand().getType();
+	eq Unary.getType() = getOperand().getType();
+	eq ParExpr.getType() = getExpr().getType();
+
+	eq LogicalExpr.getType() = CompilationUnit.getBooleanType();		//boolean type
+	eq RelationalExpr.getType() = CompilationUnit.getBooleanType();		//boolean type
+	eq InstanceOfExpr.getType() = CompilationUnit.getBooleanType();		//boolean type
+
+	eq BooleanLiteral.getType() = CompilationUnit.getBooleanType();
+	eq IntegerLiteral.getType() = CompilationUnit.getIntegerType();
+	eq LongLiteral.getType() = CompilationUnit.getLongType();
+	eq CharacterLiteral.getType() = CompilationUnit.getCharType();
+	eq FloatingPointLiteral.getType() = CompilationUnit.getFloatType();
+	eq DoubleLiteral.getType() = CompilationUnit.getDoubleType();
+	eq StringLiteral.getType() = CompilationUnit.getStringType();
+	eq NullLiteral.getType() = CompilationUnit.getNullType();
+
+	eq CastExpr.getType() = getTypeAccess().lookupType();
+	eq ClassInstanceExpr.getType() = getAccess().lookupType();
+	eq ArrayCreationExpr.getType() = getTypeAccess().lookupType();
+	eq ArrayInit.getType() {
+		for(int i = 0; i < getNumInit(); i++) 
+			if(getInit(i).getType() != null)
+				return getInit(i).getType();
+		return  CompilationUnit.getNoNameType();			//TODO recheck this as well
+	}
+
+	syn lazy TypeDecl Access.getType();
+
+	//TODO recheck all the nulls --> should return a type
+	eq ConstructorAccess.getType() =					//equals(super) deprecated -> will never return null
+			getID().equals("this") ? getCompilationUnitAncestor().getTypeDecl() : null;
+	eq ThisAccess.getType() = getCompilationUnitAncestor().getTypeDecl();
+	eq SuperAccess.getType() = null;					//deprecated
+	syn lazy TypeDecl TypeAccess.getType() = null;				//inherited by PrimitiveType and ArrayTypeAccess
+	eq PrimitiveTypeAccess.getType() =
+			CompilationUnit.getPrimitiveType(getName());		//PrimitiveTypeAccess inherits from TypeAccess 
+	eq ArrayTypeAccess.getType() = getAccess().getType();			//inherited by ArrayTypeWithSizeAccess
+	eq ArrayTypeWithSizeAccess.getType() = getAccess().getType();
+	eq ArrayAccess.getType() = null;					//Only used in Qualified
+	eq ClassAccess.getType() = CompilationUnit.getClassType();		//Class Access
+
+	eq ParseName.getType() =
+		isAbstractDotParent() ? getType(getQualifiedType()) : getTypeNoQualified();
+
+	eq MethodAccess.getType() = getType(getQualifiedType());
+	eq AbstractDot.getType() = getRight().getType();
+
+	/******************************************************/ 		//TODO consider in another file!!
+
+	syn TypeDecl Expr.getType(TypeDecl t) = getType();			//For the left child of AbstractDot 
+										//TODO What if the right child is an expression
+										//TODO is getType() correct??
+	syn TypeDecl Access.getType(TypeDecl t);
+
+	eq VarAccess.getType(TypeDecl t) = null;				//not used
+	eq PackageOrTypeAccess.getType(TypeDecl t) = null;			//not used
+	eq PackageAccess.getType(TypeDecl t) = null;				//not used
+	eq AmbiguousAccess.getType(TypeDecl t) = null;				//not used
+	eq SuperAccess.getType(TypeDecl t) = null;				//deprecated
+
+	eq ConstructorAccess.getType(TypeDecl t) = t;				//not used in Qualified
+	eq ClassInstanceExpr.getType(TypeDecl t) = null;			//not used in Qualified in this version
+	eq ClassAccess.getType(TypeDecl t) = CompilationUnit.getClassType();	//not used in Qualified in this version
+
+	eq TypeAccess.getType(TypeDecl t) = null;				//inherited by PrimitiveTypeAccess, ArrayTypeAccess
+	eq PrimitiveTypeAccess.getType(TypeDecl t) = getType();			//TODO is this correct?
+	eq ArrayTypeAccess.getType(TypeDecl t) = getAccess().getType(t);			//TODO is this correct?
+	eq ArrayTypeWithSizeAccess.getType(TypeDecl t) = getAccess().getType(t);		//TODO is this correct?
+
+	eq ThisAccess.getType(TypeDecl t) = t;					//Qualified this is not supposed to be used,
+										//except in the case of this.var or this.meth()
+
+	eq ArrayAccess.getType(TypeDecl t) = t;
+	eq ParseName.getType(TypeDecl t) {
+		NameDecl nd;
+		if((nd = lookupVariable(t)) != null)
+			return nd.getTypeAccess().lookupType();
+		return CompilationUnit.getNoNameType();
+	}
+
+	eq MethodAccess.getType(TypeDecl t) {
+		MethodDecl m;
+		if((m = lookupMethod(t)) != null)
+			return m.getTypeAccess().lookupType();
+		return CompilationUnit.getNoNameType();
+	}
+	eq AbstractDot.getType(TypeDecl t) =
+		getRight().getType(getLeft().getType(t));			//should not be used
+
+	/****************Qualified Type**************************/
+
+	syn lazy TypeDecl Access.getQualifiedType() {
+		if(isAbstractDotParent())
+			return ((Access) getParent()).getQualifiedType();
+
+		return getCompilationUnitAncestor().getTypeDecl();
+	}
+
+	eq AbstractDot.getQualifiedType() {
+		if(isAbstractDotParent())
+			return getLeft().getType(((Access) getParent()).getQualifiedType());
+
+		return getLeft().getTypeNoQualified();
+	}
+
+	syn lazy TypeDecl Expr.getTypeNoQualified() = getType(getCompilationUnitAncestor().getTypeDecl());
+
+	eq ParseName.getTypeNoQualified() =
+		lookupVariable() != null ? lookupVariable().getTypeAccess().lookupType() : CompilationUnit.getNoNameType();
+											//lookupPackage();
+	//TODO recheck
+	eq PackageParseName.getTypeNoQualified() = lookupType(getPackage(), getID());
+
+
+/*****************************************************************************************************/
+/*	//TODO another file
+
+	//class NameDecl
+	abstract class NameDecl {
+		abstract public Modifiers getModifiers();
+		abstract public Access getTypeAccess();
+		abstract public List<Dims> getDimss();
+		abstract public String getID();
+		abstract public TypestateVar getTypestateVar();
+	}
+
+	//class VarDecl
+	class VarDecl extends NameDecl {
+		private VariableDecl vd;
+		public VarDecl(VariableDecl vd) {
+			this.vd = vd;
+		}
+		public Modifiers getModifiers() { return vd.getModifiers(); }
+		public Access getTypeAccess() { return vd.getTypeAccess(); }
+		public List<Dims> getDimss() {return vd.getDimss();}
+		public String getID() { return vd.getID(); }
+		public TypestateVar getTypestateVar() {return vd.typestate;}
+		
+	}
+
+	class ParDecl extends NameDecl {
+		private ParameterDeclaration pd;
+		public ParDecl(ParameterDeclaration pd) {
+			this.pd = pd;
+		}
+		public Modifiers getModifiers() { return pd.getModifiers(); }
+		public Access getTypeAccess() { return pd.getTypeAccess(); }
+		public List<Dims> getDimss() {return null;}
+		public String getID() { return pd.getID(); }
+		public TypestateVar getTypestateVar() {return pd.typestate;}
+	}
+
+	class MDecl extends NameDecl {
+		private MethodDecl md;
+		public MDecl(MethodDecl md) {
+			this.md = md;
+		}
+		public Modifiers getModifiers() {return md.getModifiers();}
+		public Access getTypeAccess() {return md.getTypeAccess();}
+		public List<Dims> getDimss() {return null;}
+		public String getID() {return md.getID();}
+		public TypestateVar getTypestateVar() {return md.typestate;}
+	}
+
+	syn lazy NameDecl ParameterDeclaration.toNameDecl() = new ParDecl(this);
+	syn lazy NameDecl VariableDecl.toNameDecl() = new VarDecl(this);
+	syn lazy NameDecl MethodDecl.toNameDecl() = new MDecl(this);
+
+
+
+	syn lazy NameDecl Access.getNameDecl();
+
+	eq VarAccess.getNameDecl() = null;					//not used
+	eq PackageOrTypeAccess.getNameDecl() = null;				//not used
+	eq PackageAccess.getNameDecl() = null;					//not used
+	eq AmbiguousAccess.getNameDecl() = null;				//not used
+
+	eq ConstructorAccess.getNameDecl() = null;				// variable name is this
+	eq TypeAccess.getNameDecl() = null;
+	eq PrimitiveTypeAccess.getNameDecl() = null;
+	eq ArrayTypeAccess.getNameDecl() = getAccess().getNameDecl();
+	eq ThisAccess.getNameDecl() = null;					// again the this keyword
+	eq SuperAccess.getNameDecl() = null;					// not used in this version
+	eq ArrayAccess.getNameDecl() = null;					//only used in qualified
+	eq ClassAccess.getNameDecl() = null;
+	eq ClassInstanceExpr.getNameDecl() = null;				//doesn't have a variable
+
+	eq ParseName.getNameDecl() = isAbstractDotParent() ? null : lookupVariable();
+	eq MethodAccess.getNameDecl() = lookupMethod(getQualifiedType()).toNameDecl();
+
+	eq AbstractDot.getNameDecl() = getRight().getNameDecl();	
+*/
+}

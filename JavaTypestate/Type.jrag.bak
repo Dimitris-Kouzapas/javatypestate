@@ -1,0 +1,104 @@
+aspect Type {
+	syn lazy TypeDecl Expr.getType();
+
+	eq AssignExpr.getType() = getDest().getType();
+	eq ConditionalExpr.getType() = getTrueExpr().getType() != null ? getTrueExpr().getType() : getFalseExpr().getType();
+	eq Binary.getType() = getLeftOperand().getType() != null ? getLeftOperand().getType() : getRightOperand().getType();
+	eq LogicalExpr.getType() = CompilationUnit.getBooleanType();		//boolean type
+	eq RelationalExpr.getType() = CompilationUnit.getBooleanType();		//boolean type
+	eq Unary.getType() = getOperand().getType();
+
+	eq BooleanLiteral.getType() = CompilationUnit.getBooleanType();
+	eq IntegerLiteral.getType() = CompilationUnit.getIntegerType();
+	eq LongLiteral.getType() = CompilationUnit.getLongType();
+	eq CharacterLiteral.getType() = CompilationUnit.getCharType();
+	eq FloatingPointLiteral.getType() = CompilationUnit.getFloatType();
+	eq DoubleLiteral.getType() = CompilationUnit.getDoubleType();
+	eq StringLiteral.getType() = CompilationUnit.getStringType();
+	eq NullLiteral.getType() = CompilationUnit.getNullType();
+
+	eq InstanceOfExpr.getType() = CompilationUnit.getBooleanType();		//boolean type
+	eq CastExpr.getType() = getTypeAccess().lookupType();
+	eq ParExpr.getType() = getExpr().getType();
+	eq ClassInstanceExpr.getType() = getAccess().lookupType();
+	eq ArrayCreationExpr.getType() = getTypeAccess().lookupType();
+	eq ArrayInit.getType() {
+		for(int i = 0; i < getNumInit(); i++) 
+			if(getInit(i).getType() != null)
+				return getInit(i).getType();
+		return  null;
+	}
+
+	//super class case is deprecated
+	eq ConstructorAccess.getType() = getID().equals("this") ? getCompilationUnitAncestor().getTypeDecl() : null;
+	eq ThisAccess.getType() = getCompilationUnitAncestor().getTypeDecl();
+	eq SuperAccess.getType() = null;			//deprecated
+	eq TypeAccess.getType() = null;				//PrimitiveTypeAccess inherits from TypeAccess
+	eq ArrayAccess.getType() = null;
+	eq ClassAccess.getType() = null;
+	eq VarAccess.getType() = null;				//not used
+	eq PackageOrTypeAccess.getType() = null;		//not used
+	eq PackageAccess.getType() = null;			//not used
+	eq AmbiguousAccess.getType() = null;			//not used
+
+	//TODO lookupVariable should not be null??
+	eq ParseName.getType() =
+		lookupVariable() != null ? lookupVariable().getTypeAccess().lookupType() : CompilationUnit.getNoNameType();
+	eq MethodAccess.getType() =
+		lookupMethod() != null ? lookupMethod().getTypeAccess().lookupType() : CompilationUnit.getNoNameType();
+	eq AbstractDot.getType() = getQualifiedType();//getRight().getType(getLeft().getType());
+
+	/************ Qualified Type ***********/ //TODO consider in another file!!
+
+	syn TypeDecl Expr.getType(TypeDecl t) = null;				//For the left child of AbstractDot
+	syn TypeDecl Access.getType(TypeDecl t);
+
+	eq VarAccess.getType(TypeDecl t) = null;				//not used
+	eq PackageOrTypeAccess.getType(TypeDecl t) = null;			//not used
+	eq PackageAccess.getType(TypeDecl t) = null;				//not used
+	eq AmbiguousAccess.getType(TypeDecl t) = null;				//not used
+	eq SuperAccess.getType(TypeDecl t) = null;				//deprecated
+
+	eq ConstructorAccess.getType(TypeDecl t) = null;			//not used in Qualified
+	eq TypeAccess.getType(TypeDecl t) = null;				//not used in Qualified
+	eq ClassInstanceExpr.getType(TypeDecl t) = null;			//not used in Qualified in this version
+	eq ClassAccess.getType(TypeDecl t) = null;				//not used in Qualified in this version
+
+	eq ThisAccess.getType(TypeDecl t) = t;
+	eq ArrayAccess.getType(TypeDecl t) = t;
+	eq ParseName.getType(TypeDecl t) {
+		VarDecl vd;
+		if((vd = lookupVariable(t)) != null)
+			return vd.getTypeAccess().lookupType();
+		return CompilationUnit.getNoNameType();
+	}
+	eq MethodAccess.getType(TypeDecl t) {
+		MethodDecl m;
+		if((m = lookupMethod(t)) != null)
+			return m.getTypeAccess().lookupType();
+		return CompilationUnit.getNoNameType();
+	}
+	eq AbstractDot.getType(TypeDecl t) = getRight().getType(getLeft().getType(t));
+
+	/******************************************************/
+	//TODO Dont know if this is ok!! it works but maybe a better implementation
+	syn lazy TypeDecl Access.getQualifiedType() {
+		if(getParent() instanceof AbstractDot)
+			return getType(((Access) getParent()).getParentType());
+		return getType();
+	}
+
+	syn lazy TypeDecl AbstractDot.getQualifiedType() {
+		return getRight().getQualifiedType();
+	}
+
+	syn lazy TypeDecl Access.getParentType() = null;
+
+	syn lazy TypeDecl AbstractDot.getParentType() {
+		if(getParent() instanceof AbstractDot)
+			return getLeft().getType(((Access) getParent()).getParentType());
+		return getLeft().getType();
+	}
+
+	//TODO when Qualified Access is a String ==> e.g. test.enumeration.tria;
+}

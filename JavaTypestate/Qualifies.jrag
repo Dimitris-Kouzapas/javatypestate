@@ -1,0 +1,63 @@
+aspect Qualifies {
+	public Dot Dot.lastDot() {
+		Dot node = this;
+		while(node.getRightNoTransform() instanceof Dot)
+			node = (Dot)node.getRightNoTransform();
+		return node;
+	}
+
+	public Dot Expr.qualifiesAccess(Access access) {
+		Dot dot = new Dot(this, access);
+		dot.setStart(this.getStart());
+		dot.setEnd(access.getEnd());
+		return dot;
+	}
+  
+	public Dot Dot.qualifiesAccess(Access access) {
+		Dot lastDot = lastDot();
+		Expr l = lastDot.getRightNoTransform();
+		Dot dot = new Dot(lastDot.getRightNoTransform(), access);
+		dot.setStart(l.getStart());
+		dot.setEnd(access.getEnd());
+		lastDot.setRight(dot);
+		return this;
+	}
+
+	public Access Access.addArrayDims(List list) {
+		Access a = this;
+		for(int i = 0; i < list.getNumChildNoTransform(); i++) {
+			Dims dims = (Dims)list.getChildNoTransform(i);
+			Opt opt = dims.getExprOpt();
+			if(opt.getNumChildNoTransform() == 1)
+				a = new ArrayTypeWithSizeAccess(a, (Expr)opt.getChildNoTransform(0));
+			else
+				a = new ArrayTypeAccess(a);
+			
+			a.setStart(dims.getStart());
+//			a.setEnd(dims.end());
+			a.setEnd(dims.getEnd());
+		}
+		return a;
+	}
+
+	// These are used by the parser to extract the last name which
+	// will be replaced by a method name
+	public Access AbstractDot.extractLast() {
+		return getRightNoTransform();
+	}
+
+	public void AbstractDot.replaceLast(Access access) {
+		setRight(access);
+	}
+
+	public Access Dot.extractLast() {
+		return lastDot().getRightNoTransform();
+	}
+
+	public void Dot.replaceLast(Access access) {
+		lastDot().setRight(access);
+ 	}
+
+	syn Access Access.lastAccess() = this;
+	eq AbstractDot.lastAccess() = getRight().lastAccess();
+}

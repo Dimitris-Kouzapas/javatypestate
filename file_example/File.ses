@@ -1,0 +1,64 @@
+package file_example;
+import java.io.*;
+
+class File typestate FileProtocol {
+	private MyFileObject reader;
+//	private BufferedReader reader;
+	private String file;
+	private char[] readBuffer;
+	private int i;
+
+	File(String file) {
+		this.file = file;
+		reader = new MyFileObject(file);
+		readBuffer = new char[1024];
+		i = 0;
+	}
+
+	Status open() {
+		if(reader.open())
+			return new Status(Status.OK);
+		return new Status(Status.ERROR);
+	}
+
+	void close() {
+		reader.close();
+	}
+
+	BooleanEnum hasNext() {
+		if(reader.ready())
+			return new BooleanEnum(BooleanEnum.TRUE);
+		return new BooleanEnum(BooleanEnum.FALSE);
+	}
+
+	void read() {
+		readBuffer[i++] = reader.read();
+	}
+
+	//void iii(File m) {
+	//	m.open();
+	//}
+
+	public static void main(String[] args) {
+		File myFile = new File("file.txt");
+		Status s = myFile.open();
+
+		switch(s.getEnum()) {
+			case Status.OK:
+				myFile.read();
+				break;
+			case Status.ERROR:
+				myFile.hasNext();
+				System.out.println("file not found!");
+				break;
+		}
+
+		while(true) {
+			myFile.close();
+		}
+		//iii(myFile);
+
+//		myFile.hasNext();
+
+	}
+}

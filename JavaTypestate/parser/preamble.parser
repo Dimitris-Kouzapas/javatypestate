@@ -1,0 +1,82 @@
+%header {:
+	package JavaTypestate.parser;
+	import JavaTypestate.AST.*;
+:};
+%embed {:
+	class Events extends Parser.Events {
+
+		public void scannerError(Scanner.Exception e) {
+			errors.add(new TypestateLexicalError(e.getMessage(), null, e.line, e.column));
+		}
+
+		public void syntaxError(Symbol token) {
+//			int line = token.getLine(token.getStart());
+//			int column = token.getColumn(token.getStart());
+//			int endLine = token.getLine(token.getEnd());
+//			int endColumn = token.getColumn(token.getEnd());
+			String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
+//			errors.add(new TypestateSyntaxError("Unexpected token \"" + value + "\"", null, line, column));
+			errors.add(new TypestateSyntaxError("Unexpected token \"" + value + "\"", null, token.getStart(), token.getEnd()));
+		}
+
+		public void unexpectedTokenRemoved(Symbol token) {
+			String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
+			errors.add(new TypestateWarning("Unexpected token removed \"" + value + "\"", null, token.getStart(), token.getEnd()));
+		}
+
+		public void missingTokenInserted(Symbol token) {
+			String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
+			errors.add(new TypestateWarning("Missing token inserted \"" + value + "\"", null, token.getStart(), token.getEnd()));
+		}
+
+		public void misspelledTokenReplaced(Symbol token) {
+			String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
+			errors.add(new TypestateWarning("Misspelled token replaced \"" + value + "\"", null, token.getStart(), token.getEnd()));
+		}
+
+		public void errorPhraseRemoved(Symbol error) {
+			String value = error.value != null ? error.value.toString() : Terminals.NAMES[error.getId()];
+			errors.add(new TypestateWarning("Error phrase removed \"" + value + "\"", null, error.getStart(), error.getEnd()));
+		}
+	}
+
+	{
+		// Use error handler in parser
+		report = new Events();
+	}
+
+	protected java.util.Collection<TypestateError> errors;// = new ArrayList<TypestateError>();
+
+	private void addErrorsCU(CompilationUnit cu, String fileName) {
+		for(java.util.Iterator iter = errors.iterator(); iter.hasNext(); ) {
+			TypestateError e = (TypestateError) iter.next();
+			e.setFileName(fileName);
+			if(cu != null)
+				cu.addError(e);
+		}
+	}
+
+	public CompilationUnit parse(java.io.InputStream is, String fileName) throws java.io.IOException, ParserFailException {
+		CompilationUnit cu;
+		errors = new ArrayList<TypestateError>();
+		try {
+			JavaTypestate.scanner.JavaScanner scanner = new JavaTypestate.scanner.JavaScanner(new JavaTypestate.scanner.Unicode(is));
+			cu = (CompilationUnit)parse(scanner);
+		} catch(Parser.Exception e) {
+			addErrorsCU(null, fileName);
+			throw new ParserFailException(errors);
+		}
+//		if(!cu.getTypeDecl().getID().equals(fileName))
+//			errors.add(
+//				new TypestateSemanticError(
+//					"Module name " + cu.getTypeDecl().getID() + " does not much file name",
+//					fileName,
+//					cu.getTypeDecl().getStart(),	//TODO find getstart and getEnd
+//					cu.getTypeDecl().getEnd()
+//				)
+//			);
+		addErrorsCU(cu, fileName);
+		return cu;
+	}
+:};
+

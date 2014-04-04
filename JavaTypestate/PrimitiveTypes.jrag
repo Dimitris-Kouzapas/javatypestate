@@ -1,0 +1,131 @@
+aspect PrimitiveTypes {
+	static protected final String[] CompilationUnit.primitiveTypeString = {
+		"boolean", "byte", "short", "int", "long", "char", "float", "double"
+	};
+	static private final PrimitiveType CompilationUnit.primitiveType[] = {
+		new BooleanType(), new ByteType(), new ShortType(), new IntType(),
+		new LongType(), new CharType(), new FloatType(), new DoubleType()
+	};
+
+	static private final TypeDecl CompilationUnit.voidType = new VoidType();
+	static private final TypeDecl CompilationUnit.nullType = new NullType();
+	static private final TypeDecl CompilationUnit.unknownType = new NoNameType();
+	static private final TypeDecl CompilationUnit.classType = new ClassType();
+
+	static private final TypeDecl CompilationUnit.stringType =
+		new UnknownTypeDecl(new Modifiers(), "String", new List<BodyDecl>());
+
+	static protected TypeDecl CompilationUnit.getPrimitiveType(String type) {
+		for(int i = 0; i < primitiveTypeString.length; i++)
+			if(type.equals(primitiveTypeString[i]))
+				return primitiveType[i];
+
+		if(type.equals("void"))
+			return voidType;
+
+		return null;
+	}
+
+	static protected TypeDecl CompilationUnit.getBooleanType() {
+		return primitiveType[0];
+	}
+	static protected TypeDecl CompilationUnit.getByteType() {
+		return primitiveType[1];
+	}
+	static protected TypeDecl CompilationUnit.getShortType() {
+		return primitiveType[2];
+	}
+	static protected TypeDecl CompilationUnit.getIntegerType() {
+		return primitiveType[3];
+	}
+	static protected TypeDecl CompilationUnit.getLongType() {
+		return primitiveType[4];
+	}
+	static protected TypeDecl CompilationUnit.getCharType() {
+		return primitiveType[5];
+	}
+	static protected TypeDecl CompilationUnit.getFloatType() {
+		return primitiveType[6];
+	}
+	static protected TypeDecl CompilationUnit.getDoubleType() {
+		return primitiveType[7];
+	}
+
+	static protected TypeDecl CompilationUnit.getVoidType() {
+		return voidType;
+	}
+	static protected TypeDecl CompilationUnit.getNullType() {
+		return nullType;
+	}
+	static protected TypeDecl CompilationUnit.getNoNameType() {
+		return unknownType;
+	}
+	static protected TypeDecl CompilationUnit.getStringType() {
+		return stringType;
+	}
+
+	static protected TypeDecl CompilationUnit.getClassType() {
+		return classType;
+	}
+
+	public boolean UnknownTypeDecl.equals(Object o) {
+		if((o instanceof UnknownTypeDecl) && (getID().equals(((UnknownTypeDecl) o).getID())))
+			return true;
+		return false;
+	}
+
+	public boolean NoNameType.equals(Object o) {
+		return true;
+	}
+
+	public boolean NullType.equals(Object o) {
+		if(o instanceof PrimitiveType)
+			return false;
+		return true;
+	}
+
+	public String UnknownTypeDecl.toString() {
+		return getID();
+	}
+
+	public String BooleanType.toString() {
+		return CompilationUnit.primitiveTypeString[0];
+	}
+	public String ByteType.toString() {
+		return CompilationUnit.primitiveTypeString[1];
+	}
+	public String ShortType.toString() {
+		return CompilationUnit.primitiveTypeString[2];
+	}
+	public String IntType.toString() {
+		return CompilationUnit.primitiveTypeString[3];
+	}
+	public String LongType.toString() {
+		return CompilationUnit.primitiveTypeString[4];
+	}
+	public String CharType.toString() {
+		return CompilationUnit.primitiveTypeString[5];
+	}
+	public String FloatType.toString() {
+		return CompilationUnit.primitiveTypeString[6];
+	}
+	public String DoubleType.toString() {
+		return CompilationUnit.primitiveTypeString[7];
+	}
+
+	public String VoidType.toString() {
+		return "void";
+	}
+	public String NullType.toString() {
+		return "null";
+	}
+
+	public String NoNameType.toString() {
+		return "unknown";
+	}
+
+	public String ClassType.toString() {
+		return "class";
+	}
+
+}

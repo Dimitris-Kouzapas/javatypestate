@@ -1,0 +1,48 @@
+aspect LookupVariable {
+	inh VariableDeclaration ParseName.lookupVariable(String variable);
+	syn lazy VariableDeclaration ParseName.lookupVariable() = lookupVariable(getID());
+
+	syn VariableDeclaration ParseName.lookupVariable(CompilationUnit u) = u != null ? u.lookupVariable(getID()) : null;
+
+	//for consistency
+	eq CompilationUnit.getImportDecl(int i).lookupVariable(String variable) = null;
+	inh VariableDeclaration Block.lookupVariable(String variable);
+
+	eq Block.getStmt(int k).lookupVariable(String variable) {
+		Set<VariableDecl> s = getLocalVariables();
+		for(Iterator i = s.iterator(); i.hasNext(); ) {
+			VariableDecl vd = (VariableDecl) i.next();
+			if(variable.equals(vd.getID()))
+				return new VariableDeclaration(vd.getModifiers().copy(), (Access)(vd.getTypeAccess().copy()), vd.getID(), vd.getInitOpt().copy());
+		}
+		return lookupVariable(variable);
+	}
+
+	inh VariableDeclaration MethodDecl.lookupVariable(String variable);
+	eq MethodDecl.getBlock().lookupVariable(String variable) {
+		for(int i = 0; i < getNumParameter(); i++) {
+			if(variable.equals(getParameter(i).getID())) {
+				ParameterDeclaration p = getParameter(i);
+				return new VariableDeclaration(p.getModifiers().copy(), (Access) (p.getTypeAccess().copy()), p.getID(), new Opt());
+			}
+		}
+		return lookupVariable(variable);
+	}
+
+	syn VariableDeclaration ClassDecl.lookupVariable(String variable) {
+		Set<VariableDecl> s = getFieldVariables();
+		for(Iterator i = s.iterator(); i.hasNext(); ) {
+			VariableDecl vd = (VariableDecl) i.next();
+			if(variable.equals(vd.getID()))
+				return new VariableDeclaration(vd.getModifiers().copy(), (Access)(vd.getTypeAccess().copy()), vd.getID(), vd.getInitOpt().copy());
+		}
+		return null;
+	}
+
+	eq TypeDecl.getBodyDecl(int i).lookupVariable(String variable)	= lookupVariable(variable);
+
+	syn VariableDeclaration TypeDecl.lookupVariable(String variable) = (this instanceof ClassDecl) ?
+								    ((ClassDecl) this).lookupVariable(variable) : null;
+
+	syn VariableDeclaration CompilationUnit.lookupVariable(String variable) = getTypeDecl().lookupVariable(variable);
+}

@@ -1,0 +1,103 @@
+aspect LookupVariable {
+	//NameDecl
+	inh NameDecl ParseName.lookupVariable(String var);
+	syn lazy NameDecl ParseName.lookupVariable() = lookupVariable(getID());
+	eq CompilationUnit.getImportDecl(int i).lookupVariable(String var) = null;
+
+	syn lazy NameDecl ParseName.lookupVariable(TypeDecl t) = t != null ? t.lookupVariable(getID()) : null;
+
+	//Block
+	coll Set<VariableDecl> Block.getVariableDecls() [new HashSet<VariableDecl>()] with add root Block; 
+	VariableDecl contributes this to Block.getVariableDecls() for getBlockAncestor();
+
+	inh Block VariableDecl.getBlockAncestor();
+	eq Block.getStmt(int i).getBlockAncestor() = this;
+	eq TypeDecl.getBodyDecl().getBlockAncestor() = null;
+
+	inh NameDecl Block.lookupVariable(String var);
+	eq Block.getStmt(int j).lookupVariable(String var) {
+		for(VariableDecl vd : getVariableDecls())
+			if(vd.getID().equals(var))
+				return vd.toNameDecl();
+
+		return lookupVariable(var);
+	}
+
+	//MethodDecl
+	inh NameDecl MethodDecl.lookupVariable(String var);
+	eq MethodDecl.getBlock().lookupVariable(String var) {
+		for(int i = 0; i < getNumParameter(); i++)
+			if(getParameter(i).getID().equals(var))
+				return getParameter(i).toNameDecl();
+
+		return lookupVariable(var);
+	}
+
+	//ConstructorDecl
+	inh NameDecl ConstructorDecl.lookupVariable(String var);
+	eq ConstructorDecl.getBlock().lookupVariable(String var) {
+		for(int i = 0; i < getNumParameter(); i++)
+			if(getParameter(i).getID().equals(var))
+				return getParameter(i).toNameDecl();
+		return lookupVariable(var);
+	}
+
+	//ClassDecl
+	eq TypeDecl.getBodyDecl(int i).lookupVariable(String var) = null;
+	eq ClassDecl.getBodyDecl(int i).lookupVariable(String var) = lookupVariable(var);
+
+	coll Set<VariableDecl> ClassDecl.getVariableDecls() [new HashSet<VariableDecl>()] with add root ClassDecl;
+	VariableDecl contributes this when isField() to ClassDecl.getVariableDecls() for getClassDeclAncestor();
+
+	syn NameDecl TypeDecl.lookupVariable(String var) = null;
+	syn NameDecl ClassDecl.lookupVariable(String var) {
+		for(VariableDecl vd : getVariableDecls())
+			if(vd.getID().equals(var))
+				return vd.toNameDecl();
+		//for possible future work
+		if(hasSuperClassAccess())
+			return getSuperClassAccess().lookupType().lookupVariable(var);
+		return null;
+	}
+
+
+	//class NameDecl
+	abstract class NameDecl {
+		abstract public Modifiers getModifiers();
+		abstract public Access getTypeAccess();
+		abstract public List<Dims> getDimss();
+		abstract public String getID();
+		abstract public TypestateVar getTypestateVar();
+	}
+
+	//class VarDecl
+	class VarDecl extends NameDecl {
+		private VariableDecl vd;
+		public VarDecl(VariableDecl vd) {
+			this.vd = vd;
+		}
+		public Modifiers getModifiers() { return vd.getModifiers(); }
+		public Access getTypeAccess() { return vd.getTypeAccess(); }
+		public List<Dims> getDimss() {return vd.getDimss();}
+		public String getID() { return vd.getID(); }
+		public TypestateVar getTypestateVar() {return vd.typestate;}
+		
+	}
+
+	class ParDecl extends NameDecl {
+		private ParameterDeclaration pd;
+		public ParDecl(ParameterDeclaration pd) {
+			this.pd = pd;
+		}
+		public Modifiers getModifiers() { return pd.getModifiers(); }
+		public Access getTypeAccess() { return pd.getTypeAccess(); }
+		public List<Dims> getDimss() {return null;}
+		public String getID() { return pd.getID(); }
+		public TypestateVar getTypestateVar() {return pd.typestate;}
+		
+	}
+
+	syn lazy NameDecl ParameterDeclaration.toNameDecl() = new ParDecl(this);
+	syn lazy NameDecl VariableDecl.toNameDecl() = new VarDecl(this);
+
+}

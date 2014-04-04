@@ -1,0 +1,5 @@
+package test;
+typestate ABCD {
+	session
+		Start = {int foo(My): end}
+}

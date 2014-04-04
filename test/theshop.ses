@@ -1,0 +1,22 @@
+import test.*;
+typestate MyShop {
+	session
+			Start =	Init//ial
+	where
+	//		Initial = main main = Start
+
+			Init =	{
+					void init(): Shop
+				}
+
+			Shop =	{
+			                int price(): Shop,
+					enumType buy(MyObject  <{void buyme(): end }>, int): <ok: Pay, error: Shop>,
+					void stop(): {}
+				}
+
+			Pay =	{
+					int pay(): Shop
+				}
+
+}

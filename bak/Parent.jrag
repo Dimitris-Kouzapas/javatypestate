@@ -1,0 +1,44 @@
+aspect Parent {
+	protected CompilationUnit ASTNode.getCompilationUnitParent() {
+		ASTNode node = this;
+		while(node != null && !(node instanceof CompilationUnit))
+			node = node.getParent();
+		return (CompilationUnit) node;
+	}
+
+//	eq CompilationUnit.getTypeDecl().getCompilationUnitParent() = this;
+	eq Program.getCompilationUnit(int i).getProgramParent() = this;
+	eq TypeDecl.getBodyDecl(int i).getClassDeclParent() = null;
+	eq ClassDecl.getBodyDecl(int i).getClassDeclParent() = this;
+	eq Block.getStmt(int i).getBlockParent() = this;
+	eq TypeDecl.getBodyDecl(int i).getBlockParent()	= (getBodyDecl(i) instanceof ConstructorDecl) ? 
+							  ((ConstructorDecl) getBodyDecl(i)).getBlock() : null;
+	eq MethodDecl.getBlock().getMethodDeclParent() = this;
+	eq CompilationUnit.getTypeDecl().getMethodDeclParent() = null;
+
+	inh ClassDecl BodyDecl.getClassDeclParent();
+	inh ClassDecl VariableDecl.getClassDeclParent();
+	inh Block VariableDecl.getBlockParent();
+	syn lazy Access MethodAccess.getDotParent() {
+		ASTNode a = this;
+		while(a.getParent() instanceof Dot)
+			a = getParent();
+		return (Access) a;
+	}
+	inh MethodDecl ReturnStmt.getMethodDeclParent();
+
+	eq TypestateFunc.getTypestate().getTypestateFuncParent() = this;
+	eq TypestateDecl.getTypestateFunc(int i).getTypestateDeclParent() = this;
+	eq SwitchTBlock.getConstantTypestate(int i).getSwitchTBlockParent() = this;
+	//for consistency
+	eq CompilationUnit.getImportDecl(int i).getSwitchTBlockParent() = null;
+
+	inh Program TypestateDecl.getProgramParent();
+	inh TypestateFunc TypestateBlock.getTypestateFuncParent();
+	inh TypestateDecl TypestateBlock.getTypestateDeclParent();
+	inh SwitchTBlock Expr.getSwitchTBlockParent();
+
+	eq CompilationUnit.getImportDecl(int i).classID() = null;
+	eq TypeDecl.getBodyDecl(int i).classID() = getID();
+	inh String Access.classID();
+}

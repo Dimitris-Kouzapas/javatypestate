@@ -1,0 +1,4 @@
+#!/bin/bash
+
+java -cp .:tools/beaver-rt.jar JavaTypestate/AST/TypestateChecker $@
+

@@ -1,0 +1,157 @@
+aspect javaASTFunctionality {
+
+	//CompilationUnit
+	eq CompilationUnit.getImportDecl(int i).getClassDeclAncestor() = null;		//TODO dont like
+
+	//TypeDecl
+	syn lazy boolean TypeDecl.isTypestateDeclType() = false;
+	syn lazy boolean TypeDecl.isClassDeclType() = false;
+	syn lazy boolean TypeDecl.isEnumDeclType() = false;
+	syn lazy boolean TypeDecl.isTypestateClassDeclType() = false;
+
+	syn lazy TypestateDecl TypeDecl.getTypestateDecl() = null;
+	syn lazy ClassDecl TypeDecl.getClassDecl() = null;
+	syn lazy EnumDecl TypeDecl.getEnumDecl() = null;
+	syn lazy TypestateClassDecl TypeDecl.getTypestateClassDecl() = null;
+
+	eq TypeDecl.getBodyDecl(int i).getClassDeclAncestor() = null;
+
+	//TypestateDecl
+	eq TypestateDecl.isTypestateDeclType() = true;
+	eq TypestateDecl.getTypestateDecl() = this;
+
+	//EnumDecl
+	eq EnumDecl.isEnumDeclType() = true;
+	eq EnumDecl.getEnumDecl() = this;
+
+	//ClassDecl
+	eq ClassDecl.isClassDeclType() = true;
+	eq ClassDecl.getClassDecl() = this;
+
+	eq ClassDecl.isEnumDeclType() = getEnumDecl() != null;
+	eq ClassDecl.getEnumDecl() = enumDecl;
+
+	eq ClassDecl.getBodyDecl(int i).getClassDeclAncestor() = this;
+
+	//TypestateClassDeclType
+	eq TypestateClassDecl.isTypestateClassDeclType() = true;
+	eq TypestateClassDecl.getTypestateClassDecl() = this;
+	syn lazy boolean TypestateClassDecl.existsTypestateDecl() = getTypestateDecl() != null;
+	syn lazy TypestateDecl TypestateClassDecl.getTypestateDecl() =
+		getTypestateArg().lookupType().isTypestateDeclType() ? getTypestateArg().lookupType().getTypestateDecl() : null;
+
+	//MethodDecl
+	inh ClassDecl MethodDecl.getClassDeclAncestor();
+
+	syn lazy boolean MethodDecl.isTypestateMethod() {
+		ClassDecl cd = getClassDeclAncestor();
+		if(cd.isTypestateClassDeclType()) {
+			TypestateDecl t = ((TypestateClassDecl) cd).getTypestateDecl();
+			for(TypestateMethod m : t.getMethods())
+				if(isTarget(m.getID(), m.getParameterTypes()))
+					return true;
+		}
+		return false;
+	} 
+
+	syn lazy String MethodDecl.signature() {
+		// TODO Dont need getModifiers().Rewrite();???
+		// TODO Dont need return type????
+//		String s = getTypeAccess().toString() + " " + getID() + "(";
+		String s = getID() + "(";
+		for(int i = 0; i < getNumParameter(); i++) {
+			if (i != 0)
+				s += ", ";
+			s += getParameter(i).getTypeAccess().toString();
+		}
+		return s + ")";
+	}
+
+	//MethodAccess
+	syn lazy String MethodAccess.signature() {
+		String s = getID() + "(";
+		for(int i = 0; i < getNumArg(); i++) {
+			if(i != 0)
+				s += ", ";
+			s += getArg(i).getType().toString();
+		}
+
+		return s + ")";
+	}
+
+	inh ClassDecl MethodAccess.getClassDeclAncestor();
+
+//	syn lazy boolean Access.isAbstractDot() = false;
+	syn lazy boolean ASTNode.isAbstractDot() = false;
+	eq AbstractDot.isAbstractDot() = true;
+
+	syn lazy boolean Access.isAbstractDotParent() = getParent().isAbstractDot();
+
+	//Access
+	syn lazy Access Access.getLastAccess() {
+		Access a;
+		for(a = this;a.isAbstractDot(); a = ((AbstractDot) a).getRight());
+		return a;
+	}
+
+	eq ArrayTypeAccess.getLastAccess() = getAccess().getLastAccess();
+
+	syn lazy String Access.getQualifiedString() =
+		(isAbstractDotParent()) ?
+			((Access) getParent()).getQualifiedString() :
+			"";
+
+	eq AbstractDot.getQualifiedString() =
+		(isAbstractDotParent() ?
+			((Access) getParent()).getQualifiedString() + ".":
+			""
+		) +
+		getLeft().toString();
+
+	syn lazy int Access.countDims() = 0;
+	eq ArrayTypeAccess.countDims() = 1 + getAccess().countDims();
+
+
+	// ArrayTypeWithSizeAccess inherits ArrayTypeAccess
+	syn lazy boolean Access.hasDims() = countDims() != 0;
+
+	//VariableDecl FieldDecl VarDeclStmt
+	inh boolean VariableDecl.isField();
+	eq FieldDecl.getVariableDecl(int i).isField() = true;
+	eq VarDeclStmt.getVariableDecl(int i).isField() = false;
+
+	inh Modifiers VariableDecl.getModifiers();
+	eq FieldDecl.getVariableDecl(int i).getModifiers() = getModifiers();
+	eq VarDeclStmt.getVariableDecl(int i).getModifiers() = getModifiers();
+
+	inh Access VariableDecl.getTypeAccess();
+	eq FieldDecl.getVariableDecl(int i).getTypeAccess() = getTypeAccess();
+	eq VarDeclStmt.getVariableDecl(int i).getTypeAccess() = getTypeAccess();
+
+	inh ClassDecl VariableDecl.getClassDeclAncestor();
+
+	//SwitchStmt
+	//TODO why String and not Expr??
+	coll Set<String> SwitchStmt.getCaseLabels() [new HashSet<String>()] with add root SwitchStmt;
+	ConstCase contributes getValue().toString() to SwitchStmt.getCaseLabels() for getSwitchStmtAncestor();
+
+	inh SwitchStmt Case.getSwitchStmtAncestor();
+	eq SwitchStmt.getBlock().getSwitchStmtAncestor() = this;
+	eq CompilationUnit.getTypeDecl().getSwitchStmtAncestor() = null;	//TODO dont like
+
+	//Modifiers
+	private boolean Modifiers.isModifier(String mod) {
+		for(int i = 0; i < getNumModifier(); i++)
+			if(getModifier(i).getID().equals(mod))
+				return true;
+		return false;
+	}
+
+	syn lazy boolean Modifiers.isPublic() = isModifier("public");
+	syn lazy boolean Modifiers.isProtected() = isModifier("protected");
+	syn lazy boolean Modifiers.isPrivate() = isModifier("private");
+	syn lazy boolean Modifiers.isStatic() = isModifier("static");
+	syn lazy boolean Modifiers.isFinal() = isModifier("final");
+
+
+}

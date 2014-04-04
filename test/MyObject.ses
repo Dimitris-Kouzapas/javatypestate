@@ -1,0 +1,13 @@
+package test;
+class MyObject typestate ABCD {
+	private MyObject s;
+	Choice cc;
+	number e;
+
+	MyObject foo(MyObject aa) {
+		MyObject s;
+		number e = new number(number.dio);
+	}
+
+	int foo(My a) {}
+}

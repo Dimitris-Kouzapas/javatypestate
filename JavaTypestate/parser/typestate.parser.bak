@@ -1,0 +1,248 @@
+/*TypestateDecl typestate_declaration
+				=	TYPESTATE IDENTIFIER.i LBRACE typestate_func_list.t? RBRACE
+					{:
+						TypestateDecl td = new TypestateDecl(new Modifiers(), new List(), i, t);
+						td.setStart(LBRACE.getStart());
+						return td;
+					:}
+				;
+
+List typestate_func_list	=	typestate_func.t				{: return new List().add(t); :}
+				|	typestate_func_list.l typestate_func.t		{: return l.add(t); :}
+				;
+
+TypestateFunc typestate_func	=	 IDENTIFIER.i LBRACE typestate.t RBRACE
+					{:
+						TypestateFunc tf = new TypestateFunc(i, t);
+						tf.setStart(LBRACE.getStart());
+						return tf;
+					:}
+				;
+
+Typestate typestate		=	typestate_block_list.l?				{: return new Typestate(l); :}
+				|	typestate_block_list.l label_tblock.lc		{: l.add(lc); return new Typestate(l); :}
+				|	label_tblock.lc
+					{: 
+						return new Typestate(new List<TypestateBlock>().add(lc));
+					:}
+				;
+
+List typestate_block_list	=	typestate_block.t
+					{:
+						//if(t.hasMethod()) {
+						//	List l = new List().add(t.getMethod());
+						//	//t.setMethodOpt(new Opt());
+						//	return l.add(t);
+						//}
+						//else
+						return new List().add(t);
+					:}
+				|	typestate_block_list.l typestate_block.t
+					{:
+						//if(t.hasMethod()) {
+						//	l.add(t.getMethod());
+						//	//t.setMethodOpt(new Opt());
+						//	return l.add(t);
+						//}
+						//else 
+						return l.add(t);
+					:}
+				;
+
+TypestateBlock	typestate_block
+				=
+					method_tblock.m					{: return m; :} 
+				|	while_tblock.w					{: return w; :}
+				|	either_tblock.e					{: return e; :}
+				|	switch_tblock.s					{: return s; :}
+//				|	label_tblock.l					{: return l; :}
+				;
+
+TypestateBlock method_tblock	=
+					my_type.t IDENTIFIER.i LPAREN my_type_list.l? RPAREN SEMICOLON
+					{: return new MethodTBlock(t, i, l); :}
+				;
+
+MethodTBlock no_void_method_tblock
+				=
+					no_void_type.t IDENTIFIER.i LPAREN my_type_list.l? RPAREN
+					{: return new MethodTBlock(t, i, l); :}
+				;
+
+TypestateBlock while_tblock	=
+					WHILE LBRACE typestate_block_list.t RBRACE	{: return new WhileTBlock(new Typestate(t)); :}
+				;
+
+TypestateBlock either_tblock	=
+					EITHER LBRACE typestate_list.l RBRACE		{: return new EitherTBlock(l); :}
+				;
+
+List typestate_list		=
+					typestate.t					{: return new List().add(t); :}
+				|	typestate_list.l COMMA typestate.t		{: return l.add(t); :}
+				;
+
+TypestateBlock switch_tblock	=	SWITCH LPAREN no_void_method_tblock.m RPAREN LBRACE constant_typestate_list.l? RBRACE
+					{:
+						
+						SwitchTBlock sb = new SwitchTBlock(m, l);
+						sb.setStart(LPAREN.getStart());
+						return sb;
+					:}
+				;
+
+List constant_typestate_list	=	constant_typestate.t					{: return new List().add(t); :}
+				|	constant_typestate_list.l COMMA constant_typestate.t	{: return l.add(t); :}
+				;
+
+ConstantTypestate constant_typestate
+				=	LPAREN constant_expression.ce RPAREN COLON typestate.t	{: return new ConstantTypestate(ce, t); :}
+				;
+
+
+TypestateBlock label_tblock	=
+					IDENTIFIER.i SEMICOLON
+					{:
+						LabelTBlock l = new LabelTBlock(i);
+						l.setStart(SEMICOLON.getStart());
+						return l; 
+					:}
+				;
+
+List my_type_list		=
+					no_void_type.t					{: return new List().add(t); :}
+				|	my_type_list.l COMMA no_void_type.t		{: return l.add(t); :}
+				;
+
+MyType my_type			=	no_void_type.t					{: return t; :}
+				|	VOID						{: return new MyType(new PrimitiveTypeAccess("void")); :}
+				;
+
+MyType no_void_type		=	type.t						{: return new MyType(t); :}
+				;
+*/
+
+TypestateDecl typestate_declaration	=	SESSION named_typestate.tn WHERE named_typestate_list.tnl
+						{:
+							return new TypestateDecl(new Modifiers(), "typestate", new List(), tn, tnl);
+						:}
+					|	SESSION named_typestate.tn
+						{:
+							return new TypestateDecl(new Modifiers(), "typestate", new List(), tn, null);
+						:}
+					;
+
+List named_typestate_list
+					=	named_typestate.tn
+						{:
+							return new List<TypestateName>().add(tn);
+						:}
+					|	named_typestate_list.tnl named_typestate.tn
+						{:
+							return tnl.add(tn);
+						:}
+					;
+
+TypestateName named_typestate		=	IDENTIFIER.i EQ typestate.t
+						{:
+							return new TypestateName(i, t);
+						:}
+					;
+
+List typestate_list			=	method.m COLON t_element.t
+						{:
+							m.setTypestate(t);
+							return new List<TypestateTerm>().add(m);
+						:}
+					|	typestate_list.tl COMMA method.m COLON t_element.t
+						{:
+							m.setTypestate(t);
+							return tl.add(m);
+						:}
+					;
+
+Typestate typestate			=	LBRACE typestate_list.tl RBRACE
+						{:
+							return new Typestate(tl);
+						:}
+					|	LBRACE RBRACE
+						{:
+							return new Typestate(null);
+						:}
+					;
+
+Typestate t_element			=	typestate.t
+						{:
+							return t;
+						:}
+					|	t_switch.ts
+						{:
+							return ts;
+						:}
+					|	t_label.tl
+						{:
+							return tl;
+						:}
+					;
+
+TypestateMethod method			=	ttype.t IDENTIFIER.i LPAR ttype_list.tl RPAR
+						{:
+							return new TypestateMethod(t, i, tl, null);
+						:}
+					;
+
+TypestateSwitch t_switch		=	LT switch_case_list.scl GT
+						{:
+							return new TypestateSwitch(scl);
+						:}
+					;
+
+List switch_case_list			=	switch_case.sc
+						{:
+							return new List<TypestateSwitchCase>().add(sc);
+						:}
+					|	switch_case_list.scl COMMA switch_case.sc
+						{:
+							return scl.add(sc);
+						:}
+					;
+
+TypestateSwitchCase switch_case		=	IDENTIFIER.i COLON typestate.t
+						{:
+							return new TypestateSwitchCase(i, t);
+						:}
+					;
+
+
+TypestateLabel t_label			=	IDENTIFIER.i
+						{:
+							return new TypestateLabel(i);
+						:}
+					;
+
+MyType ttype				=	typestate.t type.a
+						{:
+							return new MyType(t, a);
+						:}
+					|	type.a
+						{:
+							return new MyType(null, a);
+						:}
+					|	VOID
+						{:
+							return new MyType(null, new PrimitiveTypeAccess("void"));
+						:}
+					;
+
+
+List ttype_list				=	ttype.t
+						{:
+							return new List<MyType>().add(t);
+						:}
+					|	ttype_list.tl ttype.t
+						{:
+							return tl.add(t);
+						:}
+					;
+
+

@@ -1,0 +1,43 @@
+aspect createTypestate {
+
+	//TODO maybe initialise the State.stateNode with null
+	syn lazy GraphNode TypestateDecl.createTypestate() = new InitNode().addNext(getInitState().createTypestate());
+
+	//TODO what happens after normalization?
+	private GraphNode State.StateNode = null;
+	syn lazy GraphNode State.createTypestate() {
+		StateNode = new LoopNode();
+		return StateNode.addNext(getTypestate().createTypestate());
+	}
+
+	syn boolean State.hasStateNode() = StateNode != null;
+	syn GraphNode State.getStateNode() = StateNode;
+
+	syn lazy GraphNode Typestate.createTypestate();
+
+	eq TypestateMethodList.createTypestate() {
+		GraphNode n = new LoopNode();
+		for(int i = 0; i < getNumTypestateMethod(); i++)
+			n.addNext(getTypestateMethod(i).createTypestate());
+		return n;
+	}
+
+	eq EndTypestate.createTypestate() = new EndNode();
+
+	eq TypestateMethod.createTypestate() =
+		new MethodNode(signature()).addNext(getTypestate().createTypestate());
+
+	eq TypestateSwitch.createTypestate() {
+		SwitchNode n =  new SwitchNode();
+		for(int i = 0; i < getNumTypestateSwitchCase(); i++)
+			n.addNext(getTypestateSwitchCase(i).getTypestate().createTypestate(), getTypestateSwitchCase(i).getLabel());
+		return n;
+	}
+
+	eq TypestateLabel.createTypestate() =
+		getTarget().hasStateNode() ? getTarget().getStateNode() : getTarget().createTypestate();
+
+	//TODO reinitialise State.stateNode??
+	syn lazy GraphNode TTypestate.createTypestate() = new InitNode().addNext(getTypestate().createTypestate());
+
+}

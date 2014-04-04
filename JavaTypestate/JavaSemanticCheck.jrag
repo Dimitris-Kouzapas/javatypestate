@@ -1,0 +1,140 @@
+aspect JavaSemanticCheck {
+	//TODO check for no linear expressions in the throw and try stmts??
+	//TODO check for calling linear methods on the this keyword (inside linear methods)??
+	//TODO how about constructor calls??... no linear calls.
+
+	//TODO check the use of typestate fields in non typestate method
+
+	public void TypestateClassDecl.semanticCheck() {
+		if(!existsTypestateDecl())
+			addSemanticError(
+				"Cannot find typestate " +
+				getTypestateArg().toString() +
+				" defined for class " +
+				getID() + "."
+			);
+		else
+//			for(Iterator i = getTypestateDecl().getMethodSignatures().iterator(); i.hasNext();) {
+			for(TypestateMethod m : getTypestateDecl().getMethods()) {
+				if(m.lookupMethod(this) == null)
+					addSemanticError(
+						"Method with signature " +
+						m.signature() +
+						" defined in typestate " +
+						getTypestateDecl().getID() +
+						" is not implemented in class "
+						+ getID() +
+						"."
+					);
+			}
+	}
+
+	public void VariableDecl.semanticCheck() {
+		//TODO A typestate field should not be self-reference ?????
+		if(getTypeAccess().lookupType().isTypestateClassDeclType()) {
+			if(isField() && !getClassDeclAncestor().isTypestateClassDeclType())
+				addSemanticError(
+					"Field " +
+					getID() +
+					" with typestate type " +
+					getTypeAccess().toString() +
+					" is declared in non-typestate class " +
+					getClassDeclAncestor().getID() +
+					"."
+				);
+			if(isField() && !getModifiers().isPrivate())
+				addSemanticError(
+					"Field " +
+					getID() +
+					" with typestate type " +
+					getTypeAccess().toString() +
+					" should be private"
+				);
+			if(isField() && getModifiers().isStatic())
+				addSemanticError(
+					"Field " +
+					getID() +
+					" with typestate type " +
+					getTypeAccess().toString() +
+					" should not be static."
+				);
+			if(getNumDims() > 0 || getTypeAccess().hasDims())
+				addSemanticError(
+					(isField() ? "Field ": "Variable ") +
+					getID() + " with typestate type " +
+					getTypeAccess().toString() +
+					" should not be an array."
+				);
+		}
+	}	
+
+	public void MethodDecl.semanticCheck() {
+		//TODO What if Method is a typestate method and static and private??
+		if(getTypeAccess().hasDims() && getTypeAccess().lookupType().isTypestateClassDeclType())
+			addSemanticError(
+				"Return typestate type " +
+				getTypeAccess().toString() +
+				" should not be an array."
+			);
+	}
+
+	public void ParameterDeclaration.semanticCheck() {
+		//TODO pass typestate Args in non typestate methods??
+		if(getTypeAccess().hasDims() && getTypeAccess().lookupType().isTypestateClassDeclType())
+			addSemanticError(
+				"Parameter " +
+				getID() + 
+				" with typestate type " +
+				getTypeAccess().toString() +
+				" should not be an array."
+			);
+	}
+
+	public void MethodAccess.semanticCheck() {
+		if(getQualifiedType().isTypestateClassDeclType()) {
+			//TODO if at least one method in the list is a typestatemethod
+			ArrayList<MethodDecl> a = lookupMethodTargets(getQualifiedType());
+			if(a.size() == 0)
+				addSemanticError("Method call " + signature() + " has not target.");
+			else if(a.size() > 1) {
+				String s = "";
+				for(int i = 0; i < a.size(); i++) {
+					if(i != 0)
+						s += ", ";
+					s += ((MethodDecl) a.get(i)).signature();
+				}
+				addSemanticError("Method call " + signature() + " has conflicting targets: " + s + ".");
+			}
+
+		}
+	}
+
+	public void ClassInstanceExpr.semanticCheck() {
+		if(getAccess().lookupType().isEnumDeclType()) {
+			EnumDecl e = getAccess().lookupType().getEnumDecl();
+			if(!e.getEnums().contains(getArg(0).toString()))
+				addSemanticError("Argument for enumeration instance creation should have type: " + e.getID() + ".");
+		}
+	}
+
+	public void SwitchStmt.semanticCheck() {
+		System.out.println("======================================");
+		System.out.println(getExpr() + " " + getExpr().getType());
+		System.out.println("======================================");
+
+		if(getExpr() instanceof Access) {
+			Access a = ((Access)getExpr()).getLastAccess();
+			if (a.getQualifiedType().isEnumDeclType()/* && a.toString().equals("getEnum()")*/) {
+				EnumDecl e = a.getQualifiedType().getEnumDecl();
+				for(String s : getCaseLabels())
+					if(!e.getEnums().contains(s))
+						addSemanticError("Case " + s + " should be an enumeration with type: " + e.getID() +".");
+			}
+		}
+		//TODO How do I know that this is an enum switch?????
+	}
+	//TODO check assingments (and new variable assigments) or maybe they are ok due to private typestate types
+	//TODO check an enum switch if it is parametrised on the enum type
+	//TODO enum switch should implement all the enum cases defined on the typestate definition
+	//TODO enum switch cases should be in the range of its enum type
+}

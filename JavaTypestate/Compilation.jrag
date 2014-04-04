@@ -1,0 +1,127 @@
+import beaver.*;
+import java.io.*;
+import JavaTypestate.parser.*;
+import JavaTypestate.scanner.*;
+
+aspect Compilation {
+
+	JavaParser Program.parser;
+	protected String CompilationUnit.filePath;
+
+	private /*static*/ boolean Program.verbose;
+	public /*static*/ void Program.setVerbose() {
+		verbose = true;
+	}
+
+	//TODO print errors here
+	private /*static*/ PrintStream Program.outStream = System.out;
+	public /*static*/ void Program.setOutputStream(PrintStream s) {
+		outStream = s;
+	}
+
+
+	private ArrayList<String> Program.compiledPaths = new ArrayList<String>();
+
+	public static String Program.fileSuffix() {
+		return ".ses";
+	}
+
+	public static String Program.javaFileSuffix() {
+		return ".java";
+	}
+
+	CompilationUnit Program.compile(String path) {
+		CompilationUnit u = null;
+
+		for(int i = 0; i < compiledPaths.size(); i++)
+			if(compiledPaths.get(i).equals(path))
+				return null;
+
+		compiledPaths.add(path);
+
+		try{
+			FileInputStream fileStream = new FileInputStream(path);
+			u = (CompilationUnit) parser.parse(fileStream, path);
+		}
+		catch(FileNotFoundException e) {
+			return null;
+		}
+		catch(IOException e) {
+			return null;
+		}
+		catch(ParserFailException e) {
+			errors.addAll(e.getErrors());
+			return null;
+		}
+
+		if(verbose)
+			outStream.println("Loading file " + path);
+
+		u.filePath = path;
+		addCompilationUnit(u);
+
+		return u;
+	}
+
+	public boolean Program.compile(String[] args) {
+		for(int i = 0; i < args.length; i++)
+			if(new File(args[i]).exists())
+				if(!args[i].endsWith(fileSuffix()))
+					System.err.println("File " + args[i] + " should have suffix: " + fileSuffix());
+				else
+					compile(args[i]);
+			else
+				System.err.println("File " + args[i] + " not found.");
+
+		for(int i = 0; i < getNumCompilationUnit(); i++) {
+			getCompilationUnit(i).collect();
+			errors.addAll(getCompilationUnit(i).errors);
+			numWarnings += getCompilationUnit(i).numWarnings;
+		}
+
+		printErrors();
+
+		return !hasErrors();
+	}
+
+	public void Program.dumpJavaFiles() {
+		for(int i = 0; i < getNumCompilationUnit(); i++) {
+			CompilationUnit cu = getCompilationUnit(i);
+			if(!cu.getTypeDecl().isTypestateDeclType())
+				cu.Rewrite(cu.getType() + javaFileSuffix());
+		}
+	}
+
+	class TypestateChecker extends Program {
+		public TypestateChecker(JavaParser parser) {
+			this.parser = parser;
+		}
+
+		public TypestateChecker() {
+			this.parser = new JavaParser();
+		}
+
+		private void myDebug(String[] args) {
+			if(compile(args)) {
+				if(hasWarnings())
+					printErrors();
+
+				for(int i = 0; i < getNumCompilationUnit(); i++) {
+					getCompilationUnit(i).Rewrite(System.out);
+					if(getCompilationUnit(i).getTypeDecl().isEnumDeclType())
+						((ClassDecl) getCompilationUnit(i).getTypeDecl()).getEnumDecl().Rewrite(System.out);
+				}
+//				TypestateDecl td1 = ((TypestateDecl) getCompilationUnit(0).getTypeDecl());
+//				TypestateDecl td2 = ((TypestateDecl) getCompilationUnit(1).getTypeDecl());
+//				td1.createTypestate().debugCompare(td2.createTypestate());
+			}
+			else {
+	//			printErrors();
+			}
+		}
+
+		public static void main(String [] args) {
+			new TypestateChecker(new JavaParser()).myDebug(args);
+		}
+	}
+}

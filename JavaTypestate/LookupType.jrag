@@ -1,0 +1,78 @@
+aspect LookupType {
+
+	syn boolean CompilationUnit.localLookupType(String name) = getType().equals(name);
+
+	inh CompilationUnit CompilationUnit.getCompilationUnit(String type);
+	eq Program.getCompilationUnit(int j).getCompilationUnit(String type) {
+		if(new File(type + Program.fileSuffix()).exists())
+			compile(type + Program.fileSuffix());
+
+		for(int i = 0; i < getNumCompilationUnit(); i++)
+			if(getCompilationUnit(i).localLookupType(type))
+				return getCompilationUnit(i);
+		return null;
+	}
+
+	private String CompilationUnit.getPackageString() {
+		return getPackageDecl().equals("") ? "" : getPackageDecl().replace('.', File.separatorChar) + File.separatorChar;
+	}
+
+	protected String CompilationUnit.getType() {
+		return getID().startsWith(getPackageString()) ? getID() : getPackageString() + getID();
+	}
+
+	private String CompilationUnit.getID() {
+		return getTypeDecl().getID();
+	}
+
+	syn TypeDecl CompilationUnit.lookupType(String name) {
+		TypeDecl p;
+		if((p = getPrimitiveType(name)) != null)
+			return p;
+
+		String type;
+		type = getPackageString() + name;
+
+		if(localLookupType(type))
+			return this.getTypeDecl();
+
+		CompilationUnit cu;
+		if((cu = getCompilationUnit(type)) != null)
+			return cu.getTypeDecl();
+
+		for(int i = 0; i < getNumImportDecl(); i++) {
+			String s;
+			if((s = getImportDecl(i).importType(name)) != null)
+				if((cu = getCompilationUnit(s.replace('.', File.separatorChar))) != null)
+					return cu.getTypeDecl();
+		}
+
+		return new UnknownTypeDecl(new Modifiers(), name, new List<BodyDecl>());
+	}
+
+	syn String ImportDecl.importType(String name);
+	//TODO check last dot only
+	eq SingleTypeImportDecl.importType(String name) =
+		getAccess().getLastAccess().toString().equals(name) ? getAccess().toString() : null;
+	eq TypeImportOnDemandDecl.importType(String name) = getAccess().toString() + "." + name;
+
+	syn TypeDecl CompilationUnit.lookupType(String Package, String name) {
+		if(Package.equals(""))
+			return lookupType(name);
+
+		CompilationUnit cu;
+		// TODO check local Type??
+		String type = (Package + "." + name).replace('.', File.separatorChar);
+		if((cu = getCompilationUnit(type)) != null)
+			return cu.getTypeDecl();
+		return new UnknownTypeDecl(new Modifiers(), type, new List<BodyDecl>());
+	}
+
+	eq CompilationUnit.getTypeDecl().lookupType(String Package, String name) = lookupType(Package, name);
+	eq CompilationUnit.getImportDecl().lookupType(String Package, String name) = null;
+
+	inh TypeDecl Access.lookupType(String Package, String name);
+	syn lazy TypeDecl Access.lookupType() =
+		lookupType(getLastAccess().getQualifiedString(), getLastAccess().toString());
+
+}
