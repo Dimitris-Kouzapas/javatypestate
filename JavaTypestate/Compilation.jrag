@@ -8,14 +8,14 @@ aspect Compilation {
 	JavaParser Program.parser;
 	protected String CompilationUnit.filePath;
 
-	private /*static*/ boolean Program.verbose;
-	public /*static*/ void Program.setVerbose() {
+	private boolean Program.verbose;
+	public void Program.setVerbose() {
 		verbose = true;
 	}
 
 	//TODO print errors here
-	private /*static*/ PrintStream Program.outStream = System.out;
-	public /*static*/ void Program.setOutputStream(PrintStream s) {
+	private PrintStream Program.outStream = System.out;
+	public void Program.setOutputStream(PrintStream s) {
 		outStream = s;
 	}
 

@@ -56,7 +56,6 @@ aspect dataStructures {
 		 */
 
 		protected class TupleSet {
-
 			private class TupleEntry {
 				private GraphNode n1, n2;
 				TupleEntry(GraphNode n1, GraphNode n2) {
@@ -101,10 +100,12 @@ aspect dataStructures {
 				return true;
 
 			ts.insert(this, n);
-			for(int i = 0; i < n.next.size(); i++) {
+			for(GraphNode n1 : n.next) {
+//			for(int i = 0; i < n.next.size(); i++) {
 				boolean b = false;
-				for(int j = 0; j < next.size(); j++)
-					if(b = next.get(j).includes(n.next.get(i), ts))
+				for(GraphNode n2: next)
+//				for(int j = 0; j < next.size(); j++)
+					if(b = n2/*next.get(j)*/.includes(n1/*n.next.get(i)*/, ts))
 						break;
 
 				if(b == false) {
@@ -124,15 +125,15 @@ aspect dataStructures {
 			return signature.equals(n.signature());
 		}
 
-		protected boolean postfix(GraphNode n) {
-			if(this.includes(n))			//TODO check every subtree
-				return true;
-			//TODO how about recursion???
-			for(int i = 0; i < next.size(); i++)
-				if(next.get(i).postfix(n))
-					return true;
-			return false;
-		}
+//		protected boolean postfix(GraphNode n) {
+//			if(this.includes(n))			//TODO check every subtree
+//				return true;
+//			//TODO how about recursion???
+//			for(int i = 0; i < next.size(); i++)
+//				if(next.get(i).postfix(n))
+//					return true;
+//			return false;
+//		}
 
 		/**************************************************************/
 		/*                     Normalise Graph                        */
@@ -153,16 +154,18 @@ aspect dataStructures {
 		protected boolean __hasLoopNode(Set<GraphNode> visitedSet) {
 			if(isNodeVisited(visitedSet))
 				return false;
-			for(int i = 0; i < next.size(); i++)
-				if(next.get(i).__hasLoopNode(visitedSet))
+			for(GraphNode n: next)
+//			for(int i = 0; i < next.size(); i++)
+				if(n/*next.get(i)*/.__hasLoopNode(visitedSet))
 					return true;
 			return false;
 		}
 
 		private boolean hasLoopNode() {
 			Set<GraphNode> visitedSet = new HashSet<GraphNode>();
-			for(int i = 0; i < next.size(); i++)
-				if(next.get(i).__hasLoopNode(visitedSet))
+			for(GraphNode n: next)
+//			for(int i = 0; i < next.size(); i++)
+				if(n/*next.get(i)*/.__hasLoopNode(visitedSet))
 					return true;
 			return false;
 		}
@@ -197,9 +200,10 @@ aspect dataStructures {
 		protected GraphNode normalise() {
 			Set<GraphNode> visitedSet = new HashSet<GraphNode>();
 			ArrayList<GraphNode> alist = new ArrayList<GraphNode>();
-			for(int i = 0; i < next.size(); i++)
-				if(!this.equals(next.get(i)))
-					alist.addAll(next.get(i).normalise(visitedSet));
+			for(GraphNode n: next)
+//			for(int i = 0; i < next.size(); i++)
+				if(!this.equals(n/*next.get(i)*/))
+					alist.addAll(n/*next.get(i)*/.normalise(visitedSet));
 			next = alist;
 			return hasLoopNode() ? normalise() : this;
 		}
@@ -210,6 +214,12 @@ aspect dataStructures {
 
 		//polymorphic
 		abstract public int onlyEndNodes();
+
+		/***********************************************************/
+		/*               Count EndNodes/Ignore LoopNodes           */
+		/***********************************************************/
+
+		abstract public GraphNode copyNode();
 
 		/***********************************************************/
 		/*                For Debug                                */
@@ -257,6 +267,13 @@ aspect dataStructures {
 
 		public int onlyEndNodes() {
 			return -1;
+		}
+
+		public GraphNode copyNode() {
+			MethodNode m = new MethodNode(signature());
+			for(GraphNode n : next)
+				m.addNext(n.copyNode());
+			return m;
 		}
 	}
 
@@ -311,8 +328,9 @@ aspect dataStructures {
 
 		protected boolean equalNode(GraphNode n) {
 			SwitchNode sn = (SwitchNode) n;
-			for(int i = 0; i < sn.expr.size(); i++)
-				if(!(expr.contains(sn.expr.get(i))))
+			for(String s : sn.expr)
+//			for(int i = 0; i < sn.expr.size(); i++)
+				if(!(expr.contains(s/*sn.expr.get(i)*/)))
 					return false;
 			return true;
 		}
@@ -321,6 +339,13 @@ aspect dataStructures {
 			if(n instanceof SwitchNode)
 				return equalNode(n) ? super.includes(n, ts) : false;
 			return false;
+		}
+
+		public GraphNode copyNode() {
+			SwitchNode s = new SwitchNode();
+			for(int i = 0; i < next.size(); i++)
+				s.addNext(next.get(i).copyNode(), expr.get(i));
+			return s;
 		}
 
 		public int onlyEndNodes() {
@@ -354,11 +379,19 @@ aspect dataStructures {
 			return (!this.equals(next.get(i))) ? next.get(i).normalise(visitedSet) : new ArrayList<GraphNode>();
 		}
 
+		public GraphNode copyNode() {
+			LoopNode l = new LoopNode();
+			for(GraphNode n : next)
+				l.addNext(n.copyNode());
+			return l;
+		}
+
 		public int onlyEndNodes() {
 			int sum = 0;
 			int result;
-			for(int i = 0; i < next.size(); i++) {
-				result = next.get(i).onlyEndNodes();
+			for(GraphNode n: next) {
+//			for(int i = 0; i < next.size(); i++) {
+				result = n/*next.get(i)*/.onlyEndNodes();
 				if(result == -1)
 					return -1;
 				sum += result;
@@ -390,6 +423,10 @@ aspect dataStructures {
 			return false;
 		}
 
+		public GraphNode copyNode() {
+			return new EndNode();
+		}
+
 		public int onlyEndNodes() {
 			return 1;
 		}
@@ -414,6 +451,13 @@ aspect dataStructures {
 			return false;
 		}
 
+		public GraphNode copyNode() {
+			InitNode i = new InitNode();
+			for(GraphNode n : next)
+				i.addNext(n.copyNode());
+			return i;
+		}
+
 		public int onlyEndNodes() {
 			return -1;
 		}
@@ -429,9 +473,9 @@ aspect dataStructures {
 		Map<ASTNode, GraphNode> start;
 
 		/*private*/ ArrayList<GraphNode> startTypestate; //TODO make private
-		private ArrayList<Expr> exprASTNode;
+		/*private*/ ArrayList<Expr> exprASTNode;
 		/*private*/ ArrayList<GraphNode> errorTypestate; //TODO make private
-		private ArrayList<Expr> errorExpr;
+		/*private*/ ArrayList<Expr> errorExpr;
 
 		TypestateVar() {
 			current = new EndNode();		//TODO LoopEndNode();

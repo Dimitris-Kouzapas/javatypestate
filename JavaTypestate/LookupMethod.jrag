@@ -17,8 +17,16 @@ aspect LookupMethod {
 	syn lazy MethodDecl MethodAccess.lookupMethod(TypeDecl t) = 
 		t != null ? t.lookupMethod(getID(), getParameterTypes()) : null;
 
-	syn lazy MethodDecl TypestateMethod.lookupMethod(TypeDecl t) =
-		t != null ? t.lookupMethod(getID(), getParameterTypes()): null;
+	syn lazy MethodDecl TypestateMethod.lookupMethod(TypeDecl t) {
+		if(t != null) {
+			MethodDecl md = t.lookupMethod(getID(), getParameterTypes());
+			TypeDecl td = getTType().getAccess().lookupType();
+			if(md != null && (md.getTypeAccess().lookupType().equals(td) || (td instanceof NoNameType)))
+				return md;
+		}
+
+		return null;
+	}
 
 	syn MethodDecl TypeDecl.lookupMethod(String method, TypeDecl[] parameters) = null;
 	eq ClassDecl.lookupMethod(String method, TypeDecl[] parameters) {

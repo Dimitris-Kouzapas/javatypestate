@@ -1,6 +1,16 @@
 //TODO list
 
-- Rewrite the Access nodes (AbstracDot nodes)
-- add ByteCodeReader
-- 
+-	add ByteCodeReader
+
+-	In the first version we expect only "linear" methods to return typestate objects.
+	Consider adding info in the typestate file for the return type of "non-linear" methods.
+	Research for inference of the return typestate type.
+
+-	Calling a method on the this keyword
+	A "non-linear" method that alters the typestate type of the field cannot be called outside
+	its class.
+	A method ("linear" and "non-linear") that can alter the typestate of the fields can be called on the this keyword
+	only inside a "linear" method??
+	Take care when you are calling methods that alter the typestate of an object on the this keyword. Should
+	concatanate the types correctly.
 

@@ -58,6 +58,7 @@ aspect RewriteAccess {
 		return false;
 	}
 
+	//TODO is there a better way of doing it? -> Check Dot by Dot
 	syn lazy boolean ImportDecl.startsWith(String Package);
 	eq SingleTypeImportDecl.startsWith(String Package) {
 		String[] imp = getAccess().toString().split("\\.");

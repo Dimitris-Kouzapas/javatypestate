@@ -56,8 +56,6 @@ aspect Errors {
 
 		protected void print() {
 			System.err.println();
-//			System.err.println(file + ": " + ASTNode.getLine(start) + "-" + ASTNode.getColumn(start) + ": " + errorType);
-//			System.err.println("\t\t" + msg);
 			System.err.print(toString());
 			System.err.println();
 
@@ -108,8 +106,8 @@ aspect Errors {
 	}
 
 	protected void Program.printErrors() {
-		for(Iterator i = errors.iterator(); i.hasNext();)
-			((TypestateError) i.next()).print();
+		for(TypestateError te: errors)
+			te.print();
 	}
 
 	protected void ASTNode.addWarning(String warningMsg) {

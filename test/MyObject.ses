@@ -5,7 +5,10 @@ class MyObject typestate ABCD {
 	number e;
 
 	MyObject foo(MyObject aa) {
-		MyObject s;
+		MyObject s = new MyObject();
+		s.foo(new My());
+		s = new MyObject();
+		s.foo(new My());
 		number e = new number(number.dio);
 	}
 

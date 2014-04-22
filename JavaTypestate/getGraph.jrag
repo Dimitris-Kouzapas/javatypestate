@@ -126,7 +126,7 @@ aspect getGraph {
 
 		for(int i = 0; i < getNumParameter(); i++)
 			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType())
-				env.add(getParameter(i).typestate = new TypestatePar());
+				env.add(getParameter(i).typestate/* = new TypestatePar()*/);
 
 		getBlock().getGraph(env);
 		for(int i = 0; i < getNumParameter(); i++)
@@ -153,7 +153,7 @@ aspect getGraph {
 	//		TypestateVariable v = new TypestateVariable().m1().m2().m3();	
 
 	protected TypestateVar VariableDecl.typestate = null;/*isField() ? new TypestateField() : new TypestateVar();*/
-	protected TypestateVar ParameterDeclaration.typestate = null;//new TypestatePar();
+	protected TypestateVar ParameterDeclaration.typestate = new TypestatePar();
 	protected TypestateVar MethodAccess.typestate = new TypestateVar();			//TODO if is  typestate
 
 	syn boolean Stmt.getGraph(Set<TypestateVar> env);

@@ -7,6 +7,17 @@ aspect typestateCheck {
 	}
 
 	public void VariableDecl.typestateCheck() {
+		if(!isField() && getTypeAccess().lookupType().isTypestateClassDeclType()) {
+			GraphNode t = getTypeAccess().lookupType().getTypestateDecl().createTypestate().normalise();
+			for(int i = typestate.startTypestate.size() - 1; i >= 0; i--) {
+				GraphNode n = typestate.startTypestate.get(i);
+				n.normalise();
+				if(!t.includes(n))
+					typestate.exprASTNode.get(i).addSemanticError(
+						"The typestate of the created object does not match its declared typestate"
+					);
+			}
+		}
 		//TODO check for typestate typing
 /*		System.out.println(getID());
 		if(typestate != null) {
