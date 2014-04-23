@@ -112,7 +112,7 @@ aspect getGraph {
 
 		for(MethodDecl md : getMethodDecls()) {
 			md.getGraph(env);
-		//TODO everything in env should be fields
+			//TODO everything in env should be fields
 			for(TypestateVar tv : env)
 				tv.addConnectionTypestate(md);
 		}
@@ -122,6 +122,7 @@ aspect getGraph {
 
 	
 /*****************************************************************************************************/
+
 	private boolean MethodDecl.isGraph = false;
 	syn boolean MethodDecl.getGraph(Set<TypestateVar> env) {
 		if(isGraph == true)
@@ -146,6 +147,7 @@ aspect getGraph {
 //		getGraph();	//TODO is this needed???
 		return getParameter(i).typestate.getConnectionTypestate();
 	}
+
 /*****************************************************************************************************/
 
 	//TODO think of the algorithm in case of
@@ -555,7 +557,7 @@ aspect getGraph {
 		if(getQualifiedType().isTypestateClassDeclType()) {
 			TypestateVar t = getQualifiedTypestateVar();
 			if (t != null)
-				t.current = new MethodNode(signature()).addNext(t.current);
+				t.current = new MethodNode(getID(), getParameterTypes()).addNext(t.current);
 		}
 
 		//TODO find target and check arguments

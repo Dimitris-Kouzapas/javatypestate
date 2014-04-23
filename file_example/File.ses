@@ -41,21 +41,33 @@ class File typestate FileProtocol {
 
 	public static void main(String[] args) {
 		File myFile = new File("file.txt");
-		Status s = myFile.open();
-
-		switch(s.getEnum()) {
-			case Status.OK:
-				myFile.read();
-				break;
-			case Status.ERROR:
-				myFile.hasNext();
-				System.out.println("file not found!");
-				break;
-		}
 
 		while(true) {
-			myFile.close();
+		Status s = myFile.open();
+
+			switch(s.getEnum()) {
+				case Status.OK:
+					while(true) {
+						BooleanEnum b = myFile.hasNext();
+						switch(b.getEnum()) {
+							case BooleanEnum.TRUE:
+								myFile.read();
+								break;
+							case BooleanEnum.FALSE:
+								myFile.close();
+								break;
+						}
+					}
+					break;
+				case Status.ERROR:
+					System.out.println("file not found!");
+					break;
+			}
 		}
+
+//		while(true) {
+//			myFile.close();
+//		}
 		//iii(myFile);
 
 //		myFile.hasNext();

@@ -25,7 +25,7 @@ aspect createTypestate {
 	eq EndTypestate.createTypestate() = new EndNode();
 
 	eq TypestateMethod.createTypestate() =
-		new MethodNode(signature()).addNext(getTypestate().createTypestate());
+		new MethodNode(getID(), getParameterTypes()).addNext(getTypestate().createTypestate());
 
 	eq TypestateSwitch.createTypestate() {
 		SwitchNode n =  new SwitchNode();

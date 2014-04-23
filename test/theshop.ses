@@ -11,7 +11,7 @@ typestate MyShop {
 
 			Shop =	{
 			                int price(): Shop,
-					enumType buy(MyObject  <{void buyme(): end }>, int): <ok: Pay, error: Shop>,
+					Choice buy(MyObject  <{void buyme(): end }>, int): <ok: Pay, error: Shop>,
 					void stop(): {}
 				}
 

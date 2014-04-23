@@ -19,20 +19,34 @@ aspect dataStructures {
 	 */
 
 	abstract class GraphNode {
-		private String signature;
+		private String id;
+		private TypeDecl[] parameters;
 		protected ArrayList<GraphNode> next;
 
-		protected GraphNode(String m) {
-			signature = m;
+		protected GraphNode(String id, TypeDecl[] parameters) {
+			this.id = id;
+			this.parameters = parameters;
 			next = new ArrayList<GraphNode>();
 		}
 
 		public String toString() {
-			return signature != null ? signature : "";
+			if(id == null)
+				return "";
+
+			String s = id + "(";
+			for(int i = 0; i < parameters.length; i++) {
+				if(i != 0)
+					s += ", ";
+				s += parameters[i].getID();
+			}
+			return s + ")";
 		}
 
-		public String signature() {
-			return signature;
+		public String getId() {
+			return id;
+		}
+		public TypeDecl[] getParameters() {
+			return parameters;
 		}
 
 		public GraphNode addNext(GraphNode n) {
@@ -101,11 +115,9 @@ aspect dataStructures {
 
 			ts.insert(this, n);
 			for(GraphNode n1 : n.next) {
-//			for(int i = 0; i < n.next.size(); i++) {
 				boolean b = false;
 				for(GraphNode n2: next)
-//				for(int j = 0; j < next.size(); j++)
-					if(b = n2/*next.get(j)*/.includes(n1/*n.next.get(i)*/, ts))
+					if(b = n2.includes(n1, ts))
 						break;
 
 				if(b == false) {
@@ -122,7 +134,20 @@ aspect dataStructures {
 
 		// Polymorphic on SwitchNode
 		protected boolean equalNode(GraphNode n) {
-			return signature.equals(n.signature());
+			if(!n.getId().equals(id) || n.getParameters().length != parameters.length)
+				return false;
+
+			for(int i = 0; i < n.getParameters().length; i++) {
+				TypeDecl t = n.getParameters()[i];//.getTypeAccess().lookupType();
+				//null type should not be matched with primitive type
+				//noname type should be matched with any type
+				//t can never be instanceof NullType
+				//overriden equals(Object o) method
+				if(!parameters[i].equals(t) && !(t instanceof NoNameType))
+					return false;
+			}
+
+			return true;
 		}
 
 //		protected boolean postfix(GraphNode n) {
@@ -155,8 +180,7 @@ aspect dataStructures {
 			if(isNodeVisited(visitedSet))
 				return false;
 			for(GraphNode n: next)
-//			for(int i = 0; i < next.size(); i++)
-				if(n/*next.get(i)*/.__hasLoopNode(visitedSet))
+				if(n.__hasLoopNode(visitedSet))
 					return true;
 			return false;
 		}
@@ -164,8 +188,7 @@ aspect dataStructures {
 		private boolean hasLoopNode() {
 			Set<GraphNode> visitedSet = new HashSet<GraphNode>();
 			for(GraphNode n: next)
-//			for(int i = 0; i < next.size(); i++)
-				if(n/*next.get(i)*/.__hasLoopNode(visitedSet))
+				if(n.__hasLoopNode(visitedSet))
 					return true;
 			return false;
 		}
@@ -201,9 +224,8 @@ aspect dataStructures {
 			Set<GraphNode> visitedSet = new HashSet<GraphNode>();
 			ArrayList<GraphNode> alist = new ArrayList<GraphNode>();
 			for(GraphNode n: next)
-//			for(int i = 0; i < next.size(); i++)
-				if(!this.equals(n/*next.get(i)*/))
-					alist.addAll(n/*next.get(i)*/.normalise(visitedSet));
+				if(!this.equals(n))
+					alist.addAll(n.normalise(visitedSet));
 			next = alist;
 			return hasLoopNode() ? normalise() : this;
 		}
@@ -258,8 +280,8 @@ aspect dataStructures {
 	 * Instantiates a class that represents a method call.
 	 */
 	public class MethodNode extends GraphNode {
-		public MethodNode(String m) {
-			super(m);
+		public MethodNode(String id, TypeDecl[] parameters) {
+			super(id, parameters);
 		}
 
 		public String toString() {
@@ -277,14 +299,8 @@ aspect dataStructures {
 		}
 
 		public GraphNode cloneNode() {
-			return new MethodNode(signature());
+			return new MethodNode(getId(), getParameters());
 		}
-//		public GraphNode copyNode() {
-//			MethodNode m = new MethodNode(signature());
-//			for(GraphNode n : next)
-//				m.addNext(n.copyNode());
-//			return m;
-//		}
 	}
 
 	/*
@@ -298,7 +314,7 @@ aspect dataStructures {
 		private ArrayList<String> expr;
 
 		public SwitchNode() {
-			super(null);
+			super(null, null);
 			scase = null;
 			expr = new ArrayList<String>();
 		}
@@ -339,8 +355,7 @@ aspect dataStructures {
 		protected boolean equalNode(GraphNode n) {
 			SwitchNode sn = (SwitchNode) n;
 			for(String s : sn.expr)
-//			for(int i = 0; i < sn.expr.size(); i++)
-				if(!(expr.contains(s/*sn.expr.get(i)*/)))
+				if(!(expr.contains(s)))
 					return false;
 			return true;
 		}
@@ -374,11 +389,11 @@ aspect dataStructures {
 	 */
 	public class LoopNode extends GraphNode {
 		public LoopNode() {
-			super(null);
+			super(null, null);
 		}
 
 		public String toString() { 
-			return "Label " + super.toString() + ":";
+			return "Loop Node;";
 		}
 
 		protected boolean __hasLoopNode(Set<GraphNode> visitedSet) {
@@ -397,19 +412,11 @@ aspect dataStructures {
 			return new LoopNode();
 		}
 
-//		public GraphNode copyNode() {
-//			LoopNode l = new LoopNode();
-//			for(GraphNode n : next)
-//				l.addNext(n.copyNode());
-//			return l;
-//		}
-
 		public int onlyEndNodes() {
 			int sum = 0;
 			int result;
 			for(GraphNode n: next) {
-//			for(int i = 0; i < next.size(); i++) {
-				result = n/*next.get(i)*/.onlyEndNodes();
+				result = n.onlyEndNodes();
 				if(result == -1)
 					return -1;
 				sum += result;
@@ -424,7 +431,7 @@ aspect dataStructures {
 	 */
 	public class EndNode extends GraphNode {
 		protected EndNode() {
-			super(null);
+			super(null, null);
 		}
 
 		public String toString() {
@@ -445,10 +452,6 @@ aspect dataStructures {
 			return new EndNode();
 		}
 
-//		public GraphNode copyNode() {
-//			return new EndNode();
-//		}
-
 		public int onlyEndNodes() {
 			return 1;
 		}
@@ -460,7 +463,7 @@ aspect dataStructures {
 	 */
 	public class InitNode extends GraphNode {
 		protected InitNode() {
-			super(null);
+			super(null, null);
 		}
 
 		public String toString() {
@@ -476,13 +479,6 @@ aspect dataStructures {
 		public GraphNode cloneNode() {
 			return new InitNode();
 		}
-
-//		public GraphNode copyNode() {
-//			InitNode i = new InitNode();
-//			for(GraphNode n : next)
-//				i.addNext(n.copyNode());
-//			return i;
-//		}
 
 		public int onlyEndNodes() {
 			return -1;
@@ -599,7 +595,7 @@ aspect dataStructures {
 		}
 
 		void addConnectionTypestate(MethodDecl m) {
-			if(endGraph == null)			//EndGraph is the same as startNode
+			if(endGraph == null)				//EndGraph is the same as startNode
 				endGraph = current;
 
 			methodStartNode.put(m, current);

@@ -2,15 +2,27 @@ aspect PrimitiveTypes {
 	static protected final String[] CompilationUnit.primitiveTypeString = {
 		"boolean", "byte", "short", "int", "long", "char", "float", "double"
 	};
+
+//	static private final PrimitiveType CompilationUnit.primitiveType[] = {
+//		new BooleanType(), new ByteType(), new ShortType(), new IntType(),
+//		new LongType(), new CharType(), new FloatType(), new DoubleType()
+//	};
+
 	static private final PrimitiveType CompilationUnit.primitiveType[] = {
-		new BooleanType(), new ByteType(), new ShortType(), new IntType(),
-		new LongType(), new CharType(), new FloatType(), new DoubleType()
+		new BooleanType(new Modifiers(), "boolean", new Opt(), new List()),
+		new ByteType(new Modifiers(), "byte", new Opt(), new List()),
+		new ShortType(new Modifiers(), "short", new Opt(), new List()),
+		new IntType(new Modifiers(), "int", new Opt(), new List()),
+		new LongType(new Modifiers(), "long", new Opt(), new List()),
+		new CharType(new Modifiers(), "char", new Opt(), new List()),
+		new FloatType(new Modifiers(), "float", new Opt(), new List()),
+		new DoubleType(new Modifiers(), "double", new Opt(), new List())
 	};
 
-	static private final TypeDecl CompilationUnit.voidType = new VoidType();
-	static private final TypeDecl CompilationUnit.nullType = new NullType();
-	static private final TypeDecl CompilationUnit.unknownType = new NoNameType();
-	static private final TypeDecl CompilationUnit.classType = new ClassType();
+	static private final TypeDecl CompilationUnit.voidType = new VoidType(new Modifiers(), "void", new List());
+	static private final TypeDecl CompilationUnit.nullType = new NullType(new Modifiers(), "null", new List());
+	static private final TypeDecl CompilationUnit.unknownType = new NoNameType(new Modifiers(), "unknown", new List());
+	static private final TypeDecl CompilationUnit.classType = new ClassType(new Modifiers(), "class", new List());
 
 	static private final TypeDecl CompilationUnit.stringType =
 		new UnknownTypeDecl(new Modifiers(), "String", new List<BodyDecl>());
@@ -83,7 +95,7 @@ aspect PrimitiveTypes {
 			return false;
 		return true;
 	}
-
+/*
 	public String UnknownTypeDecl.toString() {
 		return getID();
 	}
@@ -127,5 +139,5 @@ aspect PrimitiveTypes {
 	public String ClassType.toString() {
 		return "class";
 	}
-
+*/
 }

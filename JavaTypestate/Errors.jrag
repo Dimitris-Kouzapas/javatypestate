@@ -51,7 +51,7 @@ aspect Errors {
 
 		public String toString() {
 			return	file + ": " + ASTNode.getLine(start) + "-" + ASTNode.getColumn(start) + ": " + errorType + 
-				"\t\t" + msg;
+				"\n\t\t" + msg;
 		}
 
 		protected void print() {

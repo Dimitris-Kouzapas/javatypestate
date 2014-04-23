@@ -14,8 +14,10 @@ class Cases {
 //		switch(a.foo(1, 'g')) {
 			case number.ena:
 			case number.dio:
-				test.MyObject = test.mytypestate.MyObject.s;
+				//test.MyObject = test.mytypestate.MyObject.s;
 			default:
 		}
 	}
+
+	MyObject foo() {}
 }
