@@ -7,7 +7,7 @@ aspect typestateCheck {
 	}
 
 	public void VariableDecl.typestateCheck() {
-		if(!isField() && getTypeAccess().lookupType().isTypestateClassDeclType()) {		//TODO what if lookupType not found?
+		if(!isField() && getTypeAccess().lookupType().isTypestateClassDeclType()) {		//TODO what if lookupType not found
 			GraphNode t = getTypeAccess().lookupType().getTypestateDecl().createTypestate().normalise();
 			for(int i = typestate.startTypestate.size() - 1; i >= 0; i--) {
 				GraphNode n = typestate.startTypestate.get(i);

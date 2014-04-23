@@ -605,7 +605,6 @@ aspect dataStructures {
 			methodStartNode.put(m, current);
 			methodEndNode.put(m, endNode);
 			methodEndGraph.put(m, endGraph);
-			methodEndExpr.put(m, endExpr);
 			endNode = new LoopNode();
 			current = endNode;
 			endGraph = null;

@@ -113,8 +113,8 @@ aspect getGraph {
 		for(MethodDecl md : getMethodDecls()) {
 			md.getGraph(env);
 		//TODO everything in env should be fields
-			for(TypestateVar tv : env)
-				tv.addConnectionTypestate(md);
+		for(TypestateVar tv : env)
+			tv.addConnectionTypestate(md);
 		}
 
 		return true;
