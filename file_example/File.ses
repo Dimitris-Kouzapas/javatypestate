@@ -43,13 +43,10 @@ class File typestate FileProtocol {
 		File myFile = new File("file.txt");
 
 		while(true) {
-		Status s = myFile.open();
-
-			switch(s.getEnum()) {
+			switch(myFile.open().getEnum()) {
 				case Status.OK:
 					while(true) {
-						BooleanEnum b = myFile.hasNext();
-						switch(b.getEnum()) {
+						switch(myFile.hasNext().getEnum()) {
 							case BooleanEnum.TRUE:
 								myFile.read();
 								break;

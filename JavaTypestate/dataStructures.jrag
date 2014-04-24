@@ -23,23 +23,32 @@ aspect dataStructures {
 		private TypeDecl[] parameters;
 		protected ArrayList<GraphNode> next;
 
+		static int cc = 0;
+		int ccc;
 		protected GraphNode(String id, TypeDecl[] parameters) {
 			this.id = id;
 			this.parameters = parameters;
+			signature = null;
 			next = new ArrayList<GraphNode>();
+			ccc = cc++;
 		}
 
-		public String toString() {
-			if(id == null)
-				return "";
+		private String signature;
 
-			String s = id + "(";
+		public String toString() {
+			if (signature != null)
+				return signature;
+
+			if(id == null)
+				return signature = "";
+
+			signature = id + "(";
 			for(int i = 0; i < parameters.length; i++) {
 				if(i != 0)
-					s += ", ";
-				s += parameters[i].getID();
+					signature += ", ";
+				signature += parameters[i].getID();
 			}
-			return s + ")";
+			return signature += ")";
 		}
 
 		public String getId() {
@@ -213,14 +222,18 @@ aspect dataStructures {
 				return nextArrayList();
 
 			ArrayList<GraphNode> tmpNext = new ArrayList<GraphNode>();
-			for(int i = 0; i < next.size(); i++)
-				tmpNext.addAll(computeNextArrayList(i, visitedSet));
+			System.out.println("\t\t" + toString() + " " + ccc);				//TODO remove
+			for(int i = 0; i < next.size(); i++) {
+				System.out.println("\t\t\t" + next.get(i).toString() + " " + next.get(i).ccc);				//TODO remove
+				tmpNext.addAll(computeNextArrayList(i, visitedSet));	//TODO infinite loop here
+			}
 			next = tmpNext;
 
 			return nextArrayList();
 		}
 
 		protected GraphNode normalise() {
+			System.out.println("normalise");		//TODO remove
 			Set<GraphNode> visitedSet = new HashSet<GraphNode>();
 			ArrayList<GraphNode> alist = new ArrayList<GraphNode>();
 			for(GraphNode n: next)

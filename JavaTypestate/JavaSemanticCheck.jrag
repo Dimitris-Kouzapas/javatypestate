@@ -75,7 +75,7 @@ aspect JavaSemanticCheck {
 				getTypeAccess().toString() +
 				" should not be an array."
 			);
-		//TODO check - if the return type has a typestate then the method should be declared the typestate definition
+		//check - if the return type has a typestate then the method should be declared the typestate definition
 		if(getClassDeclAncestor().isTypestateClassDeclType() && getTypeAccess().lookupType().isTypestateClassDeclType())
 			if(!isTypestateMethod())
 				addSemanticError(
