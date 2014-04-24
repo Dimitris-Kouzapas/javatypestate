@@ -117,10 +117,26 @@ aspect getGraph {
 				tv.addConnectionTypestate(md);
 		}
 
+		GraphNode n = getTypestateDecl().createTypestate();	//TODO if getTypestateDecl is TypestateClassDeclType
+		for(VariableDecl vd: getVariableDecls())
+			getFieldGraph(vd, n);
+
 		return true;
 	}
 
-	
+	syn lazy boolean ClassDecl.getFieldGraph(VariableDecl vd, GraphNode n) {
+		LoopNode l = new LoopNode();
+		for(GraphNode gn : n.next) {
+			getFieldGraph(vd, gn);
+			l.addNext(vd.typestate.current);
+		}
+
+		MethodDecl md = n.getMethodDecl(this);				//TODO implement this
+		
+
+		return true;
+	}
+
 /*****************************************************************************************************/
 
 	private boolean MethodDecl.isGraph = false;

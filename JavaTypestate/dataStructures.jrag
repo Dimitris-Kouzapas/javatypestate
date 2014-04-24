@@ -222,18 +222,14 @@ aspect dataStructures {
 				return nextArrayList();
 
 			ArrayList<GraphNode> tmpNext = new ArrayList<GraphNode>();
-			System.out.println("\t\t" + toString() + " " + ccc);				//TODO remove
-			for(int i = 0; i < next.size(); i++) {
-				System.out.println("\t\t\t" + next.get(i).toString() + " " + next.get(i).ccc);				//TODO remove
-				tmpNext.addAll(computeNextArrayList(i, visitedSet));	//TODO infinite loop here
-			}
+			for(int i = 0; i < next.size(); i++)
+				tmpNext.addAll(computeNextArrayList(i, visitedSet));	//TODO remove duplicate LoopNodes from here
 			next = tmpNext;
 
 			return nextArrayList();
 		}
 
 		protected GraphNode normalise() {
-			System.out.println("normalise");		//TODO remove
 			Set<GraphNode> visitedSet = new HashSet<GraphNode>();
 			ArrayList<GraphNode> alist = new ArrayList<GraphNode>();
 			for(GraphNode n: next)
