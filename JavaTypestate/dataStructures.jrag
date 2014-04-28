@@ -18,33 +18,6 @@ aspect dataStructures {
 	 * - Check if a graph has empty/loop nodes.
 	 */
 
-	//TODO define:
-	/*
-		GraphNode cloneGraph(GraphNode end) {
-			return cloneGraph(end, new HashMap<GraphNode, GraphNode>());
-		}
-		GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
-			if(visited.get(this) != null) {
-				return visited.get(this);
-			}
-			GraphNode r = cloneNode();
-			visited.put(this, r);
-
-			for(GraphNode n: next)
-				r.addNext(cloneGraph(end, visited));
-
-			return r;
-		}
-		//overwrite in SwitchNode...
-		//overwrite on LoopNode:
-		GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
-			//This means that the graph ends in a LoopNode -> it is still incomplete
-			if(next.size == 0)
-				return cloneNode().addNext(end);
-			return super(end, visited);
-		}
-	*/
-
 	abstract class GraphNode {
 		private String id;
 		private TypeDecl[] parameters;
@@ -274,16 +247,26 @@ aspect dataStructures {
 		abstract public int onlyEndNodes();
 
 		/***********************************************************/
-		/*               Count EndNodes/Ignore LoopNodes           */
+		/*               Clone Graphs			           */
 		/***********************************************************/
 
-		abstract public GraphNode cloneNode();
+		abstract protected GraphNode cloneNode();
 
-		public GraphNode copyNode() {
-			GraphNode n = cloneNode();
-			for(GraphNode g : next)
-				n.addNext(g.copyNode());
-			return n;
+		GraphNode cloneGraph(GraphNode end) {
+			return cloneGraph(end, new HashMap<GraphNode, GraphNode>());
+		}
+
+		GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
+			if(visited.get(this) != null)
+				return visited.get(this);
+
+			GraphNode r = cloneNode();
+			visited.put(this, r);
+
+			for(GraphNode n: next)
+				r.addNext(cloneGraph(end, visited));
+
+			return r;
 		}
 
 		/***********************************************************/
@@ -334,7 +317,7 @@ aspect dataStructures {
 			return -1;
 		}
 
-		public GraphNode cloneNode() {
+		protected GraphNode cloneNode() {
 			return new MethodNode(getId(), getParameters());
 		}
 	}
@@ -402,15 +385,22 @@ aspect dataStructures {
 			return false;
 		}
 
-		public GraphNode cloneNode() {
+		protected GraphNode cloneNode() {
 			return new SwitchNode();
 		}
 
-		public GraphNode copyNode() {
-			SwitchNode s = new SwitchNode();
+		public GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
+			//TODO do i really need the visited check? Can a switch node be recursively visited?
+			if(visited.get(this) != null)
+				return visited.get(this);
+
+			SwitchNode r = new SwitchNode();
+			visited.put(this, r);
+
 			for(int i = 0; i < next.size(); i++)
-				s.addNext(next.get(i).copyNode(), expr.get(i));
-			return s;
+				r.addNext(next.get(i).cloneGraph(end, visited), expr.get(i));
+			return r;
+				
 		}
 
 		public int onlyEndNodes() {
@@ -444,8 +434,15 @@ aspect dataStructures {
 			return (!this.equals(next.get(i))) ? next.get(i).normalise(visitedSet) : new ArrayList<GraphNode>();
 		}
 
-		public GraphNode cloneNode() {
+		protected GraphNode cloneNode() {
 			return new LoopNode();
+		}
+
+		GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
+			//This means that the graph ends in a LoopNode -> the graph is still incomplete
+			if(next.size() == 0)
+				return cloneNode().addNext(end);
+			return super.cloneGraph(end, visited);
 		}
 
 		public int onlyEndNodes() {
@@ -484,7 +481,7 @@ aspect dataStructures {
 			return false;
 		}
 
-		public GraphNode cloneNode() {
+		protected GraphNode cloneNode() {
 			return new EndNode();
 		}
 
@@ -512,7 +509,7 @@ aspect dataStructures {
 			return false;
 		}
 
-		public GraphNode cloneNode() {
+		protected GraphNode cloneNode() {
 			return new InitNode();
 		}
 

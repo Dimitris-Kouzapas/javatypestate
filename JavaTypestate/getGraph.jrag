@@ -124,7 +124,7 @@ aspect getGraph {
 */
 		return true;
 	}
-
+/*
 	syn lazy boolean ClassDecl.getFieldGraph(VariableDecl vd, GraphNode n) {
 		LoopNode l = new LoopNode();
 		for(GraphNode gn : n.next) {
@@ -147,6 +147,7 @@ aspect getGraph {
 
 		return true;
 	}
+*/
 
 /*****************************************************************************************************/
 
