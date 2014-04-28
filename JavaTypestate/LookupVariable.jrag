@@ -46,12 +46,12 @@ aspect LookupVariable {
 	eq TypeDecl.getBodyDecl(int i).lookupVariable(String var) = null;
 	eq ClassDecl.getBodyDecl(int i).lookupVariable(String var) = lookupVariable(var);
 
-	coll Set<VariableDecl> ClassDecl.getVariableDecls() [new HashSet<VariableDecl>()] with add root ClassDecl;
-	VariableDecl contributes this when isField() to ClassDecl.getVariableDecls() for getClassDeclAncestor();
+	coll Set<VariableDecl> ClassDecl.getFieldDecls() [new HashSet<VariableDecl>()] with add root ClassDecl;
+	VariableDecl contributes this when isField() to ClassDecl.getFieldDecls() for getClassDeclAncestor();
 
 	syn NameDecl TypeDecl.lookupVariable(String var) = null;
 	syn NameDecl ClassDecl.lookupVariable(String var) {
-		for(VariableDecl vd : getVariableDecls())
+		for(VariableDecl vd : getFieldDecls())
 			if(vd.getID().equals(var))
 				return vd.toNameDecl();
 		//for possible future work

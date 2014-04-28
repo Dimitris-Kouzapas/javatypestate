@@ -264,7 +264,7 @@ aspect dataStructures {
 			visited.put(this, r);
 
 			for(GraphNode n: next)
-				r.addNext(cloneGraph(end, visited));
+				r.addNext(n.cloneGraph(end, visited));
 
 			return r;
 		}
@@ -390,15 +390,13 @@ aspect dataStructures {
 		}
 
 		public GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
-			//TODO do i really need the visited check? Can a switch node be recursively visited?
-			if(visited.get(this) != null)
-				return visited.get(this);
-
+			// Do not need the visited check because a SwitchNode is visited recursively
+			// (a SwitchNode is always guarded by a MethodNode)
 			SwitchNode r = new SwitchNode();
-			visited.put(this, r);
 
 			for(int i = 0; i < next.size(); i++)
 				r.addNext(next.get(i).cloneGraph(end, visited), expr.get(i));
+
 			return r;
 				
 		}
@@ -590,9 +588,9 @@ aspect dataStructures {
 	class TypestateField extends TypestateVar {
 		/*private */Map<MethodDecl, GraphNode> methodStartNode;
 		/*private */Map<MethodDecl, GraphNode> methodEndGraph;
-		/*private */Map<MethodDecl, GraphNode> methodEndNode;
 		/*private */Map<MethodDecl, Expr> methodEndExpr;
-		private GraphNode endNode;
+//		private Map<MethodDecl, GraphNode> methodEndNode;
+//		private GraphNode endNode;
 		private GraphNode endGraph;
 		private Expr endExpr;
 
@@ -600,10 +598,11 @@ aspect dataStructures {
 			super();
 			methodStartNode = new HashMap<MethodDecl, GraphNode>();
 			methodEndGraph = new HashMap<MethodDecl, GraphNode>();
-			methodEndNode = new HashMap<MethodDecl, GraphNode>();
 			methodEndExpr = new HashMap<MethodDecl, Expr>();
-			endNode = new LoopNode();
-			current = endNode;
+//			methodEndNode = new HashMap<MethodDecl, GraphNode>();
+//			endNode = new LoopNode();
+//			current = endNode;
+			current = new LoopNode();
 			endGraph = null;
 			endExpr = null;
 		}
@@ -632,11 +631,12 @@ aspect dataStructures {
 				endGraph = current;
 
 			methodStartNode.put(m, current);
-			methodEndNode.put(m, endNode);
 			methodEndGraph.put(m, endGraph);
 			methodEndExpr.put(m, endExpr);
-			endNode = new LoopNode();
-			current = endNode;
+//			methodEndNode.put(m, endNode);
+//			endNode = new LoopNode();
+//			current = endNode;
+			current = new LoopNode();
 			endGraph = null;
 			endExpr = null;
 		}

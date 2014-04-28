@@ -112,6 +112,10 @@ aspect Compilation {
 						((ClassDecl) getCompilationUnit(i).getTypeDecl()).getEnumDecl().Rewrite(System.out);
 				}
 //				TypestateDecl td1 = ((TypestateDecl) getCompilationUnit(0).getTypeDecl());
+//				td1.createTypestate().printPaths();
+//				System.out.println("\n\n");
+//				td1.createTypestate().cloneGraph(null).printPaths();
+
 //				TypestateDecl td2 = ((TypestateDecl) getCompilationUnit(1).getTypeDecl());
 //				td1.createTypestate().debugCompare(td2.createTypestate());
 			}

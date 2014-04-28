@@ -1,7 +1,7 @@
 package file_example;
 import java.io.*;
 
-class File typestate Protocol {
+class File typestate FileProtocol {
 	private MyFileObject reader;
 //	private BufferedReader reader;
 	private String file;
