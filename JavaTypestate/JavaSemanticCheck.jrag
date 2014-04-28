@@ -76,7 +76,7 @@ aspect JavaSemanticCheck {
 				" should not be an array."
 			);
 		//check - if the return type has a typestate then the method should be declared the typestate definition
-		if(getClassDeclAncestor().isTypestateClassDeclType() && getTypeAccess().lookupType().isTypestateClassDeclType())
+		if(/*getClassDeclAncestor().isTypestateClassDeclType() && */getTypeAccess().lookupType().isTypestateClassDeclType())
 			if(!isTypestateMethod())
 				addSemanticError(
 					"Only methods declared in a typestate can return objects with a typestate."
@@ -84,7 +84,6 @@ aspect JavaSemanticCheck {
 	}
 
 	public void ParameterDeclaration.semanticCheck() {
-		//TODO pass typestate Args in non typestate methods??
 		if(getTypeAccess().hasDims() && getTypeAccess().lookupType().isTypestateClassDeclType())
 			addSemanticError(
 				"Parameter " +
@@ -100,7 +99,7 @@ aspect JavaSemanticCheck {
 			//TODO if at least one method in the list is a typestatemethod
 			ArrayList<MethodDecl> a = lookupMethodTargets(getQualifiedType());
 			if(a.size() == 0)
-				addSemanticError("Method call " + signature() + " has not target.");
+				addSemanticError("Method call " + signature() + " has no target.");
 			else if(a.size() > 1) {
 				String s = "";
 				for(int i = 0; i < a.size(); i++) {
@@ -123,10 +122,9 @@ aspect JavaSemanticCheck {
 	}
 
 	public void SwitchStmt.semanticCheck() {
-		//TODO delete the next 3 lines
-		System.out.println("======================================");
-		System.out.println(getExpr() + " " + getExpr().getType());
-		System.out.println("======================================");
+//		System.out.println("======================================");
+//		System.out.println(getExpr() + " " + getExpr().getType());
+//		System.out.println("======================================");
 
 		if(getExpr() instanceof Access) {
 			Access a = ((Access)getExpr()).getLastAccess();

@@ -18,6 +18,33 @@ aspect dataStructures {
 	 * - Check if a graph has empty/loop nodes.
 	 */
 
+	//TODO define:
+	/*
+		GraphNode cloneGraph(GraphNode end) {
+			return cloneGraph(end, new HashMap<GraphNode, GraphNode>());
+		}
+		GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
+			if(visited.get(this) != null) {
+				return visited.get(this);
+			}
+			GraphNode r = cloneNode();
+			visited.put(this, r);
+
+			for(GraphNode n: next)
+				r.addNext(cloneGraph(end, visited));
+
+			return r;
+		}
+		//overwrite in SwitchNode...
+		//overwrite on LoopNode:
+		GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
+			//This means that the graph ends in a LoopNode -> it is still incomplete
+			if(next.size == 0)
+				return cloneNode().addNext(end);
+			return super(end, visited);
+		}
+	*/
+
 	abstract class GraphNode {
 		private String id;
 		private TypeDecl[] parameters;
@@ -564,10 +591,10 @@ aspect dataStructures {
 	}
 
 	class TypestateField extends TypestateVar {
-		private Map<MethodDecl, GraphNode> methodStartNode;
-		private Map<MethodDecl, GraphNode> methodEndGraph;
-		private Map<MethodDecl, GraphNode> methodEndNode;
-		private Map<MethodDecl, Expr> methodEndExpr;
+		/*private */Map<MethodDecl, GraphNode> methodStartNode;
+		/*private */Map<MethodDecl, GraphNode> methodEndGraph;
+		/*private */Map<MethodDecl, GraphNode> methodEndNode;
+		/*private */Map<MethodDecl, Expr> methodEndExpr;
 		private GraphNode endNode;
 		private GraphNode endGraph;
 		private Expr endExpr;

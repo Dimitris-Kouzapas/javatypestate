@@ -1,7 +1,7 @@
 package file_example;
 import java.io.*;
 
-class File typestate FileProtocol {
+class File typestate Protocol {
 	private MyFileObject reader;
 //	private BufferedReader reader;
 	private String file;
@@ -42,21 +42,30 @@ class File typestate FileProtocol {
 	public static void main(String[] args) {
 		File myFile = new File("file.txt");
 
-		switch(myFile.open().getEnum()) {
-			case Status.OK:
-				switch(myFile.hasNext().getEnum()) {
-					case BooleanEnum.TRUE:
-						myFile.read();
-						break;
-					case BooleanEnum.FALSE:
-						myFile.close();
-						break;
-				}
-				break;
-			case Status.ERROR:
-				System.out.println("file not found!");
-				break;
-		}
+//		switch(myFile.open().getEnum()) {
+//			case Status.OK:
+//				switch(myFile.hasNext().getEnum()) {
+//					case BooleanEnum.TRUE:
+//						myFile.read();
+//						break;
+//					case BooleanEnum.FALSE:
+//				//		myFile.close();
+//						break;
+//				}
+//				break;
+//			case Status.ERROR:
+//				System.out.println("file not found!");
+//				break;
+//		}
+
+		myFile.open();
+
+		if(true)
+			myFile.read();
+		else
+			myFile.hasNext();
+
+		myFile.close();
 
 //		while(true) {
 //			myFile.close();

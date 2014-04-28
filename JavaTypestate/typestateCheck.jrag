@@ -13,32 +13,19 @@ aspect typestateCheck {
 					"Object assigned here is not used used in a linear way."
 				);
 
+			//TODO check if getTypestateDecl exists
 			GraphNode t = getTypeAccess().lookupType().getTypestateDecl().createTypestate().normalise();
 			for(int i = typestate.startTypestate.size() - 1; i >= 0; i--) {
 				GraphNode n = typestate.startTypestate.get(i);
-//				n.printPaths();
 				n.normalise();
+//				n.printPaths();
 				if(!t.includes(n))
-//					n.printPaths();
 					typestate.exprASTNode.get(i).addSemanticError(
 						"The typestate of the created object does not match its declared typestate."
 					);
 			}
 		}
-		//TODO check for typestate typing
-/*		System.out.println(getID());
-		if(typestate != null) {
-			for(int i = 0; i < typestate.startTypestate.size(); i++) {
-				System.out.println("------------------");
-				typestate.startTypestate.get(i).normalise().printPaths();
-			}
-			for(int i = 0; i < typestate.errorTypestate.size(); i++) {
-				System.out.println("*******************");
-				typestate.errorTypestate.get(i).normalise().printPaths();
-			}
-
-		}
-*/	}
+	}
 
 	public void ParameterDeclaration.typestateCheck() {
 		//TODO 
