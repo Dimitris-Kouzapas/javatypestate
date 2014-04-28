@@ -106,6 +106,14 @@ aspect getGraph {
 	syn lazy boolean ClassDecl.getGraph() {
 		for(MethodDecl md: getMethodDecls())
 			md.getGraph();
+
+//		for(VariableDecl vd: getFieldDecls())
+//			if(vd.getTypeAccess().lookupType().isTypestateClassDeclType()) {
+//				vd.typestate.current = new EndNode();
+//				createTypestate().getFieldGraph(vd, new HashMap<GraphNode, GraphNode>());
+//				vd.typestate.checkError();
+//			}
+
 		return true;
 	}
 
@@ -117,8 +125,8 @@ aspect getGraph {
 
 		if(!n1.equals(n2))				//TODO maybe add a boolean value that states whether n1 and n2 are equal
 			addTypestate(n2.cloneGraph(end));	//TODO take care on addTypestate... Maybe inline the adding code here
-		return n1.cloneGraph(end);
 		//current = n1.cloneGraph(end);
+		return n1.cloneGraph(end);
 	}
 */
 /*
@@ -126,8 +134,10 @@ aspect getGraph {
 		if(visited.get(this) != null)
 			return visited.get(this);
 
+		LoopNode s = new LoopNode();
+		visited.put(this, s);
+
 		LoopNode l = new LoopNode();
-		visited.put(this, l);
 
 		GraphNode t = vd.typestate.current;
 
@@ -137,12 +147,10 @@ aspect getGraph {
 			l.addNext(vd.typestate.current);
 		}
 
-		MethodDecl md = null;
-		if(next.size() > 0)
-			md = getTarget();				//TODO implement this in a polymorphic way -> You need the classDecl
+		MethodDecl md = getTarget();				//TODO implement this in a polymorphic way -> You need the classDecl
 
 		TypestateField tf = (TypestateField) vd.typestate;	//TODO I dont like the casting here
-		tf.current = tf.getMethodTypestate(md, tf.current);
+		tf.current = s.addNext(tf.getMethodTypestate(md, tf.current));
 
 		return tf.current;
 	}
