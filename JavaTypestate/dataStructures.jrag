@@ -566,6 +566,8 @@ aspect dataStructures {
 		GraphNode getConnectionTypestate() {
 			return null;
 		}
+
+		void getMethodGraph(MethodDecl m) {}
 	}
 
 	class TypestatePar extends TypestateVar {
@@ -639,6 +641,19 @@ aspect dataStructures {
 			current = new LoopNode();
 			endGraph = null;
 			endExpr = null;
+		}
+
+		void getMethodGraph(MethodDecl md) {
+			md.getGraph();				//TODO Call getGraph before you call this method
+			GraphNode n1 = methodEndGraph.get(md);
+			GraphNode n2 = methodStartNode.get(md);
+
+			if(!n1.equals(n2)) {
+				startTypestate.add(n2.cloneGraph(current));
+				exprASTNode.add(methodEndExpr.get(md));
+				resetCurrent();
+			}
+			current = n1.cloneGraph(current);
 		}
 	}
 }

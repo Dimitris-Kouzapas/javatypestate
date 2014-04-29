@@ -118,16 +118,6 @@ aspect getGraph {
 	}
 
 /*
-	syn GraphNode TypestateField.getMethodTypestate(MethodDecl md, GraphNode end) {
-		md.getGraph();
-		GraphNode n1 = methodEndGraph.get(md);
-		GraphNode n2 = methodStartNode.get(md);
-
-		if(!n1.equals(n2))				//TODO maybe add a boolean value that states whether n1 and n2 are equal
-			addTypestate(n2.cloneGraph(end));	//TODO take care on addTypestate... Maybe inline the adding code here
-		//current = n1.cloneGraph(end);
-		return n1.cloneGraph(end);
-	}
 */
 /*
 	syn GraphNode GraphNode.getFieldGraph(VariableDecl vd, Map<GraphNode, GraphNode> visited) {
