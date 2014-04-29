@@ -120,15 +120,25 @@ aspect Type {
 	/****************Qualified Type**************************/
 
 	syn lazy TypeDecl Access.getQualifiedType() {
+		if(isAbstractDotParent()) {
+			AbstractDot p = (AbstractDot) getParent();
+			if(p.getLeft().equals(this))
+				return p._getQualifiedType();
+		}
+		return _getQualifiedType();
+	}
+
+	syn lazy TypeDecl Access._getQualifiedType() {
 		if(isAbstractDotParent())
-			return ((Access) getParent()).getQualifiedType();
+			return ((AbstractDot) getParent()).__getQualifiedType();
 
 		return getCompilationUnitAncestor().getTypeDecl();
 	}
 
-	eq AbstractDot.getQualifiedType() {
+//	eq AbstractDot.getQualifiedType() {
+	syn lazy TypeDecl AbstractDot.__getQualifiedType() {
 		if(isAbstractDotParent())
-			return getLeft().getType(((Access) getParent()).getQualifiedType());
+			return getLeft().getType(((AbstractDot) getParent()).__getQualifiedType());
 
 		return getLeft().getTypeNoQualified();
 	}

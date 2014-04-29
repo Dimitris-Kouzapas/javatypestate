@@ -64,41 +64,41 @@ aspect getGraph {
 			return null;
 
 		if(isAbstractDotParent())
-			return lookupVariable(getQualifiedType()).getTypestateVar();			//TODO
+			return lookupVariable(getQualifiedType()).getTypestateVar();
 		return lookupVariable().getTypestateVar();
 	}
 
-	syn lazy TypestateVar MethodAccess.getQualifiedTypestateVar() {
-		if(isAbstractDotParent())
-			return ((AbstractDot) getParent()).getLeftTypestateVar();
+	syn lazy TypestateVar Access.getQualifiedTypestateVar() {
+		if(isAbstractDotParent()) {
+			AbstractDot p = (AbstractDot) getParent();
+			return (p.getLeft().equals(this)) ? 
+				p.getQualifiedTypestateVar() :
+				p.__getQualifiedTypestateVar();
+		}
 		return null;								//TODO this means that the caller object is this
 	}
 
 	//TODO I dont like at all
 
-	syn lazy TypestateVar AbstractDot.getLeftTypestateVar() {
+	syn lazy TypestateVar Expr.__getQualifiedTypestateVar(TypeDecl t) = null;
+
+	syn lazy TypestateVar AbstractDot.__getQualifiedTypestateVar() {
 		if(getLeft() instanceof ParseName && !isAbstractDotParent())
-			return ((ParseName)getLeft()).getLeftTypestateVar(null);
-		return getLeft().getLeftTypestateVar(getQualifiedType());	//TODO is this cast correct?
+			return getLeft().__getQualifiedTypestateVar(null);
+
+		return getLeft().__getQualifiedTypestateVar(getQualifiedType());	//TODO is this cast correct?
 	}
 
-	syn lazy TypestateVar Expr.getLeftTypestateVar(TypeDecl t) {
-		return null;
-	}
+	eq ParseName.__getQualifiedTypestateVar(TypeDecl t) =
+		t != null ? lookupVariable(t).getTypestateVar() : lookupVariable().getTypestateVar();
 
-	eq ParseName.getLeftTypestateVar(TypeDecl t) {
-		return t != null ? lookupVariable(t).getTypestateVar() : lookupVariable().getTypestateVar();
-	}
+	eq MethodAccess.__getQualifiedTypestateVar(TypeDecl t) = typestate;
 
-	eq MethodAccess.getLeftTypestateVar(TypeDecl t) {
-		return typestate;
-	}
-
-	eq ThisAccess.getLeftTypestateVar(TypeDecl t) {
+	eq ThisAccess.__getQualifiedTypestateVar(TypeDecl t) {
 		//TODO supposed to be used non qualified so it should return the caller object
 		return null;
 	}
-	//TODO ArrayAccess.getLeftTypestateVar(TypeDecl t) //Typestate is not suppose to be array
+	//TODO ArrayAccess.__getQualifiedTypestateVar(TypeDecl t) //Typestate is not suppose to be array
 
 
 /*****************************************************************************************************/
@@ -449,8 +449,6 @@ aspect getGraph {
 	eq SwitchStmt.getGraph(Set<TypestateVar> env) {
 		Block b = getBlock();
 
-		//getExpr().getGraph(env);			//TODO uncomment. Should call getGraph on every line
-								//TODO of code
 		TypestateVar t = getExpr().getTypestateVar();	//TODO This is not correct. Check for
 								//TODO a typestate call.
 
@@ -503,6 +501,9 @@ aspect getGraph {
 			v.current = v.start.remove(this);
 			v.end.remove(this);
 		}
+
+		getExpr().getGraph(env);
+
 		return true;
 	}
 

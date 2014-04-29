@@ -38,6 +38,7 @@ aspect createTypestate {
 		getTarget().hasStateNode() ? getTarget().getStateNode() : getTarget().createTypestate();
 
 	//TODO reinitialise State.stateNode??
-	syn lazy GraphNode TTypestate.createTypestate() = new InitNode().addNext(getTypestate().createTypestate());
+	syn lazy GraphNode TType.createTypestate() = null;
+	eq TTypestate.createTypestate() = new InitNode().addNext(getTypestate().createTypestate());
 
 }
