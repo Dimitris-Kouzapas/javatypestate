@@ -48,10 +48,10 @@ aspect typestateCheck {
 		}
 	}
 
-/*	public void MethodAccess.typestateCheck() {
+	public void MethodAccess.typestateCheck() {
 		MethodDecl md= lookupMethod(getQualifiedType());		//TODO get a lookupMethod()
-		if(md.isTypestateMethod()) {
-			GraphNode t = md.getTypestateTarget().getTType().createTypestate();	//TODO What if t is null;
+		if(md != null && md.isTypestateMethod()) {
+			GraphNode t = md.getTypestateMethod().getTType().createTypestate();
 			if(t != null) {
 				t.normalise();
 				for(int i = typestate.startTypestate.size() - 1; i >= 0; i--) {
@@ -65,5 +65,5 @@ aspect typestateCheck {
 			}
 		}
 	}
-*/
+
 }

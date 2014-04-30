@@ -43,15 +43,16 @@ aspect javaASTFunctionality {
 	/*	MethodDecl								*/
 	inh ClassDecl MethodDecl.getClassDeclAncestor();
 
-	syn lazy boolean MethodDecl.isTypestateMethod() {
+	syn lazy boolean MethodDecl.isTypestateMethod() = getTypestateMethod() != null;
+	syn lazy TypestateMethod MethodDecl.getTypestateMethod() {
 		ClassDecl cd = getClassDeclAncestor();
 		if(cd.isTypestateClassDeclType()) {
 			TypestateDecl t = ((TypestateClassDecl) cd).getTypestateDecl();
 			for(TypestateMethod m : t.getMethods())
 				if(isTarget(m.getID(), m.getParameterTypes()))
-					return true;
+					return m;
 		}
-		return false;
+		return null;
 	} 
 
 	syn lazy String MethodDecl.signature() {
