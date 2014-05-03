@@ -62,43 +62,33 @@ aspect getGraph {
 	eq ParseName.getTypestateVar() {
 		if(!getType().isTypestateClassDeclType())
 			return null;
-
-		if(isAbstractDotParent())
+		if(getQualifiedAccess() != null)
 			return lookupVariable(getQualifiedType()).getTypestateVar();
 		return lookupVariable().getTypestateVar();
 	}
 
-	syn lazy TypestateVar Access.getQualifiedTypestateVar() {
-		if(isAbstractDotParent()) {
-			AbstractDot p = (AbstractDot) getParent();
-			return (p.getLeft().equals(this)) ? 
-				p.getQualifiedTypestateVar() :
-				p.__getQualifiedTypestateVar();
-		}
-		return null;								//TODO this means that the caller object is this
-	}
+	syn lazy TypestateVar Access.getQualifiedTypestateVar() =
+		getQualifiedAccess() != null ? 
+		getQualifiedAccess().getLeft().getTypestateVar() :
+		null;					//TODO this means that the caller object is this
 
-	//TODO I dont like at all
-
-	syn lazy TypestateVar Expr.__getQualifiedTypestateVar(TypeDecl t) = null;
-
+/*
 	syn lazy TypestateVar AbstractDot.__getQualifiedTypestateVar() {
 		if(getLeft() instanceof ParseName && !isAbstractDotParent())
 			return getLeft().__getQualifiedTypestateVar(null);
 
-		return getLeft().__getQualifiedTypestateVar(getQualifiedType());	//TODO is this cast correct?
+		return getLeft().__getQualifiedTypestateVar(getQualifiedType());
 	}
+
+	syn lazy TypestateVar Expr.__getQualifiedTypestateVar(TypeDecl t) = null;
 
 	eq ParseName.__getQualifiedTypestateVar(TypeDecl t) =
 		t != null ? lookupVariable(t).getTypestateVar() : lookupVariable().getTypestateVar();
 
 	eq MethodAccess.__getQualifiedTypestateVar(TypeDecl t) = typestate;
 
-	eq ThisAccess.__getQualifiedTypestateVar(TypeDecl t) {
-		//TODO supposed to be used non qualified so it should return the caller object
-		return null;
-	}
-	//TODO ArrayAccess.__getQualifiedTypestateVar(TypeDecl t) //Typestate is not suppose to be array
+	eq ThisAccess.__getQualifiedTypestateVar(TypeDecl t) = null;
+*/
 
 
 /*****************************************************************************************************/
@@ -107,18 +97,49 @@ aspect getGraph {
 		for(MethodDecl md: getMethodDecls())
 			md.getGraph();
 
-//		for(VariableDecl vd: getFieldDecls())
-//			if(vd.getTypeAccess().lookupType().isTypestateClassDeclType()) {
-//				vd.typestate.current = new EndNode();
-//				createTypestate().getFieldGraph(vd, new HashMap<GraphNode, GraphNode>());
-//				vd.typestate.checkError();
-//			}
+//		if(isTypestateClassDeclType())
+//			for(VariableDecl vd: getFieldDecls())
+//				if(vd.getTypeAccess().lookupType().isTypestateClassDeclType()) {
+//					vd.typestate.current = new EndNode();
+//					if(existsTypestateDecl())
+//						getTypestateDecl().createTypestate().normalise().getFieldGraph(vd, new HashMap<GraphNode, GraphNode>());
+//					vd.typestate.checkError();
+//				}
 
 		return true;
 	}
 
-/*
-*/
+	syn GraphNode ClassDecl.getFieldGraph(GraphNode r, VariableDecl vd, Map<GraphNode, GraphNode> visited) {
+		if(visited.get(r) != null)
+			return visited.get(r);
+
+		LoopNode s = new LoopNode();
+		visited.put(r, s);
+
+		LoopNode l = new LoopNode();
+
+		GraphNode t = vd.typestate.current;
+
+		for(GraphNode n : r.next) {
+			vd.typestate.current = t;
+			getFieldGraph(n, vd, visited);
+			l.addNext(vd.typestate.current);
+		}
+
+		MethodDecl md = null;//r.getTarget();				//TODO implement this in a polymorphic way -> You need the classDecl
+		if(r.getId() != null && r.getParameters() != null)
+			md = lookupMethod(r.getId(), r.getParameters());
+
+		if(md != null)						//if md == null then r is the Init/End Node
+			vd.typestate.getMethodGraph(md);
+
+		vd.typestate.current = s.addNext(vd.typestate.current);
+		
+
+		return vd.typestate.current;
+	}
+
+
 /*
 	syn GraphNode GraphNode.getFieldGraph(VariableDecl vd, Map<GraphNode, GraphNode> visited) {
 		if(visited.get(this) != null)
@@ -132,14 +153,14 @@ aspect getGraph {
 		GraphNode t = vd.typestate.current;
 
 		for(GraphNode n : next) {
+			vd.typestate.current = t.current;
 			n.getFieldGraph(vd);
-			vd.typestate = t;
 			l.addNext(vd.typestate.current);
 		}
 
 		MethodDecl md = getTarget();				//TODO implement this in a polymorphic way -> You need the classDecl
 
-		TypestateField tf = (TypestateField) vd.typestate;	//TODO I dont like the casting here
+		TypestateVar tf = vd.typestate;
 		tf.current = s.addNext(tf.getMethodTypestate(md, tf.current));
 
 		return tf.current;
@@ -220,13 +241,13 @@ aspect getGraph {
 			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType())
 				env.add(getParameter(i).typestate = new TypestatePar());
 
+		getBlock().getGraph(env);
+
 		for(int i = 0; i < getNumParameter(); i++)
 			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
 				getParameter(i).typestate.addConnectionTypestate(null);
 				env.remove(getParameter(i).typestate);
 			}
-
-		getBlock().getGraph(env);
 
 		for(TypestateVar tv : env) {
 			tv.addConnectionTypestate(this);
@@ -449,8 +470,15 @@ aspect getGraph {
 	eq SwitchStmt.getGraph(Set<TypestateVar> env) {
 		Block b = getBlock();
 
-		TypestateVar t = getExpr().getTypestateVar();	//TODO This is not correct. Check for
-								//TODO a typestate call.
+		TypestateVar t = null;
+		//TODO consider a link type for enumDecl variables
+		if(getExpr() instanceof Access) {
+			Access a = ((Access) getExpr()).getLastAccess();
+			if(a.getQualifiedType().isEnumDeclType())
+				t = a.getQualifiedAccess() != null ?
+				a.getQualifiedAccess().getQualifiedTypestateVar() :
+				null;
+		}
 
 		for(TypestateVar v : env) {
 			if(t == null || !t.equals(v))
@@ -464,7 +492,11 @@ aspect getGraph {
 		for(int i = b.getNumStmt() - 1; i >= 0; i--) {
 			if(b.getStmt(i) instanceof ConstCase) {
 				c = true;
-				count.add(((ConstCase)b.getStmt(i)).getValue().toString());
+				//TODO might not need the instanceof check and the else branch
+				if(((ConstCase)b.getStmt(i)).getValue() instanceof Access)
+					count.add(((Access)((ConstCase)b.getStmt(i)).getValue()).getLastAccess().toString());
+				else
+					count.add(((ConstCase)b.getStmt(i)).getValue().toString());
 			}
 			else if(b.getStmt(i) instanceof DefaultCase) {
 				c = true;
@@ -507,17 +539,24 @@ aspect getGraph {
 		return true;
 	}
 
+	//TODO another file
+	inh MethodDecl Stmt.getMethodDeclAncestor();
+	eq MethodDecl.getBlock().getMethodDeclAncestor() = this;
+	eq CompilationUnit.getTypeDecl().getMethodDeclAncestor() = null;
+//	syn lazy ReturnStmt.getReturnTypestate() =
+//		getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType() ?
+//		
+//		null;
+
+	//TODO implement me
 	eq ReturnStmt.getGraph(Set<TypestateVar> env) {
 		if(!hasResult())
 			return true;
 
 		TypestateVar t = getResult().getTypestateVar();
-		if(t != null) {
-			t.resetCurrent();			//TODO LoopEndNode();
-			//TODO if thisMethodDecl is typestate then 
-			//TODO thisMethodDecl().getReturnTypestate().lastNode().addNext(t.current);
-			//TODO t.current = thisMethodDecl().getReturnTypestate(); 
-		}
+		if(t != null)
+			if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType())
+				t.current = getMethodDeclAncestor().getTypestateMethod().getTType().createTypestate();	//TODO cloneGraphNode ??
 		
 		getResult().getGraph(env);
 
@@ -686,6 +725,7 @@ aspect getGraph {
 
 		//TODO find target and check arguments
 		MethodDecl md = lookupMethod(getQualifiedType());		//TODO what if it is null??
+
 		for(int i = getNumArg() - 1; i >= 0; i--) {
 			TypestateVar t = getArg(i).getTypestateVar();
 			if(t != null) {

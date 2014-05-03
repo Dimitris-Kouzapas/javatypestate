@@ -1,0 +1,7 @@
+package file_example;
+
+class FileFactory typestate FactoryProtocol {
+	File new_File() {
+		return new File("file.txt");
+	}
+}

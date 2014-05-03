@@ -95,9 +95,9 @@ aspect PrimitiveTypes {
 			return false;
 		return true;
 	}
-/*
+
 	public String UnknownTypeDecl.toString() {
-		return getID();
+		return "unknown: " + getID();
 	}
 
 	public String BooleanType.toString() {
@@ -133,11 +133,10 @@ aspect PrimitiveTypes {
 	}
 
 	public String NoNameType.toString() {
-		return "unknown";
+		return "unknown name";
 	}
 
 	public String ClassType.toString() {
 		return "class";
 	}
-*/
 }

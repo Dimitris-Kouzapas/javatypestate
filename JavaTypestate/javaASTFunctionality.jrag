@@ -87,6 +87,20 @@ aspect javaASTFunctionality {
 	eq AbstractDot.isAbstractDot() = true;
 	syn lazy boolean Access.isAbstractDotParent() = getParent().isAbstractDot();
 
+	syn lazy AbstractDot Access.getQualifiedAccess() {
+		if(isAbstractDotParent()) {
+			AbstractDot p = (AbstractDot) getParent();
+			if(p.getLeft().equals(this)) {
+				if(p.isAbstractDotParent())
+					return (AbstractDot) p.getParent();
+			}
+			else
+				return p;
+		}
+
+		return null;
+	}
+
 	syn lazy Access Access.getLastAccess() {
 		Access a;
 		for(a = this;a.isAbstractDot(); a = ((AbstractDot) a).getRight());

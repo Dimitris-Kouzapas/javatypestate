@@ -1,11 +1,16 @@
 package file_example;
-typestate FileProtocol {
+typestate FactoryProtocol {
 
 	session
 		Init =		{
+					File	<NewFile>	new_File() : end
+				}
+
+	where
+
+		NewFile =	{
 					Status open(): <OK: Open, ERROR: end>
 				}
-	where
     
 		Open =		{
 					BooleanEnum hasNext(): <TRUE: Read, FALSE: Close>,
@@ -19,5 +24,6 @@ typestate FileProtocol {
 		Close =		{
 					void close(): end 
 				}
-}
 
+
+}

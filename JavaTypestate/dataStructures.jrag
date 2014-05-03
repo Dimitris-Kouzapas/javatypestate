@@ -531,7 +531,7 @@ aspect dataStructures {
 		/*private*/ ArrayList<Expr> errorExpr;
 
 		TypestateVar() {
-			current = new EndNode();		//TODO LoopEndNode();
+			current = new EndNode();
 			end = new HashMap<ASTNode, GraphNode>();
 			start = new HashMap<ASTNode, GraphNode>();
 			startTypestate = new ArrayList<GraphNode>();
@@ -591,8 +591,6 @@ aspect dataStructures {
 		/*private */Map<MethodDecl, GraphNode> methodStartNode;
 		/*private */Map<MethodDecl, GraphNode> methodEndGraph;
 		/*private */Map<MethodDecl, Expr> methodEndExpr;
-//		private Map<MethodDecl, GraphNode> methodEndNode;
-//		private GraphNode endNode;
 		private GraphNode endGraph;
 		private Expr endExpr;
 
@@ -601,9 +599,6 @@ aspect dataStructures {
 			methodStartNode = new HashMap<MethodDecl, GraphNode>();
 			methodEndGraph = new HashMap<MethodDecl, GraphNode>();
 			methodEndExpr = new HashMap<MethodDecl, Expr>();
-//			methodEndNode = new HashMap<MethodDecl, GraphNode>();
-//			endNode = new LoopNode();
-//			current = endNode;
 			current = new LoopNode();
 			endGraph = null;
 			endExpr = null;
@@ -629,15 +624,13 @@ aspect dataStructures {
 		}
 
 		void addConnectionTypestate(MethodDecl m) {
-			if(endGraph == null)				//EndGraph is the same as startNode
+			//EndGraph is the same as startNode
+			if(endGraph == null)
 				endGraph = current;
 
 			methodStartNode.put(m, current);
 			methodEndGraph.put(m, endGraph);
 			methodEndExpr.put(m, endExpr);
-//			methodEndNode.put(m, endNode);
-//			endNode = new LoopNode();
-//			current = endNode;
 			current = new LoopNode();
 			endGraph = null;
 			endExpr = null;
