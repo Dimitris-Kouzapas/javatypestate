@@ -638,8 +638,8 @@ aspect dataStructures {
 
 		void getMethodGraph(MethodDecl md) {
 			md.getGraph();				//TODO Call getGraph before you call this method
-			GraphNode n1 = methodEndGraph.get(md);
-			GraphNode n2 = methodStartNode.get(md);
+			GraphNode n1 = methodStartNode.get(md);
+			GraphNode n2 = methodEndGraph.get(md);
 
 			if(!n1.equals(n2)) {
 				startTypestate.add(n2.cloneGraph(current));

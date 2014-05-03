@@ -70,25 +70,7 @@ aspect getGraph {
 	syn lazy TypestateVar Access.getQualifiedTypestateVar() =
 		getQualifiedAccess() != null ? 
 		getQualifiedAccess().getLeft().getTypestateVar() :
-		null;					//TODO this means that the caller object is this
-
-/*
-	syn lazy TypestateVar AbstractDot.__getQualifiedTypestateVar() {
-		if(getLeft() instanceof ParseName && !isAbstractDotParent())
-			return getLeft().__getQualifiedTypestateVar(null);
-
-		return getLeft().__getQualifiedTypestateVar(getQualifiedType());
-	}
-
-	syn lazy TypestateVar Expr.__getQualifiedTypestateVar(TypeDecl t) = null;
-
-	eq ParseName.__getQualifiedTypestateVar(TypeDecl t) =
-		t != null ? lookupVariable(t).getTypestateVar() : lookupVariable().getTypestateVar();
-
-	eq MethodAccess.__getQualifiedTypestateVar(TypeDecl t) = typestate;
-
-	eq ThisAccess.__getQualifiedTypestateVar(TypeDecl t) = null;
-*/
+		null;							//TODO this means that the caller object is this
 
 
 /*****************************************************************************************************/
@@ -97,14 +79,17 @@ aspect getGraph {
 		for(MethodDecl md: getMethodDecls())
 			md.getGraph();
 
-//		if(isTypestateClassDeclType())
-//			for(VariableDecl vd: getFieldDecls())
-//				if(vd.getTypeAccess().lookupType().isTypestateClassDeclType()) {
-//					vd.typestate.current = new EndNode();
-//					if(existsTypestateDecl())
-//						getTypestateDecl().createTypestate().normalise().getFieldGraph(vd, new HashMap<GraphNode, GraphNode>());
-//					vd.typestate.checkError();
-//				}
+		if(isTypestateClassDeclType()) {
+			TypestateClassDecl cd = (TypestateClassDecl) this;
+			for(VariableDecl vd: getFieldDecls())
+				if(vd.getTypeAccess().lookupType().isTypestateClassDeclType()) {
+					vd.typestate.current = new EndNode();
+					if(cd.existsTypestateDecl())
+						cd.getTypestateDecl().createTypestate().normalise();
+						cd.getFieldGraph(cd.getTypestateDecl().createTypestate(), vd, new HashMap<GraphNode, GraphNode>());
+					//vd.typestate.checkError();
+				}
+		}
 
 		return true;
 	}
@@ -126,11 +111,15 @@ aspect getGraph {
 			l.addNext(vd.typestate.current);
 		}
 
+		if(r.next.size() > 0)
+			vd.typestate.current = l;
+
 		MethodDecl md = null;//r.getTarget();				//TODO implement this in a polymorphic way -> You need the classDecl
 		if(r.getId() != null && r.getParameters() != null)
 			md = lookupMethod(r.getId(), r.getParameters());
 
-		if(md != null)						//if md == null then r is the Init/End Node
+		//if md == null then r is the Init/End Node
+		if(md != null)
 			vd.typestate.getMethodGraph(md);
 
 		vd.typestate.current = s.addNext(vd.typestate.current);

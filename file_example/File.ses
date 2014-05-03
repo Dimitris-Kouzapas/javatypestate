@@ -33,7 +33,7 @@ class File typestate FileProtocol {
 	void read() {
 		readBuffer[i++] = reader.read();
 	}
-
+/*
 	public static void main(String[] args) {
 		File myFile = new File("file.txt");
 		processFile(myFile);
@@ -61,4 +61,5 @@ class File typestate FileProtocol {
 		myFile.close();
 
 	}
+*/
 }
