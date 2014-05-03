@@ -87,7 +87,7 @@ aspect getGraph {
 					if(cd.existsTypestateDecl())
 						cd.getTypestateDecl().createTypestate().normalise();
 						cd.getFieldGraph(cd.getTypestateDecl().createTypestate(), vd, new HashMap<GraphNode, GraphNode>());
-					//vd.typestate.checkError();
+					//vd.typestate.checkError();	//TODO check for errors
 				}
 		}
 
@@ -114,7 +114,7 @@ aspect getGraph {
 		if(r.next.size() > 0)
 			vd.typestate.current = l;
 
-		MethodDecl md = null;//r.getTarget();				//TODO implement this in a polymorphic way -> You need the classDecl
+		MethodDecl md = null;
 		if(r.getId() != null && r.getParameters() != null)
 			md = lookupMethod(r.getId(), r.getParameters());
 
@@ -129,87 +129,9 @@ aspect getGraph {
 	}
 
 
-/*
-	syn GraphNode GraphNode.getFieldGraph(VariableDecl vd, Map<GraphNode, GraphNode> visited) {
-		if(visited.get(this) != null)
-			return visited.get(this);
-
-		LoopNode s = new LoopNode();
-		visited.put(this, s);
-
-		LoopNode l = new LoopNode();
-
-		GraphNode t = vd.typestate.current;
-
-		for(GraphNode n : next) {
-			vd.typestate.current = t.current;
-			n.getFieldGraph(vd);
-			l.addNext(vd.typestate.current);
-		}
-
-		MethodDecl md = getTarget();				//TODO implement this in a polymorphic way -> You need the classDecl
-
-		TypestateVar tf = vd.typestate;
-		tf.current = s.addNext(tf.getMethodTypestate(md, tf.current));
-
-		return tf.current;
-	}
-*/
-
-/*
-	syn boolean ClassDecl.getGraph() {
-		Set<TypestateVar> env = new HashSet<TypestateVar>();
-
-		for(VariableDecl vd : getVariableDecls())
-			if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
-				env.add(vd.typestate = new TypestateField());
-
-		for(MethodDecl md : getMethodDecls()) {
-			md.getGraph(env);
-			//everything in env should be fields
-			for(TypestateVar tv : env)
-				tv.addConnectionTypestate(md);
-		}
-
-//		GraphNode n = getTypestateDecl().createTypestate();	//TODO if getTypestateDecl is TypestateClassDeclType
-//		for(VariableDecl vd: getVariableDecls())
-//			if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
-//				getFieldGraph(vd, n);				//TODO add visitedSet for recursion			
-//
-		return true;
-	}
-*/
-
-/*
-	syn lazy boolean ClassDecl.getFieldGraph(VariableDecl vd, GraphNode n) {
-		LoopNode l = new LoopNode();
-		for(GraphNode gn : n.next) {
-			getFieldGraph(vd, gn);
-			l.addNext(vd.typestate.current);
-		}
-
-		MethodDecl md = null;
-		if(n.next.size() > 0)			
-			md = lookupMethod(n.getId(), n.getParameters());	//TODO implement this
-
-		TypestateField tf = (TypestateField) vd.typestate;			//TODO I dont like the casting here
-		GraphNode endGraph = tf.methodEndGraph.get(md).copyNode();
-//		GraphNode endNode = tf.methodEndNode.get(md);			//TODO if I copy then I lose the last node :(
-//		tf.current = endNode.addNext(tf.current);
-//		if(endGraph instanceof InitNode) {
-//			tf.addTypestate(tf.methodEndExpr.get(md));		//TODO also check the addtypestate
-//			tf.current = tf.methodStartNode.get(md).copyNode();
-//		}
-
-		return true;
-	}
-*/
-
 /*****************************************************************************************************/
 
-	syn Set<VariableDecl> MethodDecl.getFieldDecls() =
-			getClassDeclAncestor().getFieldDecls();			//TODO change the name of getVariableDecls to
-										//TODO getFieldDecls
+	syn Set<VariableDecl> MethodDecl.getFieldDecls() = getClassDeclAncestor().getFieldDecls();
 
 	private boolean MethodDecl.isGraph = false;
 	syn lazy boolean MethodDecl.getGraph() {
@@ -251,41 +173,13 @@ aspect getGraph {
 		return getParameter(i).typestate.getConnectionTypestate();
 	}
 
-/*
-	private boolean MethodDecl.isGraph = false;
-	syn boolean MethodDecl.getGraph(Set<TypestateVar> env) {
-		if(isGraph == true)
-			return true;
-		isGraph = true;
-
-		for(int i = 0; i < getNumParameter(); i++)
-			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType())
-				env.add(getParameter(i).typestate);
-//				env.add(getParameter(i).typestate = new TypestatePar());
-
-		getBlock().getGraph(env);
-		for(int i = 0; i < getNumParameter(); i++)
-			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				getParameter(i).typestate.addConnectionTypestate(null);
-				env.remove(getParameter(i).typestate);
-			}
-
-		return true;
-	}
-
-	syn GraphNode MethodDecl.getParameterTypestate(int i) {
-//		getGraph();	//TODO is this needed???
-		return getParameter(i).typestate.getConnectionTypestate();
-	}
-*/
 /*****************************************************************************************************/
 
-	//TODO Note: the next case of code is not a valid java statement
+	//Note: the next case of code is not a valid java statement
 	//	if(cond)
 	//		TypestateVariable v = new TypestateVariable().m1().m2().m3();	
 
 	protected TypestateVar VariableDecl.typestate = null;
-//	protected TypestateVar ParameterDeclaration.typestate = new TypestatePar();
 	protected TypestateVar ParameterDeclaration.typestate = null;
 	protected TypestateVar MethodAccess.typestate = new TypestateVar();			//TODO if is  typestate
 
@@ -546,7 +440,7 @@ aspect getGraph {
 		if(t != null)
 			if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType())
 				t.current = getMethodDeclAncestor().getTypestateMethod().getTType().createTypestate();	//TODO cloneGraphNode ??
-		
+
 		getResult().getGraph(env);
 
 		return true;

@@ -122,7 +122,7 @@ aspect Errors {
 		CompilationUnit u = (CompilationUnit) getCompilationUnitAncestor();
 		e.setFileName(u.filePath);
 		u.errors.add(e);
-		if(e instanceof TypestateWarning)	//TODO I hate instanceof
+		if(e instanceof TypestateWarning)
 			u.numWarnings++;
 	}
 

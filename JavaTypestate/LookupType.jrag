@@ -51,7 +51,7 @@ aspect LookupType {
 	}
 
 	syn String ImportDecl.importType(String name);
-	//TODO check last dot only
+
 	eq SingleTypeImportDecl.importType(String name) =
 		getAccess().getLastAccess().toString().equals(name) ? getAccess().toString() : null;
 	eq TypeImportOnDemandDecl.importType(String name) = getAccess().toString() + "." + name;

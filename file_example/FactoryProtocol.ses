@@ -11,7 +11,7 @@ typestate FactoryProtocol {
 		NewFile =	{
 					Status open(): <OK: Open, ERROR: end>
 				}
-    
+
 		Open =		{
 					BooleanEnum hasNext(): <TRUE: Read, FALSE: Close>,
 					void close(): end
@@ -20,7 +20,7 @@ typestate FactoryProtocol {
 		Read =		{
 					void read(): Open
 				}
-	    
+
 		Close =		{
 					void close(): end 
 				}

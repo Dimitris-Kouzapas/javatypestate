@@ -8,43 +8,19 @@ aspect typestateCheck {
 
 	public void VariableDecl.typestateCheck() {
 		if(getTypeAccess().lookupType().isTypestateClassDeclType()) {		//TODO what if lookupType not found?
-			for(int i = typestate.errorTypestate.size() - 1; i >= 0; i--)
-				typestate.errorExpr.get(i).addSemanticError(
-					"Object assigned here is not used used in a linear way."
-				);
-
+			typestate.reportErrors();
 			//TODO check if getTypestateDecl exists
 			GraphNode t = getTypeAccess().lookupType().getTypestateDecl().createTypestate().normalise();
-			for(int i = typestate.startTypestate.size() - 1; i >= 0; i--) {
-				GraphNode n = typestate.startTypestate.get(i);
-				n.normalise();
-//				n.printPaths();
-				if(!t.includes(n))
-					typestate.exprASTNode.get(i).addSemanticError(
-						"The typestate of the created object does not match its declared typestate."
-					);
-			}
+			typestate.checkTypestate(t);
 		}
 	}
 
 	public void ParameterDeclaration.typestateCheck() {
 		if(getTypeAccess().lookupType().isTypestateClassDeclType()) {		//TODO what if lookupType not found?
-			for(int i = typestate.errorTypestate.size() - 1; i >= 0; i--)
-				typestate.errorExpr.get(i).addSemanticError(
-					"Object assigned here is not used used in a linear way."
-				);
-
+			typestate.reportErrors();
 			//TODO check if getTypestateDecl exists
 			GraphNode t = getTypeAccess().lookupType().getTypestateDecl().createTypestate().normalise();
-			for(int i = typestate.startTypestate.size() - 1; i >= 0; i--) {
-				GraphNode n = typestate.startTypestate.get(i);
-				n.normalise();
-//				n.printPaths();
-				if(!t.includes(n))
-					typestate.exprASTNode.get(i).addSemanticError(
-						"The typestate of the created object does not match its declared typestate."
-					);
-			}
+			typestate.checkTypestate(t);
 		}
 	}
 

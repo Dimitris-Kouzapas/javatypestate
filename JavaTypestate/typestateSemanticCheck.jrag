@@ -55,7 +55,6 @@ aspect typestateSemanticCheck {
 				for(String s : ((TypestateSwitch) getTypestate()).getLabels()) {
 					if(!t.getEnumDecl().getEnumLabels().contains(s))
 						addSemanticError("Label " + s + " is not defined in the enumeration type " + t.getEnumDecl().getID() + ".");
-					//TODO Masterpiece for Ornela ==> do the other way around!
 				}
 		}
 	}

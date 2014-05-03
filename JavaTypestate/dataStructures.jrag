@@ -563,11 +563,33 @@ aspect dataStructures {
 		}
 
 		void addConnectionTypestate(MethodDecl m) {}
+
 		GraphNode getConnectionTypestate() {
 			return null;
 		}
 
 		void getMethodGraph(MethodDecl m) {}
+
+		void reportErrors() {
+			for(int i = errorTypestate.size() - 1; i >= 0; i--)
+				errorExpr.get(i).addSemanticError(
+					"Object assigned here is not used used in a linear way."
+				);
+		}
+
+		void checkTypestate(GraphNode t) {
+			for(int i = startTypestate.size() - 1; i >= 0; i--) {
+				GraphNode n = startTypestate.get(i);
+				n.normalise();
+//				n.printPaths();
+				if(!t.includes(n))
+					exprASTNode.get(i).addSemanticError(
+						"The typestate of the created object does not match its declared typestate."
+					);
+			}
+
+		}
+
 	}
 
 	class TypestatePar extends TypestateVar {
