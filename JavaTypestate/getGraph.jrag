@@ -87,7 +87,7 @@ aspect getGraph {
 					if(cd.existsTypestateDecl())
 						cd.getTypestateDecl().createTypestate().normalise();
 						cd.getFieldGraph(cd.getTypestateDecl().createTypestate(), vd, new HashMap<GraphNode, GraphNode>());
-					//vd.typestate.checkError();	//TODO check for errors
+					vd.typestate.checkError(vd);
 				}
 		}
 
@@ -194,8 +194,10 @@ aspect getGraph {
 			getStmt(i).getGraph(env);
 
 		for(VariableDecl v: getVariableDecls())
-			if(v.getTypeAccess().lookupType().isTypestateClassDeclType())
+			if(v.getTypeAccess().lookupType().isTypestateClassDeclType()) {
+				v.typestate.checkError(v);
 				env.remove(v.typestate);
+			}
 		return true;
 	}
 
@@ -471,6 +473,8 @@ aspect getGraph {
 			else if((t = getInit().getTypestateVar()) != null) {
 				t.checkError(getInit());
 				t.current = typestate.current;
+				//Typestate should be reset
+				typestate.resetCurrent();
 			}
 		}
 

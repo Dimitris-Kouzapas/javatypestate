@@ -525,10 +525,10 @@ aspect dataStructures {
 		Map<ASTNode, GraphNode> end;
 		Map<ASTNode, GraphNode> start;
 
-		/*private*/ ArrayList<GraphNode> startTypestate; //TODO make private
-		/*private*/ ArrayList<Expr> exprASTNode;
-		/*private*/ ArrayList<GraphNode> errorTypestate; //TODO make private
-		/*private*/ ArrayList<Expr> errorExpr;
+		private ArrayList<GraphNode> startTypestate;
+		private ArrayList<Expr> exprASTNode;
+		private ArrayList<GraphNode> errorTypestate;
+		private ArrayList<ASTNode> errorNode;
 
 		TypestateVar() {
 			current = new EndNode();
@@ -538,7 +538,7 @@ aspect dataStructures {
 			exprASTNode = new ArrayList<Expr>();
 
 			errorTypestate = new ArrayList<GraphNode>();
-			errorExpr = new ArrayList<Expr>();
+			errorNode = new ArrayList<ASTNode>();
 		}
 
 		void addTypestate(Expr e) {
@@ -547,18 +547,19 @@ aspect dataStructures {
 			resetCurrent();
 		}
 
-		protected void addErrorTypestate(Expr e) {
+		private void addErrorTypestate(ASTNode e) {
 			errorTypestate.add(current);
-			errorExpr.add(e);
+			errorNode.add(e);
 			resetCurrent();
 		}
 
-		void checkError(Expr e) {
-			if(current.onlyEndNodes() == -1)		//has more than EndNodes/LoopNodes
+		void checkError(ASTNode e) {
+			//has more than EndNodes/LoopNodes
+			if(current.onlyEndNodes() == -1)
 				addErrorTypestate(e);
 		}
 
-		void resetCurrent() {
+		protected void resetCurrent() {
 			current = new EndNode();
 		}
 
@@ -570,26 +571,21 @@ aspect dataStructures {
 
 		void getMethodGraph(MethodDecl m) {}
 
-		void reportErrors() {
+		void reportErrors(String errorMessage) {
 			for(int i = errorTypestate.size() - 1; i >= 0; i--)
-				errorExpr.get(i).addSemanticError(
-					"Object assigned here is not used used in a linear way."
-				);
+				errorNode.get(i).addSemanticError(errorMessage);
 		}
 
-		void checkTypestate(GraphNode t) {
+		void checkTypestate(GraphNode t, String errorMessage) {
 			for(int i = startTypestate.size() - 1; i >= 0; i--) {
 				GraphNode n = startTypestate.get(i);
 				n.normalise();
 //				n.printPaths();
 				if(!t.includes(n))
-					exprASTNode.get(i).addSemanticError(
-						"The typestate of the created object does not match its declared typestate."
-					);
+					exprASTNode.get(i).addSemanticError(errorMessage);
 			}
 
 		}
-
 	}
 
 	class TypestatePar extends TypestateVar {
@@ -610,9 +606,9 @@ aspect dataStructures {
 	}
 
 	class TypestateField extends TypestateVar {
-		/*private */Map<MethodDecl, GraphNode> methodStartNode;
-		/*private */Map<MethodDecl, GraphNode> methodEndGraph;
-		/*private */Map<MethodDecl, Expr> methodEndExpr;
+		private Map<MethodDecl, GraphNode> methodStartNode;
+		private Map<MethodDecl, GraphNode> methodEndGraph;
+		private Map<MethodDecl, Expr> methodEndExpr;
 		private GraphNode endGraph;
 		private Expr endExpr;
 
@@ -627,22 +623,22 @@ aspect dataStructures {
 		}
 
 		void addTypestate(Expr e) {
-			if(startTypestate.size() == 0 && endGraph == null) {
+			if(endGraph == null) {
 				endGraph = current;
 				endExpr = e;
+				resetCurrent();
 			}
 			else {
-				startTypestate.add(current);
-				exprASTNode.add(e);
+				super.addTypestate(e);
 			}
-			resetCurrent();
 		}
 
-		void checkError(Expr e) {
-			if(current.onlyEndNodes() == -1)		//if has more than EndNodes/LoopNodes
-				addErrorTypestate(e);
-			else if(current.onlyEndNodes() == 0)		//if has only LoopNodes
-				addTypestate(e);			//TODO add them somewhere for future check for only end/loopnode
+		void checkError(ASTNode e) {
+			super.checkError(e);
+			//if has only LoopNodes
+			if(current.onlyEndNodes() == 0)
+				addTypestate((Expr) e);		//TODO add them somewhere for future check for only end/loopnode
+								//TODO is it a fact that at this point we expect e to be an Expr?
 		}
 
 		void addConnectionTypestate(MethodDecl m) {
@@ -664,9 +660,8 @@ aspect dataStructures {
 			GraphNode n2 = methodEndGraph.get(md);
 
 			if(!n1.equals(n2)) {
-				startTypestate.add(n2.cloneGraph(current));
-				exprASTNode.add(methodEndExpr.get(md));
-				resetCurrent();
+				current = n2.cloneGraph(current);
+				super.addTypestate(methodEndExpr.get(md));
 			}
 			current = n1.cloneGraph(current);
 		}
