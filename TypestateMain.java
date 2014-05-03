@@ -35,9 +35,9 @@ class TypestateMain {
 			if(verbose == true)
 				System.out.println("Typestate check.");
 			t = tc.compile(files);
-			if(t == false && printErrors) {
+			if((tc.hasErrors() || tc.hasWarnings()) && printErrors) {
 				if(verbose == true)
-					System.out.println("Print errors.");
+					System.out.println("Print errors and Warnings.");
 				tc.printErrors();
 			}
 		}
