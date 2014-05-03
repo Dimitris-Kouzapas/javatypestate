@@ -9,48 +9,72 @@ class TypestateMain {
 	JavaChecker jc;
 	TypestateChecker tc;
 
+	private boolean printErrors = true;
+	private boolean semantic = false;
+	private boolean verbose = false;
+
+	private final int DEFAULT = 0x111;
+	private final int TYPESTATE = 0x01;
+	private final int JAVA14 = 0x10;
+
+	private int mode = DEFAULT;
+
 	TypestateMain() {
 		jc = new JavaChecker();
 		tc = new TypestateChecker();
 	}
 
 	public boolean compile() {
-		return jc.compile(files) && tc.compile(files);
+		boolean j = true, t = true;
+		if((mode & JAVA14) != 0) {
+			if(verbose == true)
+				System.out.println("Checking java 1.4.");
+			j = jc.compile(files);
+		}
+		if((mode & TYPESTATE) != 0) {
+			if(verbose == true)
+				System.out.println("Typestate check.");
+			t = tc.compile(files);
+			if(t == false && printErrors) {
+				if(verbose == true)
+					System.out.println("Print errors.");
+				tc.printErrors();
+			}
+		}
+
+		return j & t;
 	}
 
 	public void createJavaFiles() {
-		tc.dumpJavaFiles();
+		tc.createJavaFiles();
 		;//TODO compile with javac ?? 
 	}
 
 	public static void main(String [] args) {
 		TypestateMain m = new TypestateMain();
 		m.processArgs(args);
-		if(m.compile() && !semantic)
+		if(m.compile() && !m.semantic)
 			m.createJavaFiles();
-	//	else
-	//		m.tc.printErrors();	//TODO dont like here
 	}
 
-	private static boolean semantic = false;
-	private static void setSemantic() {
-		semantic = true;
+	private void setMode(int m) {
+		if(mode == DEFAULT)
+			mode = m;
+		else
+			mode |= m;
 	}
-
-	//private static boolean typestate = true;
-	//private static void setTypestate() {
-	//}
 
 	private String[] files;
-
 	void processArgs(String[] args) {
 		ArrayList<String> files = new ArrayList<String>();
 
 		for(int i = 0; i < args.length; i++) {
-			if(args[i].equals("-Verbose") || args[i].equals("-verbose") || args[i].equals("-v"))
+			if(args[i].equals("-Verbose") || args[i].equals("-verbose") || args[i].equals("-v")) {
+				verbose = true;
 				tc.setVerbose();
+			}
 			else if(args[i].equals("-Semantic") || args[i].equals("-semantic") || args[i].equals("-s"))
-				setSemantic();
+				semantic = true;
 			else if(args[i].equals("-Output") || args[i].equals("output") || args[i].equals("-o")) {
 				if(i + 1 >= args.length)
 					; //TODO error
@@ -63,13 +87,14 @@ class TypestateMain {
 					}
 				}
 			}
-	//		else if(args[i].equals("-Typestate") || args[i].equals("-typestate") || args[i].equals("-t"))
-	//			setTypestate();
-	//		else if(args[i].equals("-Java14") || args[i].equals("-java14") || args[i].equals("-j"))
-	//			setJava14();
+			else if(args[i].equals("-Typestate") || args[i].equals("-typestate") || args[i].equals("-t"))
+				setMode(TYPESTATE);
+			else if(args[i].equals("-Java14") || args[i].equals("-java14") || args[i].equals("-j"))
+				setMode(JAVA14);
 			else
 				files.add(args[i]);
 		}
+
 		this.files = new String[files.size()];
 		for(int i = 0; i < files.size(); i++)
 			this.files[i] = files.get(i);

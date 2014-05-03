@@ -79,12 +79,12 @@ aspect Compilation {
 			numWarnings += getCompilationUnit(i).numWarnings;
 		}
 
-		printErrors();
+		//printErrors();
 
 		return !hasErrors();
 	}
 
-	public void Program.dumpJavaFiles() {
+	public void Program.createJavaFiles() {
 		for(int i = 0; i < getNumCompilationUnit(); i++) {
 			CompilationUnit cu = getCompilationUnit(i);
 			if(!cu.getTypeDecl().isTypestateDeclType())
@@ -120,7 +120,7 @@ aspect Compilation {
 //				td1.createTypestate().debugCompare(td2.createTypestate());
 			}
 			else {
-	//			printErrors();
+				printErrors();
 			}
 		}
 

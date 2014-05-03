@@ -118,7 +118,7 @@ aspect getGraph {
 		if(r.getId() != null && r.getParameters() != null)
 			md = lookupMethod(r.getId(), r.getParameters());
 
-		//if md == null then r is the Init/End Node
+		//if md == null then r is the Switch/Init/End Node
 		if(md != null)
 			vd.typestate.getMethodGraph(md);
 

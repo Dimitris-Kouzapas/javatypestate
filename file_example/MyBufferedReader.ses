@@ -5,7 +5,7 @@ class MyBufferedReader {
 	private BufferedReader reader;
 	private String file;
 
-	MyFileObject(String file) {
+	MyBufferedReader(String file) {
 		this.file = file;
 	}
 

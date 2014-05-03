@@ -105,7 +105,7 @@ aspect Errors {
 		return numWarnings != 0;
 	}
 
-	protected void Program.printErrors() {
+	public void Program.printErrors() {
 		for(TypestateError te: errors)
 			te.print();
 	}

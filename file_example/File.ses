@@ -2,7 +2,7 @@ package file_example;
 import java.io.*;
 
 class File typestate FileProtocol {
-	private MyBuffered reader;
+	private MyBufferedReader reader;
 	private String file;
 	private char[] readBuffer;
 	private int i;
@@ -40,7 +40,7 @@ class File typestate FileProtocol {
 		processFile(a);
 	}
 
-	public void processFile(File myFile) {
+	public static void processFile(File myFile) {
 		switch(myFile.open().getEnum()) {
 			case Status.OK:
 				loop:
