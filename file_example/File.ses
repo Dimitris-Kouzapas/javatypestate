@@ -35,9 +35,9 @@ class File typestate FileProtocol {
 	}
 
 	public static void main(String[] args) {
-	//	File myFile = new File("file.txt");
-	//	File a = myFile;
-	//	processFile(a);
+		File myFile = new File("file.txt");
+		File a = myFile;
+		processFile(a);
 	}
 
 	public static void processFile(File myFile) {

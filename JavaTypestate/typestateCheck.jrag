@@ -7,20 +7,22 @@ aspect typestateCheck {
 	}
 
 	public void VariableDecl.typestateCheck() {
-		if(getTypeAccess().lookupType().isTypestateClassDeclType()) {		//TODO what if lookupType not found?
+		if(getTypeAccess().lookupType() != null && getTypeAccess().lookupType().isTypestateClassDeclType()) {
 			typestate.reportErrors("Object handler is used uninitialised.");
-			//TODO check if getTypestateDecl exists
-			GraphNode t = getTypeAccess().lookupType().getTypestateDecl().createTypestate().normalise();
-			typestate.checkTypestate(t, "The typestate of the created object does not match its declared typestate.");
+			if(getTypeAccess().lookupType().getTypestateDecl() != null) {
+				GraphNode t = getTypeAccess().lookupType().getTypestateDecl().createTypestate().normalise();
+				typestate.checkTypestate(t, "The typestate of the created object does not match its declared typestate.");
+			}
 		}
 	}
 
 	public void ParameterDeclaration.typestateCheck() {
-		if(getTypeAccess().lookupType().isTypestateClassDeclType()) {		//TODO what if lookupType not found?
+		if(getTypeAccess().lookupType() != null && getTypeAccess().lookupType().isTypestateClassDeclType()) {
 			typestate.reportErrors("Object handler is used uninitialised");
-			//TODO check if getTypestateDecl exists
-			GraphNode t = getTypeAccess().lookupType().getTypestateDecl().createTypestate().normalise();
-			typestate.checkTypestate(t, "The typestate of the created object does not match its declared typestate.");
+			if(getTypeAccess().lookupType().getTypestateDecl() != null) {
+				GraphNode t = getTypeAccess().lookupType().getTypestateDecl().createTypestate().normalise();
+				typestate.checkTypestate(t, "The typestate of the created object does not match its declared typestate.");
+			}
 		}
 	}
 

@@ -223,7 +223,12 @@ aspect dataStructures {
 
 			ArrayList<GraphNode> tmpNext = new ArrayList<GraphNode>();
 			for(int i = 0; i < next.size(); i++)
-				tmpNext.addAll(computeNextArrayList(i, visitedSet));	//TODO remove duplicate LoopNodes from here
+				//for(GraphNode n : computeNextArrayList(i, visitedSet))
+				//	if(!(n instanceof LoopNode) || !tmpNext.contains(n))
+				//		tmpNext.add(n);
+						tmpNext.addAll(computeNextArrayList(i, visitedSet));	//TODO remove duplicate LoopNodes from here
+				//	else
+				//		System.out.println(n);
 			next = tmpNext;
 
 			return nextArrayList();
@@ -298,6 +303,10 @@ aspect dataStructures {
 		}
 	}
 
+	/********************************************************************************/
+	/*                       Graph Nodes                                            */ 
+	/********************************************************************************/
+
 	/*
 	 * MethodNode inherits GraphNode
 	 * Instantiates a class that represents a method call.
@@ -366,7 +375,7 @@ aspect dataStructures {
 		ArrayList<GraphNode> computeNextArrayList(int i, Set<GraphNode> visitedSet) {
 			if(i == 0)
 				 tmpExpr = new ArrayList<String>();
-			ArrayList<GraphNode> alist = next.get(i).normalise(visitedSet);
+			ArrayList<GraphNode> alist = super.computeNextArrayList(i, visitedSet);//next.get(i).normalise(visitedSet);
 			for(int j = 0; j < alist.size(); j++)
 				tmpExpr.add(expr.get(i));
 
@@ -433,7 +442,7 @@ aspect dataStructures {
 		}
 
 		ArrayList<GraphNode> computeNextArrayList(int i, Set<GraphNode> visitedSet) {
-			return (!this.equals(next.get(i))) ? next.get(i).normalise(visitedSet) : new ArrayList<GraphNode>();
+			return (!this.equals(next.get(i))) ? super.computeNextArrayList(i, visitedSet)/*next.get(i).normalise(visitedSet)*/ : new ArrayList<GraphNode>();
 		}
 
 		protected GraphNode cloneNode() {
@@ -586,10 +595,12 @@ aspect dataStructures {
 		void checkTypestate(GraphNode t, String errorMessage) {
 			for(int i = startTypestate.size() - 1; i >= 0; i--) {
 				GraphNode n = startTypestate.get(i);
-				n.normalise();
+//				System.out.println("-----------------------");
 //				n.printPaths();
 //				System.out.println("***************");
 //				t.printPaths();
+//				System.out.println("------------------------");
+				n.normalise();
 				if(!t.includes(n))
 					exprASTNode.get(i).addSemanticError(errorMessage);
 			}
