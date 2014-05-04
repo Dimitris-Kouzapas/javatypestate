@@ -39,6 +39,7 @@ aspect createTypestate {
 
 	//TODO reinitialise State.stateNode??
 	syn lazy GraphNode TType.createTypestate() = null;
-	eq TTypestate.createTypestate() = new InitNode().addNext(getTypestate().createTypestate());
+	eq TTypestate.createTypestate() = new LoopNode().addNext(getTypestate().createTypestate());	//TODO this is a hack??
+					//new InitNode().addNext(getTypestate().createTypestate()); 
 
 }

@@ -181,7 +181,7 @@ aspect getGraph {
 
 	protected TypestateVar VariableDecl.typestate = null;
 	protected TypestateVar ParameterDeclaration.typestate = null;
-	protected TypestateVar MethodAccess.typestate = new TypestateVar();			//TODO if is  typestate
+	protected TypestateVar MethodAccess.typestate = new TypestateAccess();			//TODO if is  typestate
 
 	syn boolean Stmt.getGraph(Set<TypestateVar> env);
 

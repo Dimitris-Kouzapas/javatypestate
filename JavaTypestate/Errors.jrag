@@ -97,11 +97,11 @@ aspect Errors {
 	private Collection<TypestateError> Program.errors = new ArrayList<TypestateError>();
 	private int Program.numWarnings = 0;
 
-	protected boolean Program.hasErrors() {
+	public boolean Program.hasErrors() {
 		return (errors.size() - numWarnings) > 0;
 	}
 
-	protected boolean Program.hasWarnings() {
+	public boolean Program.hasWarnings() {
 		return numWarnings != 0;
 	}
 

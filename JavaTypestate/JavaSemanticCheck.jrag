@@ -13,7 +13,8 @@ aspect JavaSemanticCheck {
 				" defined for class " +
 				getID() + "."
 			);
-		else
+		//TODO maybe put the next check as a warning
+/*		else
 			for(TypestateMethod m : getTypestateDecl().getMethods()) {
 				if(m.lookupMethod(this) == null)
 					addSemanticError(
@@ -26,7 +27,7 @@ aspect JavaSemanticCheck {
 						"."
 					);
 			}
-	}
+*/	}
 
 	public void VariableDecl.semanticCheck() {
 		//TODO A typestate field should not be self-reference ?????

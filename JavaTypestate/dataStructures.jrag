@@ -244,7 +244,11 @@ aspect dataStructures {
 		/***********************************************************/
 
 		//polymorphic
-		abstract public int onlyEndNodes();
+		abstract protected int onlyEndNodes(Set<LoopNode> visited);
+
+		public int onlyEndNodes() {
+			return onlyEndNodes(new HashSet<LoopNode>());
+		}
 
 		/***********************************************************/
 		/*               Clone Graphs			           */
@@ -313,7 +317,7 @@ aspect dataStructures {
 			return false;
 		}
 
-		public int onlyEndNodes() {
+		protected int onlyEndNodes(Set<LoopNode> visited) {
 			return -1;
 		}
 
@@ -401,7 +405,7 @@ aspect dataStructures {
 				
 		}
 
-		public int onlyEndNodes() {
+		protected int onlyEndNodes(Set<LoopNode> visited) {
 			return -1;
 		}
 	}
@@ -443,11 +447,14 @@ aspect dataStructures {
 			return super.cloneGraph(end, visited);
 		}
 
-		public int onlyEndNodes() {
+		protected int onlyEndNodes(Set<LoopNode> visited) {
+			if(visited.contains(this))
+				return 0;
+			visited.add(this);
 			int sum = 0;
 			int result;
 			for(GraphNode n: next) {
-				result = n.onlyEndNodes();
+				result = n.onlyEndNodes(visited);
 				if(result == -1)
 					return -1;
 				sum += result;
@@ -483,7 +490,7 @@ aspect dataStructures {
 			return new EndNode();
 		}
 
-		public int onlyEndNodes() {
+		protected int onlyEndNodes(Set<LoopNode> visited) {
 			return 1;
 		}
 	}
@@ -511,7 +518,7 @@ aspect dataStructures {
 			return new InitNode();
 		}
 
-		public int onlyEndNodes() {
+		protected int onlyEndNodes(Set<LoopNode> visited) {
 			return -1;
 		}
 	}
@@ -581,6 +588,8 @@ aspect dataStructures {
 				GraphNode n = startTypestate.get(i);
 				n.normalise();
 //				n.printPaths();
+//				System.out.println("***************");
+//				t.printPaths();
 				if(!t.includes(n))
 					exprASTNode.get(i).addSemanticError(errorMessage);
 			}
@@ -603,6 +612,17 @@ aspect dataStructures {
 		GraphNode getConnectionTypestate() {
 			return parameterNode;
 		}
+	}
+
+	class TypestateAccess extends TypestateVar {
+		TypestateAccess() {
+			super();
+		}
+
+		void addTypestate(Expr e) {
+			current = new LoopNode().addNext(current);
+			super.addTypestate(e);
+		}	
 	}
 
 	class TypestateField extends TypestateVar {
