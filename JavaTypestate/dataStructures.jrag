@@ -114,33 +114,21 @@ aspect dataStructures {
 				return relation.remove(new TupleEntry(firstNode, secondNode));
 			}
 		}
-
-		//Polymorphic on SwitchNode
-		protected boolean checkSwitchCase(GraphNode n, int j, int i) {
-			return true;
-		}
-
 		protected boolean includes(GraphNode n, TupleSet ts) {
 			if(ts.has(this, n) || (!hasNext() && !n.hasNext()))
 				return true;
 
 			ts.insert(this, n);
-			int i = 0;
 			for(GraphNode n1 : n.next) {
 				boolean b = false;
-				int j = 0;
-				for(GraphNode n2: next) {
-					if(checkSwitchCase(n, j, i))
-						if(b = n2.includes(n1, ts))
-							break;
-					j++;
-				}
+				for(GraphNode n2: next)
+					if(b = n2.includes(n1, ts))
+						break;
 
 				if(b == false) {
 					ts.remove(this, n);
 					return false;
 				}
-				i++;
 			}
 			return true;
 		}
@@ -199,7 +187,7 @@ aspect dataStructures {
 			return a;
 		}
 
-		// Polymorphic on SwitchNode, LoopNode
+		// Polymorphic on LoopNode
 		ArrayList<GraphNode> computeNextArrayList(int i, Set<GraphNode> visitedSet) {
 			return next.get(i).normalise(visitedSet);
 		}
@@ -213,10 +201,10 @@ aspect dataStructures {
 
 			ArrayList<GraphNode> tmpNext = new ArrayList<GraphNode>();
 			for(int i = 0; i < next.size(); i++)
-			//	for(GraphNode n : computeNextArrayList(i, visitedSet))
-			//		if(this instanceof SwitchNode || !tmpNext.contains(n))
-			//			tmpNext.add(n);
-						tmpNext.addAll(computeNextArrayList(i, visitedSet));	//TODO remove duplicate LoopNodes from here
+				for(GraphNode n : computeNextArrayList(i, visitedSet))
+					if(!tmpNext.contains(n))
+						tmpNext.add(n);
+			//			tmpNext.addAll(computeNextArrayList(i, visitedSet));	//TODO remove duplicate LoopNodes from here
 			//		else
 			//			System.out.println(n);
 			next = tmpNext;
@@ -238,8 +226,10 @@ aspect dataStructures {
 		/*               Count EndNodes/Ignore LoopNodes           */
 		/***********************************************************/
 
-		//polymorphic
-		abstract protected int onlyEndNodes(Set<LoopNode> visited);
+		//polymorphic on LoopNode, EndNode
+		protected int onlyEndNodes(Set<LoopNode> visited) {
+			return -1;
+		}
 
 		public int onlyEndNodes() {
 			return onlyEndNodes(new HashSet<LoopNode>());
@@ -255,6 +245,7 @@ aspect dataStructures {
 			return cloneGraph(end, new HashMap<GraphNode, GraphNode>());
 		}
 
+		//Polymorphic on LoopNode
 		GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
 			if(visited.get(this) != null)
 				return visited.get(this);
@@ -272,18 +263,15 @@ aspect dataStructures {
 		/*                For Debug                                */
 		/***********************************************************/
 
-		// Polymorphic on SwitchNode -> Adds switch case
-		protected void setSwitchCase(int i) {}
-
 		private void printPaths(String s, Set<GraphNode> visitedSet) {
 			if((next.size() == 0) || isNodeVisited(visitedSet)) {
 				System.out.println(s + toString());
 				return;
 			}
-			for(int i = 0; i < next.size(); i++) {
-				setSwitchCase(i);
+
+			for(int i = 0; i < next.size(); i++)
 				next.get(i).printPaths(s + toString(), visitedSet);
-			}
+
 			removeVisited(visitedSet);
 		}
 
@@ -310,7 +298,6 @@ aspect dataStructures {
 			return super.toString() + ";";
 		}
 
-
 		protected boolean equalNode(GraphNode n) {
 			if(!(n instanceof MethodNode))
 				return false;
@@ -335,12 +322,28 @@ aspect dataStructures {
 			return equalNode(n) ? super.includes(n, ts) : false;
 		}
 
-		protected int onlyEndNodes(Set<LoopNode> visited) {
-			return -1;
+		protected GraphNode cloneNode() {
+			return new MethodNode(getId(), getParameters());
+		}
+	}
+
+	public class SwitchCase extends GraphNode {
+		public SwitchCase(String id) {
+			super(id, null);
+		}
+
+		public String toString() {
+			return getId() + ":";
+		}
+
+		public boolean includes(GraphNode n, TupleSet ts) {
+			if((n instanceof SwitchCase) && getId().equals(n.getId()))
+				return super.includes(n, ts);
+			return false;
 		}
 
 		protected GraphNode cloneNode() {
-			return new MethodNode(getId(), getParameters());
+			return new SwitchCase(getId());
 		}
 	}
 
@@ -351,52 +354,12 @@ aspect dataStructures {
 	 * of the previous method call.
 	 */
 	public class SwitchNode extends GraphNode {
-		private String scase;
-		private ArrayList<String> expr;
-
 		public SwitchNode() {
 			super(null, null);
-			scase = null;
-			expr = new ArrayList<String>();
-		}
-
-		public GraphNode addNext(GraphNode n) {
-			return addNext(n, null);
-		}
-
-		public GraphNode addNext(GraphNode n, String e) {
-			super.addNext(n);
-			if(n != null)
-				expr.add(e);
-			return this;
 		}
 
 		public String toString() {
-			return scase != null ? scase + ":" : ";";
-		}
-
-		protected void setSwitchCase(int i){
-			scase = expr.get(i);
-		}
-
-		// Used in computeNextArray
-		private ArrayList<String> tmpExpr; 
-		ArrayList<GraphNode> computeNextArrayList(int i, Set<GraphNode> visitedSet) {
-			if(i == 0)
-				 tmpExpr = new ArrayList<String>();
-			ArrayList<GraphNode> alist = super.computeNextArrayList(i, visitedSet);
-			for(int j = 0; j < alist.size(); j++)
-				//TODO check for duplicates
-				tmpExpr.add(expr.get(i));
-
-			if(i == next.size() - 1)
-				expr = tmpExpr;
-			return alist;
-		}
-
-		protected boolean checkSwitchCase(GraphNode n, int j, int i) {
-			SwitchNode s = (SwitchNode) n;
-			return expr.get(j).equals(s.expr.get(i));
+			return "";
 		}
 
 		protected boolean includes(GraphNode n, TupleSet ts) {
@@ -408,24 +371,8 @@ aspect dataStructures {
 		protected GraphNode cloneNode() {
 			return new SwitchNode();
 		}
-
-		public GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
-			// Do not need the visited check because a SwitchNode is visited recursively
-			// (a SwitchNode is always guarded by a MethodNode)
-			SwitchNode r = new SwitchNode();
-
-			for(int i = 0; i < next.size(); i++)
-				r.addNext(next.get(i).cloneGraph(end, visited), expr.get(i));
-
-			return r;
-				
-		}
-
-		protected int onlyEndNodes(Set<LoopNode> visited) {
-			return -1;
-		}
 	}
-
+	
 	/*
 	 * LoopNode inherits GraphNode.
 	 * Auxiliary Node for creating a typestate graph
@@ -532,10 +479,6 @@ aspect dataStructures {
 
 		protected GraphNode cloneNode() {
 			return new InitNode();
-		}
-
-		protected int onlyEndNodes(Set<LoopNode> visited) {
-			return -1;
 		}
 	}
 

@@ -393,8 +393,11 @@ aspect getGraph {
 						if(t == null || !t.equals(v))
 							v.start.get(this).addNext(v.current);
 						else {
-							for(int j = 0; j < count.size(); j++)
-								((SwitchNode)v.start.get(this)).addNext(v.current, count.get(j));
+							for(int j = 0; j < count.size(); j++) {
+								SwitchCase sc = new SwitchCase(count.get(j));
+								sc.addNext(v.current);
+								v.start.get(this).addNext(sc);
+							}
 							count.clear();
 						}
 					}
@@ -408,8 +411,11 @@ aspect getGraph {
 				if(t == null || !t.equals(v))
 					v.start.get(this).addNext(v.current);
 				else {
-					for(int j = 0; j < count.size(); j++)
-						((SwitchNode)v.start.get(this)).addNext(v.current, count.get(j));
+					for(int j = 0; j < count.size(); j++) {
+						SwitchCase sc = new SwitchCase(count.get(j));
+						sc.addNext(v.current);
+						v.start.get(this).addNext(sc);
+					}
 					count.clear();
 				}
 			}
