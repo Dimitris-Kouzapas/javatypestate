@@ -23,14 +23,14 @@ aspect dataStructures {
 		private TypeDecl[] parameters;
 		protected ArrayList<GraphNode> next;
 
-		static int cc = 0;
-		int ccc;
+//		static int cc = 0;
+//		int ccc;
 		protected GraphNode(String id, TypeDecl[] parameters) {
 			this.id = id;
 			this.parameters = parameters;
 			signature = null;
 			next = new ArrayList<GraphNode>();
-			ccc = cc++;
+//			ccc = cc++;
 		}
 
 		private String signature;
@@ -141,7 +141,7 @@ aspect dataStructures {
 			return includes(n, new TupleSet());
 		}
 
-		// Polymorphic on SwitchNode
+		// Polymorphic on SwitchNode	//TODO is it polymorphic on Switch Node?
 		protected boolean equalNode(GraphNode n) {
 			if(!n.getId().equals(id) || n.getParameters().length != parameters.length)
 				return false;
@@ -223,12 +223,12 @@ aspect dataStructures {
 
 			ArrayList<GraphNode> tmpNext = new ArrayList<GraphNode>();
 			for(int i = 0; i < next.size(); i++)
-				//for(GraphNode n : computeNextArrayList(i, visitedSet))
-				//	if(!(n instanceof LoopNode) || !tmpNext.contains(n))
-				//		tmpNext.add(n);
+			//	for(GraphNode n : computeNextArrayList(i, visitedSet))
+			//		if(this instanceof SwitchNode || !tmpNext.contains(n))
+			//			tmpNext.add(n);
 						tmpNext.addAll(computeNextArrayList(i, visitedSet));	//TODO remove duplicate LoopNodes from here
-				//	else
-				//		System.out.println(n);
+			//		else
+			//			System.out.println(n);
 			next = tmpNext;
 
 			return nextArrayList();
@@ -375,8 +375,9 @@ aspect dataStructures {
 		ArrayList<GraphNode> computeNextArrayList(int i, Set<GraphNode> visitedSet) {
 			if(i == 0)
 				 tmpExpr = new ArrayList<String>();
-			ArrayList<GraphNode> alist = super.computeNextArrayList(i, visitedSet);//next.get(i).normalise(visitedSet);
+			ArrayList<GraphNode> alist = super.computeNextArrayList(i, visitedSet);
 			for(int j = 0; j < alist.size(); j++)
+				//TODO check for duplicates
 				tmpExpr.add(expr.get(i));
 
 			if(i == next.size() - 1)
@@ -384,18 +385,28 @@ aspect dataStructures {
 			return alist;
 		}
 
-		protected boolean equalNode(GraphNode n) {
-			SwitchNode sn = (SwitchNode) n;
-			for(String s : sn.expr)
-				if(!(expr.contains(s)))
-					return false;
-			return true;
-		}
-
+		//TODO I dont like this includes
 		protected boolean includes(GraphNode n, TupleSet ts) {
-			if(n instanceof SwitchNode)
-				return equalNode(n) ? super.includes(n, ts) : false;
-			return false;
+			if(!(n instanceof SwitchNode))
+				return false;
+			if(ts.has(this, n) || (next.size() == 0 && n.next.size() == 0))
+				return true;
+
+			ts.insert(this, n);
+			SwitchNode s = (SwitchNode) n;
+			for(int i = 0; i < s.next.size(); i++) {
+				boolean b = false;
+				for(int j = 0; j < next.size(); j++)
+					if(expr.get(j).equals(s.expr.get(i)))
+						if(b = next.get(j).includes(s.next.get(i), ts))
+							break;
+
+				if(b == false) {
+					ts.remove(this, n);
+					return false;
+				}
+			}
+			return true;
 		}
 
 		protected GraphNode cloneNode() {
@@ -442,7 +453,7 @@ aspect dataStructures {
 		}
 
 		ArrayList<GraphNode> computeNextArrayList(int i, Set<GraphNode> visitedSet) {
-			return (!this.equals(next.get(i))) ? super.computeNextArrayList(i, visitedSet)/*next.get(i).normalise(visitedSet)*/ : new ArrayList<GraphNode>();
+			return (!this.equals(next.get(i))) ? super.computeNextArrayList(i, visitedSet) : new ArrayList<GraphNode>();
 		}
 
 		protected GraphNode cloneNode() {
@@ -595,12 +606,12 @@ aspect dataStructures {
 		void checkTypestate(GraphNode t, String errorMessage) {
 			for(int i = startTypestate.size() - 1; i >= 0; i--) {
 				GraphNode n = startTypestate.get(i);
+				n.normalise();
 //				System.out.println("-----------------------");
 //				n.printPaths();
 //				System.out.println("***************");
 //				t.printPaths();
 //				System.out.println("------------------------");
-				n.normalise();
 				if(!t.includes(n))
 					exprASTNode.get(i).addSemanticError(errorMessage);
 			}

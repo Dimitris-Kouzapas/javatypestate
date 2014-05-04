@@ -28,13 +28,14 @@ class FileFactory typestate FactoryProtocol {
 							break loop;
 					}
 				}
+				myFile.close();
 				break;
 			case Status.ERROR:
 				System.out.println("file not found!");
 				break;
 		}
 
-		myFile.close();
+		//myFile.close();
 
 	}
 }
