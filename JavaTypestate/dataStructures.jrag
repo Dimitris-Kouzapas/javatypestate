@@ -23,14 +23,11 @@ aspect dataStructures {
 		private TypeDecl[] parameters;
 		protected ArrayList<GraphNode> next;
 
-//		static int cc = 0;
-//		int ccc;
 		protected GraphNode(String id, TypeDecl[] parameters) {
 			this.id = id;
 			this.parameters = parameters;
 			signature = null;
 			next = new ArrayList<GraphNode>();
-//			ccc = cc++;
 		}
 
 		private String signature;
@@ -118,45 +115,38 @@ aspect dataStructures {
 			}
 		}
 
+		//Polymorphic on SwitchNode
+		protected boolean checkSwitchCase(GraphNode n, int j, int i) {
+			return true;
+		}
+
 		protected boolean includes(GraphNode n, TupleSet ts) {
 			if(ts.has(this, n) || (!hasNext() && !n.hasNext()))
 				return true;
 
 			ts.insert(this, n);
+			int i = 0;
 			for(GraphNode n1 : n.next) {
 				boolean b = false;
-				for(GraphNode n2: next)
-					if(b = n2.includes(n1, ts))
-						break;
+				int j = 0;
+				for(GraphNode n2: next) {
+					if(checkSwitchCase(n, j, i))
+						if(b = n2.includes(n1, ts))
+							break;
+					j++;
+				}
 
 				if(b == false) {
 					ts.remove(this, n);
 					return false;
 				}
+				i++;
 			}
 			return true;
 		}
 
 		protected boolean includes(GraphNode n) {
 			return includes(n, new TupleSet());
-		}
-
-		// Polymorphic on SwitchNode	//TODO is it polymorphic on Switch Node?
-		protected boolean equalNode(GraphNode n) {
-			if(!n.getId().equals(id) || n.getParameters().length != parameters.length)
-				return false;
-
-			for(int i = 0; i < n.getParameters().length; i++) {
-				TypeDecl t = n.getParameters()[i];//.getTypeAccess().lookupType();
-				//null type should not be matched with primitive type
-				//noname type should be matched with any type
-				//t can never be instanceof NullType
-				//overriden equals(Object o) method
-				if(!parameters[i].equals(t) && !(t instanceof NoNameType))
-					return false;
-			}
-
-			return true;
 		}
 
 //		protected boolean postfix(GraphNode n) {
@@ -320,10 +310,29 @@ aspect dataStructures {
 			return super.toString() + ";";
 		}
 
+
+		protected boolean equalNode(GraphNode n) {
+			if(!(n instanceof MethodNode))
+				return false;
+
+			if(!n.getId().equals(getId()) || n.getParameters().length != getParameters().length)
+				return false;
+
+			for(int i = 0; i < n.getParameters().length; i++) {
+				TypeDecl t = n.getParameters()[i];//.getTypeAccess().lookupType();
+				//null type should not be matched with primitive type
+				//noname type should be matched with any type
+				//t can never be instanceof NullType
+				//overriden equals(Object o) method
+				if(!getParameters()[i].equals(t) && !(t instanceof NoNameType))
+					return false;
+			}
+
+			return true;
+		}
+
 		protected boolean includes(GraphNode n, TupleSet ts) {
-			if(n instanceof MethodNode)
-				return equalNode(n) ? super.includes(n, ts) : false;
-			return false;
+			return equalNode(n) ? super.includes(n, ts) : false;
 		}
 
 		protected int onlyEndNodes(Set<LoopNode> visited) {
@@ -385,28 +394,15 @@ aspect dataStructures {
 			return alist;
 		}
 
-		//TODO I dont like this includes
-		protected boolean includes(GraphNode n, TupleSet ts) {
-			if(!(n instanceof SwitchNode))
-				return false;
-			if(ts.has(this, n) || (next.size() == 0 && n.next.size() == 0))
-				return true;
-
-			ts.insert(this, n);
+		protected boolean checkSwitchCase(GraphNode n, int j, int i) {
 			SwitchNode s = (SwitchNode) n;
-			for(int i = 0; i < s.next.size(); i++) {
-				boolean b = false;
-				for(int j = 0; j < next.size(); j++)
-					if(expr.get(j).equals(s.expr.get(i)))
-						if(b = next.get(j).includes(s.next.get(i), ts))
-							break;
+			return expr.get(j).equals(s.expr.get(i));
+		}
 
-				if(b == false) {
-					ts.remove(this, n);
-					return false;
-				}
-			}
-			return true;
+		protected boolean includes(GraphNode n, TupleSet ts) {
+			if(n instanceof SwitchNode) 
+				return super.includes(n, ts);
+			return false;
 		}
 
 		protected GraphNode cloneNode() {
