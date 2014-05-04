@@ -15,3 +15,24 @@
 	concatanate the types correctly.
 
 -	First do the semantic check and then do the typestateCheck given that the semantic check is correct!!
+
+-	Add link type e.g. code like
+
+		EnumType e = o.foo();
+
+		switch(e.getEnum()) {
+			...
+		}
+
+		should be accepted
+
+-	Add cross-reference labels in typestate definitions e.g
+
+	typestate ThisTypestate {
+		session 
+				{ Init = Obj <ThatTypestate.State> foo() : Continue }
+	}
+
+	with State defined in ThatTypestate.
+
+	The semantic checks should change. 
