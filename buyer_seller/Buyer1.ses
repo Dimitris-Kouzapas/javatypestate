@@ -1,0 +1,24 @@
+package buyer_seller;
+
+class Buyer1 typestate Buyer1Protocol {
+
+	void sendTitleToSeller(String title) {
+		SellerSocket.send(t);
+	}
+
+	int receivePriceFromSeller() {
+
+	}
+
+	void sendQuoteToBuyer2(int quote) {
+
+	}
+
+	AgreementLabel receiveLabelFromBuyer2() {
+
+	}
+
+	void transferMoneyToSeller(int money) {
+
+	}
+}

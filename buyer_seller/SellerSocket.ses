@@ -1,0 +1,5 @@
+package buyer_seller;
+
+class SellerSocket typestate SellerSocketProtocol {
+	
+}
