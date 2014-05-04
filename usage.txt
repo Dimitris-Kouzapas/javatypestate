@@ -1,0 +1,12 @@
+
+	usage: java TypestateMain [flags] files");
+
+	flags:
+	
+	-Typestate -typestate -t:	Perform only typechecking.
+	-Java14 -java14 -j:		Perform only java1.4 checking.
+	Note if you put both of the above flags you get both checks.;
+
+	-Semantic -semantic -s:		Perform only typecheck. No java files are created.
+	-Verbose -verbose -v:		Print the steps the typestate typechecker does.
+

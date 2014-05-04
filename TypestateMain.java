@@ -9,6 +9,8 @@ class TypestateMain {
 	JavaChecker jc;
 	TypestateChecker tc;
 
+	private String[] files;
+
 	private boolean printErrors = true;
 	private boolean semantic = false;
 	private boolean verbose = false;
@@ -24,7 +26,7 @@ class TypestateMain {
 		tc = new TypestateChecker();
 	}
 
-	public boolean compile() {
+	private boolean compile() {
 		boolean j = true, t = true;
 		if((mode & JAVA14) != 0) {
 			if(verbose == true)
@@ -45,16 +47,9 @@ class TypestateMain {
 		return j & t;
 	}
 
-	public void createJavaFiles() {
+	private void createJavaFiles() {
 		tc.createJavaFiles();
 		;//TODO compile with javac ?? 
-	}
-
-	public static void main(String [] args) {
-		TypestateMain m = new TypestateMain();
-		m.processArgs(args);
-		if(m.compile() && !m.semantic)
-			m.createJavaFiles();
 	}
 
 	private void setMode(int m) {
@@ -64,7 +59,6 @@ class TypestateMain {
 			mode |= m;
 	}
 
-	private String[] files;
 	void processArgs(String[] args) {
 		ArrayList<String> files = new ArrayList<String>();
 
@@ -98,5 +92,35 @@ class TypestateMain {
 		this.files = new String[files.size()];
 		for(int i = 0; i < files.size(); i++)
 			this.files[i] = files.get(i);
+	}
+
+	public static void main(String [] args) {
+		if(args.length == 0) {
+			usage();
+			return;
+		}
+		TypestateMain m = new TypestateMain();
+		m.processArgs(args);
+		if(m.compile() && !m.semantic)
+			m.createJavaFiles();
+	}
+
+
+	private static void usage() {
+		System.out.println();
+		System.out.println("\tusage: java TypestateMain [flags] files");
+		System.out.println();
+		System.out.println("flags:");
+		System.out.println();
+		System.out.print("-Typestate -typestate -t:");
+		System.out.println("\tPerform only typechecking.");
+		System.out.print("-Java14 -java14 -j:");
+		System.out.println("\t\tPerform only java1.4 checking.");
+		System.out.println("Note if you put both of the above flags you get both checks.");
+		System.out.println();
+		System.out.print("-Semantic -semantic -s:");
+		System.out.println("\t\tPerform only typecheck. No java files are created.");
+		System.out.print("-Verbose -verbose -v:");
+		System.out.println("\t\tPrint the steps the typestate typechecker does.");
 	}
 }
