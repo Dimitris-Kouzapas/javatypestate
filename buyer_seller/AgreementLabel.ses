@@ -1,0 +1,5 @@
+package buyer_seller;
+
+enum AgreementLabel {
+	AGREE, QUIT;
+}
