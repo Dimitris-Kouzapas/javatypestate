@@ -1,0 +1,6 @@
+beaver/
+Java14Frontend/
+JavaTypestate/AST/
+JavaTypestate/scanner/JavaScanner*
+JavaTypestate/parser/JavaParser*
+*.class

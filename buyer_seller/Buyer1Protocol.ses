@@ -3,7 +3,7 @@ package buyer_seller;
 typestate Buyer1Protocol {
 	session
 		InitSession = 	{
-							void sendTitleToSeller(String title): TitleSent
+							void sendTitleToSeller(String): TitleSent
 						}
 	where
 		TitleSent =		{
@@ -11,7 +11,7 @@ typestate Buyer1Protocol {
 						}
 
 		PriceReceived = {
-							void sendQuoteToBuyer2(int quote): QuoteSent
+							void sendQuoteToBuyer2(int): QuoteSent
 						}
 		
 		QuoteSent = 	{
@@ -19,6 +19,6 @@ typestate Buyer1Protocol {
 						}
 
 		TalktoSeller =	{
-							void transferMoneyToSeller(int money): end
+							void transferMoneyToSeller(int): end
 						}
 }

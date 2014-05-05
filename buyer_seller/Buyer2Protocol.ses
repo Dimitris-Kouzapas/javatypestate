@@ -1,1 +1,15 @@
+package buyer_seller;
 
+typestate Buyer2Protocol {
+	session
+		InitSession =	{
+							void receiveQuoteFromBuyer1(int): QuoteReceived
+						}
+	where
+		QuoteReceived = {
+							AgreementLabel sendToSellerBuyer1(): <AGREE:TalktoSeller, QUIT:end>
+						}
+		TalktoSeller = 	{
+							void transferMoneyToSeller(int): end
+						}
+}

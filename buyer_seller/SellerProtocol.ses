@@ -1,0 +1,20 @@
+package buyer_seller;
+
+typestate SellerProtocol {
+	session
+		InitSession =		{
+								void receiveTitleFromBuyer1(String): TitleReceived
+							}
+	where
+		TitleReceived =		{
+								int sendPriceToBuyer1(): PriceSent
+							}
+
+		PriceSent =			{
+								AgreementLabel receiveLabelFromBuyer2(): <AGREE: TalktoBothBuyers, QUIT: end>
+							}
+
+		TalktoBothBuyers =	{
+								void receiveMoneyFromBothByers(int): end
+							}	
+}
