@@ -127,7 +127,7 @@ aspect JavaSemanticCheck {
 //		System.out.println(getExpr() + " " + getExpr().getType());
 //		System.out.println("======================================");
 
-		if(getExpr() instanceof Access) {
+		if(getExpr().isAccess()) {
 			Access a = ((Access)getExpr()).getLastAccess();
 			if (a.getQualifiedType().isEnumDeclType()/* && a.toString().equals("getEnum()")*/) {
 				EnumDecl e = a.getQualifiedType().getEnumDecl();

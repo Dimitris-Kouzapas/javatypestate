@@ -83,6 +83,9 @@ aspect javaASTFunctionality {
 	inh ClassDecl MethodAccess.getClassDeclAncestor();
 
 	/*	Access								*/
+	syn lazy boolean Expr.isAccess() = false;
+	eq Access.isAccess() = true;
+
 	syn lazy boolean ASTNode.isAbstractDot() = false;
 	eq AbstractDot.isAbstractDot() = true;
 	syn lazy boolean Access.isAbstractDotParent() = getParent().isAbstractDot();

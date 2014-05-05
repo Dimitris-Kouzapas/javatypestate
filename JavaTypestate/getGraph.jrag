@@ -50,8 +50,8 @@ aspect getGraph {
 	eq AbstractDot.getTypestateVar() = getRight().getTypestateVar();
 
 	eq ThisAccess.getTypestateVar() {
-		if(isAbstractDotParent())				//Qualified this is not supposed to be used because we do not
-									//have internal classes
+		if(isAbstractDotParent())				//Qualified "this" is not supposed to be used as a right child of the Dot
+									//because we do not have internal classes
 			return null;
 		return null;						//TODO the case with code like Obj o = this; ??. Avoid this case ??
 	}
@@ -75,20 +75,43 @@ aspect getGraph {
 
 /*****************************************************************************************************/
 
+	syn lazy boolean MethodAccess.isThisAccess() {
+		if(getQualifiedAccess() == null)
+			return true;
+
+		//TODO find a way for no instanceof
+		if(getQualifiedAccess().getLeft() instanceof ThisAccess)
+			return true;
+
+		return false;
+	}
+
+/*****************************************************************************************************/
+
+	syn Set<VariableDecl> ClassDecl.getTypestateFields() {
+		Set<VariableDecl> s = new HashSet<VariableDecl>();
+		for(VariableDecl vd: getFieldDecls())
+			if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
+				s.add(vd);
+		return s;
+	} 
+
+
 	syn lazy boolean ClassDecl.getGraph() {
 		for(MethodDecl md: getMethodDecls())
 			md.getGraph();
 
 		if(isTypestateClassDeclType()) {
 			TypestateClassDecl cd = (TypestateClassDecl) this;
-			for(VariableDecl vd: getFieldDecls())
-				if(vd.getTypeAccess().lookupType().isTypestateClassDeclType()) {
+			if(cd.existsTypestateDecl()) {
+				GraphNode r = null;
+				r = cd.getTypestateDecl().createTypestate().normalise();
+				for(VariableDecl vd: getTypestateFields()) {
 					vd.typestate.current = new EndNode();
-					if(cd.existsTypestateDecl())
-						cd.getTypestateDecl().createTypestate().normalise();
-						cd.getFieldGraph(cd.getTypestateDecl().createTypestate(), vd, new HashMap<GraphNode, GraphNode>());
+					cd.getFieldGraph(r, vd, new HashMap<GraphNode, GraphNode>());
 					vd.typestate.checkError(vd);
 				}
+			}
 		}
 
 		return true;
@@ -131,7 +154,8 @@ aspect getGraph {
 
 /*****************************************************************************************************/
 
-	syn Set<VariableDecl> MethodDecl.getFieldDecls() = getClassDeclAncestor().getFieldDecls();
+	syn Set<VariableDecl> MethodDecl.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
+								//getClassDeclAncestor().getFieldDecls();
 
 	private boolean MethodDecl.isGraph = false;
 	syn lazy boolean MethodDecl.getGraph() {
@@ -141,12 +165,11 @@ aspect getGraph {
 
 		Set<TypestateVar> env = new HashSet<TypestateVar>();
 
-		for(VariableDecl vd : getFieldDecls())
-			if(vd.getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				if(vd.typestate == null)
-					vd.typestate = new TypestateField();
-				env.add(vd.typestate);
-			}
+		for(VariableDecl vd : getTypestateFields()) {
+			if(vd.typestate == null)
+				vd.typestate = new TypestateField();
+			env.add(vd.typestate);
+		}
 
 		for(int i = 0; i < getNumParameter(); i++)
 			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType())
@@ -357,7 +380,7 @@ aspect getGraph {
 
 		TypestateVar t = null;
 		//TODO consider a link type for enumDecl variables
-		if(getExpr() instanceof Access) {
+		if(getExpr().isAccess()) {
 			Access a = ((Access) getExpr()).getLastAccess();
 			if(a.getQualifiedType().isEnumDeclType())
 				t = a.getQualifiedAccess() != null ?
@@ -377,8 +400,8 @@ aspect getGraph {
 		for(int i = b.getNumStmt() - 1; i >= 0; i--) {
 			if(b.getStmt(i) instanceof ConstCase) {
 				c = true;
-				//TODO might not need the instanceof check and the else branch
-				if(((ConstCase)b.getStmt(i)).getValue() instanceof Access)
+				//TODO might not need the isAccess check and the else branch
+				if(((ConstCase)b.getStmt(i)).getValue().isAccess())
 					count.add(((Access)((ConstCase)b.getStmt(i)).getValue()).getLastAccess().toString());
 				else
 					count.add(((ConstCase)b.getStmt(i)).getValue().toString());
@@ -607,17 +630,27 @@ aspect getGraph {
 		return true;
 	}
 
+	//TODO another file???
+	syn Set<VariableDecl> MethodAccess.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
+
 	//TODO implement me
 	eq MethodAccess.getGraph(Set<TypestateVar> env) {
-		//TODO what happens if qualified type is this (the caller)????
-		if(getQualifiedType().isTypestateClassDeclType()) {
+		MethodDecl md = lookupMethod(getQualifiedType());		//TODO what if it is null??
+		if(isThisAccess()) {
+			for(VariableDecl vd : getTypestateFields())
+				vd.typestate.getMethodGraph(md);
+		//	System.out.println(this + " Yes");
+		}
+		//else
+		//	System.out.println(this + " No");
+
+		else if(getQualifiedType().isTypestateClassDeclType()) {
 			TypestateVar t = getQualifiedTypestateVar();
 			if (t != null)
 				t.current = new MethodNode(getID(), getParameterTypes()).addNext(t.current);
 		}
 
 		//TODO find target and check arguments
-		MethodDecl md = lookupMethod(getQualifiedType());		//TODO what if it is null??
 
 		for(int i = getNumArg() - 1; i >= 0; i--) {
 			TypestateVar t = getArg(i).getTypestateVar();

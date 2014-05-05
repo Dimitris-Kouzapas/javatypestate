@@ -5,6 +5,7 @@ class Aclass typestate Aprotocol{
 
 	void aMethod() {
 		myFile = new File("text.txt");
+		bMethod();
 	//	myFile = new File("text.txt");
 	}
 
@@ -21,13 +22,14 @@ class Aclass typestate Aprotocol{
 							break loop;
 					}
 				}
+				myFile.close();		
 				break;
 			case Status.ERROR:
 				System.out.println("file not found!");
 				break;
 		}
 
-		myFile.close();
+		//myFile.close();
 
 	}
 }
