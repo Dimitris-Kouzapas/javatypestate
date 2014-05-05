@@ -1,6 +1,5 @@
 aspect RewriteAccess {
-
-	// The rewrite operations iterates on an AbstractDot until its left node
+	// The rewrite operations iterate on an AbstractDot until its left node
 	// is not a package reference or the node itseld is not an AbstractDot anymore
 	rewrite AbstractDot {
 		when (isDotPackage() && getRight().isAbstractDot()) to Access {
@@ -82,5 +81,4 @@ aspect RewriteAccess {
 
 		return true;
 	}
-
 }

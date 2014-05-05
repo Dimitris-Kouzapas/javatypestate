@@ -547,7 +547,7 @@ aspect dataStructures {
 				GraphNode n = startTypestate.get(i);
 				n.normalise();
 //				System.out.println("-----------------------");
-				n.printPaths();
+//				n.printPaths();
 //				System.out.println("***************");
 //				t.printPaths();
 //				System.out.println("------------------------");
