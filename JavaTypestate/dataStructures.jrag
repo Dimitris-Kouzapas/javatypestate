@@ -633,7 +633,6 @@ aspect dataStructures {
 		}
 
 		void getMethodGraph(MethodDecl md) {
-			md.getGraph();				//TODO Call getGraph before you call this method
 			GraphNode n1 = methodStartGraph.get(md);
 			GraphNode n2 = methodEndGraph.get(md);
 

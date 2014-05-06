@@ -95,6 +95,7 @@ aspect javaASTFunctionality {
 	}
 
 	inh ClassDecl MethodAccess.getClassDeclAncestor();
+	inh MethodDecl MethodAccess.getMethodDeclAncestor();
 
 	/*	Access								*/
 	syn lazy boolean Expr.isAccess() = false;

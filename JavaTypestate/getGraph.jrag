@@ -155,12 +155,12 @@ aspect getGraph {
 /*****************************************************************************************************/
 
 	syn Set<VariableDecl> MethodDecl.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
-								//getClassDeclAncestor().getFieldDecls();
 
 	private boolean MethodDecl.isGraph = false;
+	protected boolean MethodDecl.isGraph() {return isGraph;}
 	syn lazy boolean MethodDecl.getGraph() {
-		if(isGraph == true)
-			return true;
+		//if(isGraph == true)
+		//	return true;
 		isGraph = true;
 
 		Set<TypestateVar> env = new HashSet<TypestateVar>();
@@ -192,7 +192,8 @@ aspect getGraph {
 	}
 
 	syn GraphNode MethodDecl.getParameterTypestate(int i) {
-		getGraph();
+		if(isGraph == false)
+			getGraph();
 		return getParameter(i).typestate.getConnectionTypestate();
 	}
 
@@ -455,10 +456,6 @@ aspect getGraph {
 
 	//TODO another file
 	inh MethodDecl Stmt.getMethodDeclAncestor();
-//	syn lazy ReturnStmt.getReturnTypestate() =
-//		getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType() ?
-//		
-//		null;
 
 	//TODO implement me
 	eq ReturnStmt.getGraph(Set<TypestateVar> env) {
@@ -542,7 +539,7 @@ aspect getGraph {
 		return true;
 	}
 
-	eq Literal.getGraph(Set<TypestateVar> env) = false;		//No typestate
+	eq Literal.getGraph(Set<TypestateVar> env) = false;
 
 	eq Binary.getGraph(Set<TypestateVar> env) {
 		getRightOperand().getGraph(env);
@@ -636,39 +633,35 @@ aspect getGraph {
 	//TODO implement me
 	eq MethodAccess.getGraph(Set<TypestateVar> env) {
 		MethodDecl md = lookupMethod(getQualifiedType());		//TODO what if it is null??
+		if(md == null)
+			return false;
 		//TODO case of recursion
 		if(isThisAccess()) {
+			if(md.isGraph() == false)
+				md.getGraph();
 			for(VariableDecl vd : getTypestateFields())
 				vd.typestate.getMethodGraph(md);
-		//	System.out.println(this + " Yes");
 		}
-		//else
-		//	System.out.println(this + " No");
-
 		else if(getQualifiedType().isTypestateClassDeclType()) {
 			TypestateVar t = getQualifiedTypestateVar();
 			if (t != null)
 				t.current = new MethodNode(getID(), getParameterTypes()).addNext(t.current);
 		}
 
-		//TODO find target and check arguments
-
 		for(int i = getNumArg() - 1; i >= 0; i--) {
 			TypestateVar t = getArg(i).getTypestateVar();
 			if(t != null) {
 				t.checkError(getArg(i));
-				t.current = md.getParameterTypestate(i);	//TODO this
+				t.current = md.getParameterTypestate(i);
 			}
 		}
 
-		//TODO implement me
 		if(getType().isTypestateClassDeclType())
 			typestate.addTypestate(this);
 
-		return false;
+		return true;
 	}
 
 	eq ClassInstanceExpr.getGraph(Set<TypestateVar> env) = true;
-	
 
 }

@@ -118,7 +118,14 @@ aspect JavaSemanticCheck {
 				}
 				addSemanticError("Method call " + signature() + " has conflicting targets: " + s + ".");
 			}
+		}
 
+		if(isThisAccess()) {
+			MethodDecl md = lookupMethod(getQualifiedType());	//TODO what if md == null
+			if(md != null && !md.getUsedTypestateFields().isEmpty() && !getMethodDeclAncestor().isTypestateMethod())
+				addSemanticError(
+					"Cannot call a method that uses typestateField inside a method that is not defined in the typestate."
+				);
 		}
 	}
 
