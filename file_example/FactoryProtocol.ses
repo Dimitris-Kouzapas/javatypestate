@@ -3,7 +3,7 @@ typestate FactoryProtocol {
 
 	session
 		Init =		{
-					File	<NewFile>	new_File() : {}
+					File	<NewFile>	new_File() : end
 				}
 
 	where

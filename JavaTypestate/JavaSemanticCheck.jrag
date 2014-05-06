@@ -5,7 +5,7 @@ aspect JavaSemanticCheck {
 
 	//TODO check the use of typestate fields in non typestate method
 
-	public void TypestateClassDecl.semanticCheck() {
+	protected void TypestateClassDecl.semanticCheck() {
 		if(!existsTypestateDecl())
 			addSemanticError(
 				"Cannot find typestate " +
@@ -29,7 +29,7 @@ aspect JavaSemanticCheck {
 			}
 */	}
 
-	public void VariableDecl.semanticCheck() {
+	protected void VariableDecl.semanticCheck() {
 		//TODO A typestate field should not be self-reference ?????
 		if(getTypeAccess().lookupType().isTypestateClassDeclType()) {
 			if(isField() && !getClassDeclAncestor().isTypestateClassDeclType())
@@ -68,7 +68,7 @@ aspect JavaSemanticCheck {
 		}
 	}	
 
-	public void MethodDecl.semanticCheck() {
+	protected void MethodDecl.semanticCheck() {
 		//TODO What if Method is a typestate method and static and private??
 		if(getTypeAccess().hasDims() && getTypeAccess().lookupType().isTypestateClassDeclType())
 			addSemanticError(
@@ -84,7 +84,7 @@ aspect JavaSemanticCheck {
 				);
 	}
 
-	public void ParameterDeclaration.semanticCheck() {
+	protected void ParameterDeclaration.semanticCheck() {
 		if(getTypeAccess().hasDims() && getTypeAccess().lookupType().isTypestateClassDeclType())
 			addSemanticError(
 				"Parameter " +
@@ -95,7 +95,7 @@ aspect JavaSemanticCheck {
 			);
 	}
 
-	public void MethodAccess.semanticCheck() {
+	protected void MethodAccess.semanticCheck() {
 		if(getQualifiedType().isTypestateClassDeclType()) {
 			//TODO if at least one method in the list is a typestatemethod
 			ArrayList<MethodDecl> a = lookupMethodTargets(getQualifiedType());
@@ -114,7 +114,7 @@ aspect JavaSemanticCheck {
 		}
 	}
 
-	public void ClassInstanceExpr.semanticCheck() {
+	protected void ClassInstanceExpr.semanticCheck() {
 		if(getAccess().lookupType().isEnumDeclType()) {
 			EnumDecl e = getAccess().lookupType().getEnumDecl();
 			if(!e.getEnums().contains(getArg(0).toString()))
@@ -122,7 +122,7 @@ aspect JavaSemanticCheck {
 		}
 	}
 
-	public void SwitchStmt.semanticCheck() {
+	protected void SwitchStmt.semanticCheck() {
 //		System.out.println("======================================");
 //		System.out.println(getExpr() + " " + getExpr().getType());
 //		System.out.println("======================================");

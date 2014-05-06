@@ -9,30 +9,23 @@ aspect Errors {
 		return (CompilationUnit) node;
 	}
 
-	public void ASTNode.typestateCheck() {}
-	public void ASTNode.semanticCheck() {}
+	protected void ASTNode.typestateCheck() {}
+	protected void ASTNode.semanticCheck() {}
 
-	public void ASTNode.collect() {
-		semanticCheck();
-		typestateCheck();
-		for(int i = 0; i < getNumChild(); i++)
-			getChild(i).collect();
-	}
-
-//	public void CompilationUnit.collect() {
-//		collectSemantic();
-		//TODO if program has no errors
-//		if(errors.size() == 0)
-//			collectTypestate();
+//	public void ASTNode.collect() {
+//		semanticCheck();
+//		typestateCheck();
+//		for(int i = 0; i < getNumChild(); i++)
+//			getChild(i).collect();
 //	}
 
-	public void ASTNode.collectSemantic() {
+	protected void ASTNode.collectSemantic() {
 		semanticCheck();
 		for(int i = 0; i < getNumChild(); i++)
 			getChild(i).collectSemantic();
 	}
 
-	public void ASTNode.collectTypestate() {
+	protected void ASTNode.collectTypestate() {
 		typestateCheck();
 		for(int i = 0; i < getNumChild(); i++)
 			getChild(i).collectTypestate();

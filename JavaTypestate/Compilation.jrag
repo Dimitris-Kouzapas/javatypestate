@@ -63,6 +63,22 @@ aspect Compilation {
 		return u;
 	}
 
+	public void Program.collect() {
+		for(int i = 0; i < getNumCompilationUnit(); i++) {
+			getCompilationUnit(i).collectSemantic();
+			errors.addAll(getCompilationUnit(i).errors);
+			numWarnings += getCompilationUnit(i).numWarnings;
+		}
+
+		if(!hasErrors())
+			for(int i = 0; i < getNumCompilationUnit(); i++) {
+				getCompilationUnit(i).collectTypestate();
+				errors.addAll(getCompilationUnit(i).errors);
+				numWarnings += getCompilationUnit(i).numWarnings;
+			}
+
+	}
+
 	public boolean Program.compile(String[] args) {
 		for(int i = 0; i < args.length; i++)
 			if(new File(args[i]).exists())
@@ -73,11 +89,13 @@ aspect Compilation {
 			else
 				System.err.println("File " + args[i] + " not found.");
 
-		for(int i = 0; i < getNumCompilationUnit(); i++) {
-			getCompilationUnit(i).collect();
-			errors.addAll(getCompilationUnit(i).errors);
-			numWarnings += getCompilationUnit(i).numWarnings;
-		}
+//		for(int i = 0; i < getNumCompilationUnit(); i++) {
+//			getCompilationUnit(i).collect();
+//			errors.addAll(getCompilationUnit(i).errors);
+//			numWarnings += getCompilationUnit(i).numWarnings;
+//		}
+
+		collect();
 
 		//printErrors();
 

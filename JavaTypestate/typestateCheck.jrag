@@ -1,12 +1,12 @@
 aspect typestateCheck {
-	public void ClassDecl.typestateCheck() {
+	protected void ClassDecl.typestateCheck() {
 		getGraph();
 	}
 
-	public void MethodDecl.typestateCheck() {
+	protected void MethodDecl.typestateCheck() {
 	}
 
-	public void VariableDecl.typestateCheck() {
+	protected void VariableDecl.typestateCheck() {
 		if(getTypeAccess().lookupType() != null && getTypeAccess().lookupType().isTypestateClassDeclType()) {
 			typestate.reportErrors("Object handler is used uninitialised.");
 			if(getTypeAccess().lookupType().getTypestateDecl() != null) {
@@ -16,7 +16,7 @@ aspect typestateCheck {
 		}
 	}
 
-	public void ParameterDeclaration.typestateCheck() {
+	protected void ParameterDeclaration.typestateCheck() {
 		if(getTypeAccess().lookupType() != null && getTypeAccess().lookupType().isTypestateClassDeclType()) {
 			typestate.reportErrors("Object handler is used uninitialised");
 			if(getTypeAccess().lookupType().getTypestateDecl() != null) {
@@ -26,7 +26,7 @@ aspect typestateCheck {
 		}
 	}
 
-	public void MethodAccess.typestateCheck() {
+	protected void MethodAccess.typestateCheck() {
 		MethodDecl md= lookupMethod(getQualifiedType());		//TODO get a lookupMethod()
 		if(md != null && md.isTypestateMethod()) {
 			GraphNode t = md.getTypestateMethod().getTType().createTypestate();

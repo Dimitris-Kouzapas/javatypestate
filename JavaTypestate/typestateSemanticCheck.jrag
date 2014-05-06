@@ -2,7 +2,7 @@ import java.util.*;
 
 aspect typestateSemanticCheck {
 
-	public void State.semanticCheck() {
+	protected void State.semanticCheck() {
 		if(isDuplicate())
 			addSemanticError("Duplicate State: " + getID() + ".");
 		if(!isReachable())
@@ -13,12 +13,12 @@ aspect typestateSemanticCheck {
 			addWarning("Circular-referenced state definition: " + path + ".");
 	}
 
-	public void TypestateLabel.semanticCheck() {
+	protected void TypestateLabel.semanticCheck() {
 		if(getTarget() == null)
 			addSemanticError("No Definition for state: " + getLabel());
 	}
 
-	public void TTypestate.semanticCheck() {
+	protected void TTypestate.semanticCheck() {
 		TypeDecl t = getAccess().lookupType();
 
 		if(!t.isTypestateClassDeclType())
@@ -30,7 +30,7 @@ aspect typestateSemanticCheck {
 			addSemanticError("Typestate type " + getAccess().toString() + " should not be an array type.");
 	}
 
-	public void TType.semanticCheck() {
+	protected void TType.semanticCheck() {
 		TypeDecl t = getAccess().lookupType();
 		if(t.isTypestateDeclType())
 			addSemanticError(getAccess().toString() + " is not a proper type.");
@@ -38,14 +38,14 @@ aspect typestateSemanticCheck {
 			addSemanticError("Class Type " + getAccess().toString() + " has a typestate type.");
 	}
 
-	public void TypestateSwitch.semanticCheck() {
+	protected void TypestateSwitch.semanticCheck() {
 		for(int i = 0; i < getNumTypestateSwitchCase(); i++)
 			for(int j = i + 1; j < getNumTypestateSwitchCase(); j++)
 				if(getTypestateSwitchCase(i).getLabel().equals(getTypestateSwitchCase(j).getLabel()))
 					addSemanticError("Duplicate case label: " + getTypestateSwitchCase(i).getLabel() + ".");
 	}
 
-	public void TypestateMethod.semanticCheck() {
+	protected void TypestateMethod.semanticCheck() {
 		TypeDecl t;
 		if(getTypestate() instanceof TypestateSwitch) {
 			t = getTType().getAccess().lookupType();
@@ -59,7 +59,7 @@ aspect typestateSemanticCheck {
 		}
 	}
 
-	public void TypestateMethodList.semanticCheck() {
+	protected void TypestateMethodList.semanticCheck() {
 		for(int i = 0; i < getNumTypestateMethod(); i++) {
 			TypestateMethod tm1 = getTypestateMethod(i);
 			for(int j = i + 1; j < getNumTypestateMethod(); j++) {
