@@ -644,7 +644,7 @@ aspect Rewrite {
 		}
 		stream.println(" {");
 		stream.pushIndent();
-		//TODO: Typestate print
+
 		for(int i = 0; i < getNumBodyDecl(); i++)
 			getBodyDecl(i).Rewrite(stream);
 		stream.popIndent();
@@ -670,7 +670,7 @@ aspect Rewrite {
 
 		stream.println(" {");
 		stream.pushIndent();
-		//TODO: Typestate print
+
 		for(int i = 0; i < getNumBodyDecl(); i++)
 			getBodyDecl(i).Rewrite(stream);
 		stream.popIndent();

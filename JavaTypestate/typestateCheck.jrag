@@ -3,9 +3,6 @@ aspect typestateCheck {
 		getGraph();
 	}
 
-	protected void MethodDecl.typestateCheck() {
-	}
-
 	protected void VariableDecl.typestateCheck() {
 		if(getTypeAccess().lookupType() != null && getTypeAccess().lookupType().isTypestateClassDeclType()) {
 			typestate.reportErrors("Object handler is used uninitialised.");

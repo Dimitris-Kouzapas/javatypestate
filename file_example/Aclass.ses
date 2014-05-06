@@ -5,11 +5,11 @@ class Aclass typestate Aprotocol{
 
 	void aMethod() {
 		myFile = new File("text.txt");
-		bMethod();
+		//bMethod();
 	//	myFile = new File("text.txt");
 	}
 
-	void bMethod() {
+	private void bMethod() {
 		switch(myFile.open().getEnum()) {
 			case Status.OK:
 				loop:

@@ -2,22 +2,8 @@ import java.util.ArrayList;
 
 aspect Errors {
 
-	protected CompilationUnit ASTNode.getCompilationUnitAncestor() {
-		ASTNode node = this;
-		while(node != null && !(node instanceof CompilationUnit))
-			node = node.getParent();
-		return (CompilationUnit) node;
-	}
-
 	protected void ASTNode.typestateCheck() {}
 	protected void ASTNode.semanticCheck() {}
-
-//	public void ASTNode.collect() {
-//		semanticCheck();
-//		typestateCheck();
-//		for(int i = 0; i < getNumChild(); i++)
-//			getChild(i).collect();
-//	}
 
 	protected void ASTNode.collectSemantic() {
 		semanticCheck();

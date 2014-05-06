@@ -22,15 +22,15 @@ aspect Compilation {
 
 	private ArrayList<String> Program.compiledPaths = new ArrayList<String>();
 
-	public static String Program.fileSuffix() {
+	protected static String Program.fileSuffix() {
 		return ".ses";
 	}
 
-	public static String Program.javaFileSuffix() {
+	protected static String Program.javaFileSuffix() {
 		return ".java";
 	}
 
-	CompilationUnit Program.compile(String path) {
+	protected CompilationUnit Program.compile(String path) {
 		CompilationUnit u = null;
 
 		for(int i = 0; i < compiledPaths.size(); i++)

@@ -1,6 +1,13 @@
 aspect javaASTFunctionality {
 
 	/*	CompilationUnit								*/
+	protected CompilationUnit ASTNode.getCompilationUnitAncestor() {
+		ASTNode node = this;
+		while(node != null && !(node instanceof CompilationUnit))
+			node = node.getParent();
+		return (CompilationUnit) node;
+	}
+
 	eq CompilationUnit.getImportDecl(int i).getClassDeclAncestor() = null;		//TODO dont like
 
 	/*	TypeDecl								*/
@@ -43,20 +50,27 @@ aspect javaASTFunctionality {
 	/*	MethodDecl								*/
 	inh ClassDecl MethodDecl.getClassDeclAncestor();
 
+	eq MethodDecl.getBlock().getMethodDeclAncestor() = this;
+	eq CompilationUnit.getTypeDecl().getMethodDeclAncestor() = null;
+	eq ImportDecl.getAccess().getMethodDeclAncestor() = null;
+
+	coll Set<VariableDecl> MethodDecl.getUsedTypestateFields() [new HashSet<VariableDecl>()] with add root MethodDecl;
+
 	syn lazy boolean MethodDecl.isTypestateMethod() = getTypestateMethod() != null;
 	syn lazy TypestateMethod MethodDecl.getTypestateMethod() {
 		ClassDecl cd = getClassDeclAncestor();
 		if(cd.isTypestateClassDeclType()) {
 			TypestateDecl t = ((TypestateClassDecl) cd).getTypestateDecl();
-			for(TypestateMethod m : t.getMethods())
-				if(isTarget(m.getID(), m.getParameterTypes()))
-					return m;
+			if(t != null)
+				for(TypestateMethod m : t.getMethods())
+					if(isTarget(m.getID(), m.getParameterTypes()))
+						return m;
 		}
 		return null;
 	} 
 
 	syn lazy String MethodDecl.signature() {
-		// TODO Dont need getModifiers().Rewrite();???
+		// TODO Dont need getModifiers().toString();??
 		// TODO Dont need return type????
 		// String s = getTypeAccess().toString() + " " + getID() + "(";
 		String s = getID() + "(";
@@ -127,6 +141,20 @@ aspect javaASTFunctionality {
 	syn lazy int Access.countDims() = 0;
 	eq ArrayTypeAccess.countDims() = 1 + getAccess().countDims();
 
+	/*	ParseName							*/
+	ParseName contributes getVariableDecl()
+	when getVariableDecl() != null && getVariableDecl().isField()
+	to MethodDecl.getUsedTypestateFields() for getMethodDeclAncestor();
+
+	syn lazy VariableDecl ParseName.getVariableDecl() {
+		if(!getType().isTypestateClassDeclType())
+			return null;
+		if(getQualifiedAccess() != null)
+			return lookupVariable(getQualifiedType()).getVariableDecl();
+		return lookupVariable().getVariableDecl();
+	}
+
+	inh MethodDecl ParseName.getMethodDeclAncestor();
 
 	// ArrayTypeWithSizeAccess inherits ArrayTypeAccess
 	syn lazy boolean Access.hasDims() = countDims() != 0;

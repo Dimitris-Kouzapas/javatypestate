@@ -2,5 +2,5 @@ package file_example;
 
 typestate Aprotocol {
 	session
-			Init = {void aMethod(): {}}// {void bMethod() : Init} }
+			Init = {void aMethod(): {void bMethod() : Init} }
 }

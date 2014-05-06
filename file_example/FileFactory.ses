@@ -5,11 +5,13 @@ class FileFactory typestate FactoryProtocol {
 	File new_File() {
 		myFile = new File("file.txt");
 		//myFile.open();
+		//foo();
 		return myFile;
 	}
 
-	void foo() {
-		File myFile = new_File();
+	private void foo() {
+//		foo();
+		//File myFile = new_File();
 //		myFile = new_File();
 //		File a = new_File();
 //		File myFile = a;

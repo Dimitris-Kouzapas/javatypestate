@@ -455,8 +455,6 @@ aspect getGraph {
 
 	//TODO another file
 	inh MethodDecl Stmt.getMethodDeclAncestor();
-	eq MethodDecl.getBlock().getMethodDeclAncestor() = this;
-	eq CompilationUnit.getTypeDecl().getMethodDeclAncestor() = null;
 //	syn lazy ReturnStmt.getReturnTypestate() =
 //		getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType() ?
 //		
@@ -638,6 +636,7 @@ aspect getGraph {
 	//TODO implement me
 	eq MethodAccess.getGraph(Set<TypestateVar> env) {
 		MethodDecl md = lookupMethod(getQualifiedType());		//TODO what if it is null??
+		//TODO case of recursion
 		if(isThisAccess()) {
 			for(VariableDecl vd : getTypestateFields())
 				vd.typestate.getMethodGraph(md);

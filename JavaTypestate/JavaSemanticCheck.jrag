@@ -69,7 +69,7 @@ aspect JavaSemanticCheck {
 	}	
 
 	protected void MethodDecl.semanticCheck() {
-		//TODO What if Method is a typestate method and static and private??
+		//TODO What if Method is a typestate method and static
 		if(getTypeAccess().hasDims() && getTypeAccess().lookupType().isTypestateClassDeclType())
 			addSemanticError(
 				"Return typestate type " +
@@ -77,11 +77,19 @@ aspect JavaSemanticCheck {
 				" should not be an array."
 			);
 		//check - if the return type has a typestate then the method should be declared the typestate definition
-		if(/*getClassDeclAncestor().isTypestateClassDeclType() && */getTypeAccess().lookupType().isTypestateClassDeclType())
+		if(/*getClassDeclAncestor().isTypestateClassDeclType() && */getTypeAccess().lookupType().isTypestateClassDeclType()) {
 			if(!isTypestateMethod())
 				addSemanticError(
-					"Only methods declared in a typestate can return objects with a typestate."
+					signature() + ": Only methods declared in a typestate can return objects with a typestate."
 				);
+		}
+
+		if(!isTypestateMethod() && !getUsedTypestateFields().isEmpty()) {
+			if(!getModifiers().isPrivate())
+				addSemanticError(
+					signature() + ": Methods that are not defined in the typestate and use typestate fields should be private."
+				);
+		}
 	}
 
 	protected void ParameterDeclaration.semanticCheck() {
@@ -123,10 +131,6 @@ aspect JavaSemanticCheck {
 	}
 
 	protected void SwitchStmt.semanticCheck() {
-//		System.out.println("======================================");
-//		System.out.println(getExpr() + " " + getExpr().getType());
-//		System.out.println("======================================");
-
 		if(getExpr().isAccess()) {
 			Access a = ((Access)getExpr()).getLastAccess();
 			if (a.getQualifiedType().isEnumDeclType()/* && a.toString().equals("getEnum()")*/) {
@@ -136,10 +140,6 @@ aspect JavaSemanticCheck {
 						addSemanticError("Case " + s + " should be an enumeration with type: " + e.getID() +".");
 			}
 		}
-		//TODO How do I know that this is an enum switch?????
 	}
 	//TODO check assignments (and new variable assigments) or maybe they are ok due to private typestate types
-	//TODO check an enum switch if it is parametrised on the enum type
-	//TODO enum switch should implement all the enum cases defined on the typestate definition
-	//TODO enum switch cases should be in the range of its enum type
 }

@@ -63,6 +63,7 @@ aspect LookupVariable {
 
 	//class NameDecl
 	abstract class NameDecl {
+		abstract public VariableDecl getVariableDecl();
 		abstract public Modifiers getModifiers();
 		abstract public Access getTypeAccess();
 		abstract public List<Dims> getDimss();
@@ -76,6 +77,7 @@ aspect LookupVariable {
 		public VarDecl(VariableDecl vd) {
 			this.vd = vd;
 		}
+		public VariableDecl getVariableDecl() { return vd; }
 		public Modifiers getModifiers() { return vd.getModifiers(); }
 		public Access getTypeAccess() { return vd.getTypeAccess(); }
 		public List<Dims> getDimss() {return vd.getDimss();}
@@ -89,6 +91,7 @@ aspect LookupVariable {
 		public ParDecl(ParameterDeclaration pd) {
 			this.pd = pd;
 		}
+		public VariableDecl getVariableDecl() { return null; }
 		public Modifiers getModifiers() { return pd.getModifiers(); }
 		public Access getTypeAccess() { return pd.getTypeAccess(); }
 		public List<Dims> getDimss() {return null;}

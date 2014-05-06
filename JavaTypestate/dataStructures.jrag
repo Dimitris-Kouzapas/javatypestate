@@ -51,6 +51,7 @@ aspect dataStructures {
 		public String getId() {
 			return id;
 		}
+
 		public TypeDecl[] getParameters() {
 			return parameters;
 		}
@@ -136,16 +137,6 @@ aspect dataStructures {
 		protected boolean includes(GraphNode n) {
 			return includes(n, new TupleSet());
 		}
-
-//		protected boolean postfix(GraphNode n) {
-//			if(this.includes(n))			//TODO check every subtree
-//				return true;
-//			//TODO how about recursion???
-//			for(int i = 0; i < next.size(); i++)
-//				if(next.get(i).postfix(n))
-//					return true;
-//			return false;
-//		}
 
 		/**************************************************************/
 		/*                     Normalise Graph                        */
@@ -545,8 +536,6 @@ aspect dataStructures {
 				n.normalise();
 //				System.out.println("-----------------------");
 //				n.printPaths();
-//				System.out.println("***************");
-//				t.printPaths();
 //				System.out.println("------------------------");
 				if(!t.includes(n))
 					exprASTNode.get(i).addSemanticError(errorMessage);
@@ -584,18 +573,24 @@ aspect dataStructures {
 	}
 
 	class TypestateField extends TypestateVar {
-		private Map<MethodDecl, GraphNode> methodStartNode;
+		private Map<MethodDecl, GraphNode> methodStartGraph;
 		private Map<MethodDecl, GraphNode> methodEndGraph;
 		private Map<MethodDecl, Expr> methodEndExpr;
+
+//		private GraphNode startNode;
+//		private GraphNode endNode;
+
 		private GraphNode endGraph;
 		private Expr endExpr;
 
 		TypestateField() {
 			super();
-			methodStartNode = new HashMap<MethodDecl, GraphNode>();
+			methodStartGraph = new HashMap<MethodDecl, GraphNode>();
 			methodEndGraph = new HashMap<MethodDecl, GraphNode>();
 			methodEndExpr = new HashMap<MethodDecl, Expr>();
+//			startNode = new LoopNode();
 			current = new LoopNode();
+//			current = endNode = new LoopNode().addNext(current);
 			endGraph = null;
 			endExpr = null;
 		}
@@ -621,20 +616,25 @@ aspect dataStructures {
 
 		void addConnectionTypestate(MethodDecl m) {
 			//EndGraph is the same as startNode
+//			startNode.addNext(current);
 			if(endGraph == null)
 				endGraph = current;
+//				endGraph = startNode;
 
-			methodStartNode.put(m, current);
+			methodStartGraph.put(m, current);
+//			methodStartGraph.put(m, startNode);//current);
 			methodEndGraph.put(m, endGraph);
 			methodEndExpr.put(m, endExpr);
+//			startNode = new LoopNode();
 			current = new LoopNode();
+//			current = endNode = new LoopNode().addNext(current);
 			endGraph = null;
 			endExpr = null;
 		}
 
 		void getMethodGraph(MethodDecl md) {
 			md.getGraph();				//TODO Call getGraph before you call this method
-			GraphNode n1 = methodStartNode.get(md);
+			GraphNode n1 = methodStartGraph.get(md);
 			GraphNode n2 = methodEndGraph.get(md);
 
 			if(!n1.equals(n2)) {
