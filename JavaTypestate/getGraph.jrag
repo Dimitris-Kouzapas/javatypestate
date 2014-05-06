@@ -469,8 +469,10 @@ aspect getGraph {
 
 		TypestateVar t = getResult().getTypestateVar();
 		if(t != null)
-			if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType())
-				t.current = getMethodDeclAncestor().getTypestateMethod().getTType().createTypestate();	//TODO cloneGraphNode ??
+			if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType()) {
+				t.checkError(getResult());
+				t.current = getMethodDeclAncestor().getTypestateMethod().getTType().createTypestate(); //TODO cloneGraphNode ??
+			}
 
 		getResult().getGraph(env);
 

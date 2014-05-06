@@ -51,8 +51,6 @@ class File typestate FileProtocol {
 							break;
 						case BooleanEnum.FALSE:
 							break loop;
-						case 12:
-		
 					}
 				}
 				myFile.close();

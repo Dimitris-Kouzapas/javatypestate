@@ -1,20 +1,23 @@
 package file_example;
 
 class FileFactory typestate FactoryProtocol {
+	private File myFile;
 	File new_File() {
-		File myFile = new File("file.txt");
+		myFile = new File("file.txt");
 		//myFile.open();
 		return myFile;
 	}
 
-	public static void main() {
+	void foo() {
 		File myFile = new_File();
+//		myFile = new_File();
 //		File a = new_File();
 //		File myFile = a;
 //		if(true)
 //			myFile = a;
 //		else
 //			myFile = new File("file.txt");
+//		myFile = new File("asd");
 
 		switch(myFile.open().getEnum()) {
 			case Status.OK:

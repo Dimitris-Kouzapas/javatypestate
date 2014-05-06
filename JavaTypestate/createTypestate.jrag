@@ -38,7 +38,7 @@ aspect createTypestate {
 	}
 
 	eq TypestateLabel.createTypestate() =
-		getTarget().hasStateNode() ? getTarget().getStateNode() : getTarget().createTypestate();
+		getTarget().hasStateNode() ? getTarget().getStateNode() : getTarget().createTypestate();	//TODO what if getTarget() == null 
 
 	//TODO reinitialise State.stateNode??
 	syn lazy GraphNode TType.createTypestate() = null;

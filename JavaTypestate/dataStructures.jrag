@@ -642,7 +642,8 @@ aspect dataStructures {
 
 			if(!n1.equals(n2)) {
 				current = n2.cloneGraph(current);
-				super.addTypestate(methodEndExpr.get(md));
+				if(current.onlyEndNodes() == -1)
+					super.addTypestate(methodEndExpr.get(md));
 			}
 			current = n1.cloneGraph(current);
 		}
