@@ -2,6 +2,10 @@ package buyer_seller;
 
 class Buyer1 typestate Buyer1Protocol {
 
+	public Buyer1() {
+
+	}
+
 	void sendTitleToSeller(String title) {
 		//SellerSocket.send(title);
 	}
