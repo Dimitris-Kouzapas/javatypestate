@@ -204,9 +204,6 @@ aspect dataStructures {
 				for(GraphNode n : computeNextArrayList(i, visitedSet))
 					if(!tmpNext.contains(n))
 						tmpNext.add(n);
-			//			tmpNext.addAll(computeNextArrayList(i, visitedSet));	//TODO remove duplicate LoopNodes from here
-			//		else
-			//			System.out.println(n);
 			next = tmpNext;
 
 			return nextArrayList();

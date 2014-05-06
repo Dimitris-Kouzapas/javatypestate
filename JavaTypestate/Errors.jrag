@@ -19,6 +19,26 @@ aspect Errors {
 			getChild(i).collect();
 	}
 
+//	public void CompilationUnit.collect() {
+//		collectSemantic();
+		//TODO if program has no errors
+//		if(errors.size() == 0)
+//			collectTypestate();
+//	}
+
+	public void ASTNode.collectSemantic() {
+		semanticCheck();
+		for(int i = 0; i < getNumChild(); i++)
+			getChild(i).collectSemantic();
+	}
+
+	public void ASTNode.collectTypestate() {
+		typestateCheck();
+		for(int i = 0; i < getNumChild(); i++)
+			getChild(i).collectTypestate();
+	}
+
+
 	public void ASTNode.setStart(int s) {
 		start = s;
 	}
