@@ -48,11 +48,11 @@ aspect dataStructures {
 			return signature += ")";
 		}
 
-		public String getId() {
+		protected String getId() {
 			return id;
 		}
 
-		public TypeDecl[] getParameters() {
+		protected TypeDecl[] getParameters() {
 			return parameters;
 		}
 
@@ -99,22 +99,23 @@ aspect dataStructures {
 
 			Set<TupleEntry> relation;
 
-			public TupleSet() {
+			protected TupleSet() {
 				relation = new HashSet<TupleEntry>();
 			}
 
-			public boolean has(GraphNode firstNode, GraphNode secondNode) {
+			protected boolean has(GraphNode firstNode, GraphNode secondNode) {
 				return relation.contains(new TupleEntry(firstNode, secondNode));
 			}
 
-			public boolean insert(GraphNode firstNode, GraphNode secondNode) {
+			protected boolean insert(GraphNode firstNode, GraphNode secondNode) {
 				return relation.add(new TupleEntry(firstNode, secondNode));
 			}
 
-			public boolean remove(GraphNode firstNode, GraphNode secondNode) {
+			protected boolean remove(GraphNode firstNode, GraphNode secondNode) {
 				return relation.remove(new TupleEntry(firstNode, secondNode));
 			}
 		}
+
 		protected boolean includes(GraphNode n, TupleSet ts) {
 			if(ts.has(this, n) || (!hasNext() && !n.hasNext()))
 				return true;
@@ -134,7 +135,7 @@ aspect dataStructures {
 			return true;
 		}
 
-		protected boolean includes(GraphNode n) {
+		public boolean includes(GraphNode n) {
 			return includes(n, new TupleSet());
 		}
 
@@ -142,31 +143,31 @@ aspect dataStructures {
 		/*                     Normalise Graph                        */
 		/**************************************************************/
 
-		protected boolean isNodeVisited(Set<GraphNode> visitedSet) {
-			if(visitedSet.contains(this))
+		protected boolean isNodeVisited(Set<GraphNode> visited) {
+			if(visited.contains(this))
 				return true;
-			visitedSet.add(this);
+			visited.add(this);
 			return false;
 		}
 
-		protected void removeVisited(Set<GraphNode> visitedSet) {
-			visitedSet.remove(this);
+		protected void removeVisited(Set<GraphNode> visited) {
+			visited.remove(this);
 		}
 
 		// Polymorphic on LoopNode
-		protected boolean __hasLoopNode(Set<GraphNode> visitedSet) {
-			if(isNodeVisited(visitedSet))
+		protected boolean __hasLoopNode(Set<GraphNode> visited) {
+			if(isNodeVisited(visited))
 				return false;
 			for(GraphNode n: next)
-				if(n.__hasLoopNode(visitedSet))
+				if(n.__hasLoopNode(visited))
 					return true;
 			return false;
 		}
 
 		private boolean hasLoopNode() {
-			Set<GraphNode> visitedSet = new HashSet<GraphNode>();
+			Set<GraphNode> visited = new HashSet<GraphNode>();
 			for(GraphNode n: next)
-				if(n.__hasLoopNode(visitedSet))
+				if(n.__hasLoopNode(visited))
 					return true;
 			return false;
 		}
@@ -179,20 +180,20 @@ aspect dataStructures {
 		}
 
 		// Polymorphic on LoopNode
-		ArrayList<GraphNode> computeNextArrayList(int i, Set<GraphNode> visitedSet) {
-			return next.get(i).normalise(visitedSet);
+		protected ArrayList<GraphNode> computeNextArrayList(int i, Set<GraphNode> visited) {
+			return next.get(i).normalise(visited);
 		}
 
 		/* 
 		 * Remove LoopNodes from its graph
 		 */
-		protected ArrayList<GraphNode> normalise(Set<GraphNode> visitedSet) {
-			if(isNodeVisited(visitedSet))
+		protected ArrayList<GraphNode> normalise(Set<GraphNode> visited) {
+			if(isNodeVisited(visited))
 				return nextArrayList();
 
 			ArrayList<GraphNode> tmpNext = new ArrayList<GraphNode>();
 			for(int i = 0; i < next.size(); i++)
-				for(GraphNode n : computeNextArrayList(i, visitedSet))
+				for(GraphNode n : computeNextArrayList(i, visited))
 					if(!tmpNext.contains(n))
 						tmpNext.add(n);
 			next = tmpNext;
@@ -200,12 +201,12 @@ aspect dataStructures {
 			return nextArrayList();
 		}
 
-		protected GraphNode normalise() {
-			Set<GraphNode> visitedSet = new HashSet<GraphNode>();
+		public GraphNode normalise() {
+			Set<GraphNode> visited = new HashSet<GraphNode>();
 			ArrayList<GraphNode> alist = new ArrayList<GraphNode>();
 			for(GraphNode n: next)
 				if(!this.equals(n))
-					alist.addAll(n.normalise(visitedSet));
+					alist.addAll(n.normalise(visited));
 			next = alist;
 			return hasLoopNode() ? normalise() : this;
 		}
@@ -215,12 +216,12 @@ aspect dataStructures {
 		/***********************************************************/
 
 		//polymorphic on LoopNode, EndNode
-		protected int onlyEndNodes(Set<LoopNode> visited) {
+		protected int onlyEndNodes(Set<GraphNode> visited) {
 			return -1;
 		}
 
-		public int onlyEndNodes() {
-			return onlyEndNodes(new HashSet<LoopNode>());
+		protected int onlyEndNodes() {
+			return onlyEndNodes(new HashSet<GraphNode>());
 		}
 
 		/***********************************************************/
@@ -229,12 +230,12 @@ aspect dataStructures {
 
 		abstract protected GraphNode cloneNode();
 
-		GraphNode cloneGraph(GraphNode end) {
+		protected GraphNode cloneGraph(GraphNode end) {
 			return cloneGraph(end, new HashMap<GraphNode, GraphNode>());
 		}
 
 		//Polymorphic on LoopNode
-		GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
+		protected GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
 			if(visited.get(this) != null)
 				return visited.get(this);
 
@@ -251,16 +252,16 @@ aspect dataStructures {
 		/*                For Debug                                */
 		/***********************************************************/
 
-		private void printPaths(String s, Set<GraphNode> visitedSet) {
-			if((next.size() == 0) || isNodeVisited(visitedSet)) {
+		private void printPaths(String s, Set<GraphNode> visited) {
+			if((next.size() == 0) || isNodeVisited(visited)) {
 				System.out.println(s + toString());
 				return;
 			}
 
 			for(int i = 0; i < next.size(); i++)
-				next.get(i).printPaths(s + toString(), visitedSet);
+				next.get(i).printPaths(s + toString(), visited);
 
-			removeVisited(visitedSet);
+			removeVisited(visited);
 		}
 
 		public void printPaths() {
@@ -324,7 +325,7 @@ aspect dataStructures {
 			return getId() + ":";
 		}
 
-		public boolean includes(GraphNode n, TupleSet ts) {
+		protected boolean includes(GraphNode n, TupleSet ts) {
 			if((n instanceof SwitchCase) && getId().equals(n.getId()))
 				return super.includes(n, ts);
 			return false;
@@ -375,7 +376,7 @@ aspect dataStructures {
 			return "Loop Node;";
 		}
 
-		protected boolean __hasLoopNode(Set<GraphNode> visitedSet) {
+		protected boolean __hasLoopNode(Set<GraphNode> visited) {
 			return true;
 		}
 
@@ -383,25 +384,25 @@ aspect dataStructures {
 			return next;
 		}
 
-		ArrayList<GraphNode> computeNextArrayList(int i, Set<GraphNode> visitedSet) {
-			return (!this.equals(next.get(i))) ? super.computeNextArrayList(i, visitedSet) : new ArrayList<GraphNode>();
+		protected ArrayList<GraphNode> computeNextArrayList(int i, Set<GraphNode> visited) {
+			return (!this.equals(next.get(i))) ? super.computeNextArrayList(i, visited) : new ArrayList<GraphNode>();
 		}
 
 		protected GraphNode cloneNode() {
 			return new LoopNode();
 		}
 
-		GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
+		protected GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
 			//This means that the graph ends in a LoopNode -> the graph is still incomplete
 			if(next.size() == 0)
 				return cloneNode().addNext(end);
 			return super.cloneGraph(end, visited);
 		}
 
-		protected int onlyEndNodes(Set<LoopNode> visited) {
-			if(visited.contains(this))
+		protected int onlyEndNodes(Set<GraphNode> visited) {
+			if(isNodeVisited(visited))
 				return 0;
-			visited.add(this);
+
 			int sum = 0;
 			int result;
 			for(GraphNode n: next) {
@@ -419,7 +420,7 @@ aspect dataStructures {
 	 * Represents the final state.
 	 */
 	public class EndNode extends GraphNode {
-		protected EndNode() {
+		public EndNode() {
 			super(null, null);
 		}
 
@@ -441,7 +442,7 @@ aspect dataStructures {
 			return new EndNode();
 		}
 
-		protected int onlyEndNodes(Set<LoopNode> visited) {
+		protected int onlyEndNodes(Set<GraphNode> visited) {
 			return 1;
 		}
 	}
@@ -451,7 +452,7 @@ aspect dataStructures {
 	 * Represents the initial state.
 	 */
 	public class InitNode extends GraphNode {
-		protected InitNode() {
+		public InitNode() {
 			super(null, null);
 		}
 
@@ -486,6 +487,7 @@ aspect dataStructures {
 
 		TypestateVar() {
 			current = new EndNode();
+
 			end = new HashMap<ASTNode, GraphNode>();
 			start = new HashMap<ASTNode, GraphNode>();
 			startTypestate = new ArrayList<GraphNode>();
@@ -495,7 +497,7 @@ aspect dataStructures {
 			errorNode = new ArrayList<ASTNode>();
 		}
 
-		void addTypestate(Expr e) {
+		protected void addTypestate(Expr e) {
 			startTypestate.add(current);
 			exprASTNode.add(e);
 			resetCurrent();
@@ -507,7 +509,7 @@ aspect dataStructures {
 			resetCurrent();
 		}
 
-		void checkError(ASTNode e) {
+		protected void checkError(ASTNode e) {
 			//has more than EndNodes/LoopNodes
 			if(current.onlyEndNodes() == -1)
 				addErrorTypestate(e);
@@ -517,20 +519,20 @@ aspect dataStructures {
 			current = new EndNode();
 		}
 
-		void addConnectionTypestate(MethodDecl m) {}
+		protected void addConnectionTypestate(MethodDecl m) {}
 
-		GraphNode getConnectionTypestate() {
+		protected GraphNode getConnectionTypestate() {
 			return null;
 		}
 
-		void getMethodGraph(MethodDecl m) {}
+		protected void getMethodGraph(MethodDecl m) {}
 
-		void reportErrors(String errorMessage) {
+		protected void reportErrors(String errorMessage) {
 			for(int i = errorTypestate.size() - 1; i >= 0; i--)
 				errorNode.get(i).addSemanticError(errorMessage);
 		}
 
-		void checkTypestate(GraphNode t, String errorMessage) {
+		protected void checkTypestate(GraphNode t, String errorMessage) {
 			for(int i = startTypestate.size() - 1; i >= 0; i--) {
 				GraphNode n = startTypestate.get(i);
 				n.normalise();
@@ -552,11 +554,11 @@ aspect dataStructures {
 			parameterNode = new LoopNode();
 		}
 
-		void addConnectionTypestate(MethodDecl m) {		//TODO dont like
+		protected void addConnectionTypestate(MethodDecl m) {		//TODO dont like
 			parameterNode.addNext(current);
 		}
 
-		GraphNode getConnectionTypestate() {
+		protected GraphNode getConnectionTypestate() {
 			return parameterNode;
 		}
 	}
@@ -566,7 +568,7 @@ aspect dataStructures {
 			super();
 		}
 
-		void addTypestate(Expr e) {
+		protected void addTypestate(Expr e) {
 			current = new LoopNode().addNext(current);
 			super.addTypestate(e);
 		}	
@@ -585,6 +587,7 @@ aspect dataStructures {
 
 		TypestateField() {
 			super();
+
 			methodStartGraph = new HashMap<MethodDecl, GraphNode>();
 			methodEndGraph = new HashMap<MethodDecl, GraphNode>();
 			methodEndExpr = new HashMap<MethodDecl, Expr>();
@@ -595,7 +598,7 @@ aspect dataStructures {
 			endExpr = null;
 		}
 
-		void addTypestate(Expr e) {
+		protected void addTypestate(Expr e) {
 			if(endGraph == null) {
 				endGraph = current;
 				endExpr = e;
@@ -606,7 +609,7 @@ aspect dataStructures {
 			}
 		}
 
-		void checkError(ASTNode e) {
+		protected void checkError(ASTNode e) {
 			super.checkError(e);
 			//if has only LoopNodes
 			if(current.onlyEndNodes() == 0)
@@ -614,7 +617,7 @@ aspect dataStructures {
 								//TODO is it a fact that at this point we expect e to be an Expr?
 		}
 
-		void addConnectionTypestate(MethodDecl m) {
+		protected void addConnectionTypestate(MethodDecl m) {
 			//EndGraph is the same as startNode
 //			startNode.addNext(current);
 			if(endGraph == null)
@@ -632,7 +635,7 @@ aspect dataStructures {
 			endExpr = null;
 		}
 
-		void getMethodGraph(MethodDecl md) {
+		protected void getMethodGraph(MethodDecl md) {
 			GraphNode n1 = methodStartGraph.get(md);
 			GraphNode n2 = methodEndGraph.get(md);
 

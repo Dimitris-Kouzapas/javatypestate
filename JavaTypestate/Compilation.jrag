@@ -89,16 +89,7 @@ aspect Compilation {
 			else
 				System.err.println("File " + args[i] + " not found.");
 
-//		for(int i = 0; i < getNumCompilationUnit(); i++) {
-//			getCompilationUnit(i).collect();
-//			errors.addAll(getCompilationUnit(i).errors);
-//			numWarnings += getCompilationUnit(i).numWarnings;
-//		}
-
 		collect();
-
-		//printErrors();
-
 		return !hasErrors();
 	}
 
