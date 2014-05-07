@@ -62,7 +62,7 @@ aspect dataStructures {
 			return this;
 		}
 
-		private boolean hasNext() {
+		protected boolean hasNext() {
 			return next.size() != 0;
 		}
 
@@ -537,7 +537,7 @@ aspect dataStructures {
 				GraphNode n = startTypestate.get(i);
 				n.normalise();
 //				System.out.println("-----------------------");
-//				n.printPaths();
+				n.printPaths();
 //				System.out.println("------------------------");
 				if(!t.includes(n))
 					exprASTNode.get(i).addSemanticError(errorMessage);
@@ -627,7 +627,7 @@ aspect dataStructures {
 			methodEndGraph.put(m, endGraph);
 			methodEndExpr.put(m, endExpr);
 //			startNode = new LoopNode();
-			current = new LoopNode();
+//			current = new LoopNode();
 //			current = endNode = new LoopNode().addNext(current);
 			endGraph = null;
 			endExpr = null;
