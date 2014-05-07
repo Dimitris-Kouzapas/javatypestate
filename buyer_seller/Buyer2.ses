@@ -1,0 +1,20 @@
+package buyer_seller;
+
+class Buyer2 typestate Buyer2Protocol {
+
+	public Buyer2() {
+
+	}
+
+	void receiveQuoteFromBuyer1(String quote) {
+
+	}
+
+	AgreementLabel sendToSellerBuyer1() {
+
+	}
+
+	void transferMoneyToSeller(String money) {
+
+	}
+}

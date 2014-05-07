@@ -1,0 +1,24 @@
+package buyer_seller;
+
+class Seller typestate SellerProtocol {
+
+	public Seller() {
+
+	}
+
+	void receiveTitleFromBuyer1(String title) {
+
+	}
+
+	String sendPriceToBuyer1() {
+
+	}
+
+	AgreementLabel receiveLabelFromBuyer2() {
+
+	}
+
+	void receiveMoneyFromBothByers(String money) {
+		
+	}
+}

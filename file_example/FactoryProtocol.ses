@@ -3,27 +3,27 @@ typestate FactoryProtocol {
 
 	session
 		Init =		{
-					File	<NewFile>	new_File() : end//{ foo : end}
-				}
+						File	<NewFile>	new_File() : end//{ foo : end}
+					}
 
 	where
 
 		NewFile =	{
-					Status open(): <OK: Open, ERROR: end>
-				}
+						Status open(): <OK: Open, ERROR: end>
+					}
 
 		Open =		{
-					BooleanEnum hasNext(): <TRUE: Read, FALSE: Close>,
-					void close(): end
-				}
+						BooleanEnum hasNext(): <TRUE: Read, FALSE: Close>,
+						void close(): end
+					}
 
 		Read =		{
-					void read(): Open
-				}
+						void read(): Open
+					}
 
 		Close =		{
-					void close(): end 
-				}
+						void close(): end 
+					}
 
 
 }

@@ -7,14 +7,15 @@ class Buyer1 typestate Buyer1Protocol {
 	}
 
 	void sendTitleToSeller(String title) {
-		//SellerSocket.send(title);
+		
+		socketSellerBuyer1.send(seller, title);
 	}
 
-	int receivePriceFromSeller() {
+	String receivePriceFromSeller() {
 
 	}
 
-	void sendQuoteToBuyer2(int quote) {
+	void sendQuoteToBuyer2(String quote) {
 
 	}
 
@@ -22,7 +23,7 @@ class Buyer1 typestate Buyer1Protocol {
 
 	}
 
-	void transferMoneyToSeller(int money) {
+	void transferMoneyToSeller(String money) {
 
 	}
 }

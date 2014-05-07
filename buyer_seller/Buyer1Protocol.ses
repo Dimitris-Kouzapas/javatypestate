@@ -7,11 +7,11 @@ typestate Buyer1Protocol {
 						}
 	where
 		TitleSent =		{
-							int receivePriceFromSeller(): PriceReceived
+							String receivePriceFromSeller(): PriceReceived
 						}
 
 		PriceReceived = {
-							void sendQuoteToBuyer2(int): QuoteSent
+							void sendQuoteToBuyer2(String): QuoteSent
 						}
 		
 		QuoteSent = 	{
@@ -19,6 +19,6 @@ typestate Buyer1Protocol {
 						}
 
 		TalktoSeller =	{
-							void transferMoneyToSeller(int): end
+							void transferMoneyToSeller(String): end
 						}
 }
