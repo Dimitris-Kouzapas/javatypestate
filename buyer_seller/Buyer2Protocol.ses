@@ -3,13 +3,13 @@ package buyer_seller;
 typestate Buyer2Protocol {
 	session
 		InitSession =	{
-							void receiveQuoteFromBuyer1(String): QuoteReceived
+							String receiveQuoteFromBuyer1(): QuoteReceived
 						}
 	where
 		QuoteReceived = {
-							AgreementLabel sendToSellerBuyer1(): <AGREE:TalktoSeller, QUIT:end>
+							AgreementLabel sendToSellerBuyer1(AgreementLabel): <AGREE:TalktoSeller, QUIT:end>
 						}
-						
+
 		TalktoSeller = 	{
 							void transferMoneyToSeller(String): end
 						}

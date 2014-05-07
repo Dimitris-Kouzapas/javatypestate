@@ -1,15 +1,23 @@
 package buyer_seller;
 
 class Main {
+	
 	public static void main(String[] args) {
 		System.out.println("Hello World: I love coding!!");
 
-		//seller = new Seller();
-		//buyer1 = new Buyer1();
-		//buyer2 = new Buyer2();
-		//socketSellerBuyer1 = new Socket(seller, buyer1);
-		//socketSellerBuyer2 = new Socket(seller, buyer2);
-		//socketBuyer1Buyer2 = new Socket(buyer1, buyer2);
-		
+		Socket socketSellerBuyer1 = new Socket();
+		Socket socketSellerBuyer2 = new Socket();
+		Socket socketBuyer1Buyer2 = new Socket();
+
+		Seller seller = new Seller(socketSellerBuyer1, socketSellerBuyer2);
+		Buyer1 buyer1 = new Buyer1(socketSellerBuyer1, socketBuyer1Buyer2);
+		Buyer2 buyer2 = new Buyer2(socketSellerBuyer2, socketBuyer1Buyer2);
+
+		socketSellerBuyer1.setEndpoints(seller, buyer1);
+		socketSellerBuyer2.setEndpoints(seller, buyer2);
+		socketBuyer1Buyer2.setEndpoints(buyer1, buyer2);
+
+		//
+
 	}
 }

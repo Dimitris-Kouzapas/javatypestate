@@ -1,31 +1,31 @@
 package buyer_seller;
-import java.util.LinkedList;
-import java.util.Queue;
 
-class Socket {
-	private Queue<String> ep1_to_ep2 = new LinkedList<String>();
-	private Queue<String> ep2_to_ep1 = new LinkedList<String>();
+import java.util.LinkedList;
+
+public class Socket {
+	private LinkedList ep1_to_ep2 = new LinkedList();
+	private LinkedList ep2_to_ep1 = new LinkedList();
 	private Object endpoint1;
 	private Object endpoint2;
 
-	public Socket(Object endpoint1, Object endpoint2) {
+	public void setEndpoints(Object endpoint1, Object endpoint2) {
 		this.endpoint1 = endpoint1;
 		this.endpoint2 = endpoint2;
 	}
 
-	public void send(Object to_endpoint, String message) {
-		if (to_endpoint == endpoint1) {
-			ep2_to_ep1.add(message);
-		} else {
+	public void send(Object from_endpoint, String message) {
+		if (from_endpoint == endpoint1) {
 			ep1_to_ep2.add(message);
+		} else {
+			ep2_to_ep1.add(message);
 		}
 	}
 
 	public String receive(Object from_endpoint) {
 		if (from_endpoint == endpoint1) {
-			return ep1_to_ep2.remove();
+			return (String)ep1_to_ep2.remove();
 		} else {
-			return ep2_to_ep1.remove();
+			return (String)ep2_to_ep1.remove();
 		}
 	}
 }

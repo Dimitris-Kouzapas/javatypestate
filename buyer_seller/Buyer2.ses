@@ -1,20 +1,26 @@
 package buyer_seller;
 
 class Buyer2 typestate Buyer2Protocol {
+	private final Socket socketSeller;
+	private final Socket socketBuyer1;
 
-	public Buyer2() {
-
+	public Buyer2(Socket socketSeller, Socket socketBuyer1) {
+		this.socketSeller = socketSeller;
+		this.socketBuyer1 = socketBuyer1;
 	}
 
-	void receiveQuoteFromBuyer1(String quote) {
-
+	String receiveQuoteFromBuyer1() {
+		return this.socketBuyer1.receive(this);
 	}
 
-	AgreementLabel sendToSellerBuyer1() {
+	AgreementLabel sendToSellerBuyer1(AgreementLabel agreement) {
+		this.socketBuyer1.send(this, agreement.getEnum() == AgreementLabel.AGREE ? "AGREE" : "QUIT" );
+		return agreement;
 
+		// If you send agree then you do something ... (transfer the money or something)
 	}
 
 	void transferMoneyToSeller(String money) {
-
+		this.socketSeller.send(this, money);
 	}
 }

@@ -1,4 +1,8 @@
 #!/bin/bash
 
-java -cp .:tools/beaver-rt.jar JavaTypestate/AST/TypestateChecker $@
+SESFILE=$@;
 
+rm ${SESFILE}.java ${SESFILE}.class ${SESFILE}
+java TypestateMain ${SESFILE}.ses
+javac ${SESFILE}.java
+java ${SESFILE}
