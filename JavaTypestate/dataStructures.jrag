@@ -519,7 +519,7 @@ aspect dataStructures {
 			current = new EndNode();
 		}
 
-		protected void addConnectionTypestate(MethodDecl m) {}
+		protected void connectTypestate(MethodDecl m) {}
 
 		protected GraphNode getConnectionTypestate() {
 			return null;
@@ -554,7 +554,7 @@ aspect dataStructures {
 			parameterNode = new LoopNode();
 		}
 
-		protected void addConnectionTypestate(MethodDecl m) {		//TODO dont like
+		protected void connectTypestate(MethodDecl m) {		//TODO dont like
 			parameterNode.addNext(current);
 		}
 
@@ -617,15 +617,13 @@ aspect dataStructures {
 								//TODO is it a fact that at this point we expect e to be an Expr?
 		}
 
-		protected void addConnectionTypestate(MethodDecl m) {
+		protected void connectTypestate(MethodDecl m) {
 			//EndGraph is the same as startNode
-//			startNode.addNext(current);
+//			current = startNode.addNext(current);
 			if(endGraph == null)
 				endGraph = current;
-//				endGraph = startNode;
 
 			methodStartGraph.put(m, current);
-//			methodStartGraph.put(m, startNode);//current);
 			methodEndGraph.put(m, endGraph);
 			methodEndExpr.put(m, endExpr);
 //			startNode = new LoopNode();
@@ -634,6 +632,10 @@ aspect dataStructures {
 			endGraph = null;
 			endExpr = null;
 		}
+
+//		protected GraphNode connectTypestate() {
+//			return startNode;
+//		}
 
 		protected void getMethodGraph(MethodDecl md) {
 			GraphNode n1 = methodStartGraph.get(md);

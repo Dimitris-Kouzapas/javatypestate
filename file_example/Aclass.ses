@@ -5,8 +5,8 @@ class Aclass typestate Aprotocol {
 
 	void aMethod() {
 		myFile = new File("text.txt");
-		//bMethod();
-	//	myFile = new File("text.txt");
+		bMethod();
+		myFile = new File("text.txt");
 	}
 
 	private void bMethod() {

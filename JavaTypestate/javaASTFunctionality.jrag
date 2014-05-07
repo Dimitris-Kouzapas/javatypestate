@@ -96,6 +96,7 @@ aspect javaASTFunctionality {
 
 	inh ClassDecl MethodAccess.getClassDeclAncestor();
 	inh MethodDecl MethodAccess.getMethodDeclAncestor();
+	syn Set<VariableDecl> MethodAccess.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
 
 	/*	Access								*/
 	syn lazy boolean Expr.isAccess() = false;

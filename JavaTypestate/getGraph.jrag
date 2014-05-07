@@ -172,19 +172,22 @@ aspect getGraph {
 		}
 
 		for(int i = 0; i < getNumParameter(); i++)
-			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType())
-				env.add(getParameter(i).typestate = new TypestatePar());
+			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
+				if(getParameter(i).typestate == null)
+					getParameter(i).typestate = new TypestatePar();
+				env.add(getParameter(i).typestate);
+			}
 
 		getBlock().getGraph(env);
 
 		for(int i = 0; i < getNumParameter(); i++)
 			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				getParameter(i).typestate.addConnectionTypestate(null);
+				getParameter(i).typestate.connectTypestate(null);
 				env.remove(getParameter(i).typestate);
 			}
 
 		for(TypestateVar tv : env) {
-			tv.addConnectionTypestate(this);
+			tv.connectTypestate(this);
 			env.remove(tv);
 		}
 
@@ -192,8 +195,8 @@ aspect getGraph {
 	}
 
 	syn GraphNode MethodDecl.getParameterTypestate(int i) {
-		if(isGraph == false)
-			getGraph();
+		if(getParameter(i).typestate == null)
+			getParameter(i).typestate = new TypestatePar();
 		return getParameter(i).typestate.getConnectionTypestate();
 	}
 
@@ -627,9 +630,6 @@ aspect getGraph {
 		return true;
 	}
 
-	//TODO another file???
-	syn Set<VariableDecl> MethodAccess.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
-
 	//TODO implement me
 	eq MethodAccess.getGraph(Set<TypestateVar> env) {
 		MethodDecl md = lookupMethod(getQualifiedType());		//TODO what if it is null??
@@ -637,10 +637,14 @@ aspect getGraph {
 			return false;
 		//TODO case of recursion
 		if(isThisAccess()) {
-			if(md.isGraph() == false)
+			if(md.isGraph() == false) {
+				//System.out.println("dame" + md.isGraph());
+				//TODO is this correct? Maybe you lose current
 				md.getGraph();
+			}
 			for(VariableDecl vd : getTypestateFields())
 				vd.typestate.getMethodGraph(md);
+				//vd.typestate.current = vd.typestate.getConnectionTypestate();
 		}
 		else if(getQualifiedType().isTypestateClassDeclType()) {
 			TypestateVar t = getQualifiedTypestateVar();
