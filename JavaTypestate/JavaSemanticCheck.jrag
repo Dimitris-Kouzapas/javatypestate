@@ -142,9 +142,9 @@ aspect JavaSemanticCheck {
 			Access a = ((Access)getExpr()).getLastAccess();
 			if (a.getQualifiedType().isEnumDeclType()/* && a.toString().equals("getEnum()")*/) {
 				EnumDecl e = a.getQualifiedType().getEnumDecl();
-				for(String s : getCaseLabels())
-					if(!e.getEnums().contains(s))
-						addSemanticError("Case " + s + " should be an enumeration with type: " + e.getID() +".");
+				for(Expr s : getCaseLabels())
+					if(!e.getEnums().contains(s.toString()))
+						addSemanticError("Case " + s.toString() + " should be an enumeration with type: " + e.getID() +".");
 			}
 		}
 	}

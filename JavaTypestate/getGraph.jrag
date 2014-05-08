@@ -155,19 +155,18 @@ aspect getGraph {
 /*****************************************************************************************************/
 
 	syn Set<VariableDecl> MethodDecl.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
+//	syn Set<MethodDecl> MethodDecl.getMethodDecls() = getClassDeclAncestor().getMethodDecls();
 
 	private boolean MethodDecl.isGraph = false;
 	protected boolean MethodDecl.isGraph() {return isGraph;}
 	syn lazy boolean MethodDecl.getGraph() {
-		//if(isGraph == true)
-		//	return true;
 		isGraph = true;
 
 		Set<TypestateVar> env = new HashSet<TypestateVar>();
 
 		for(VariableDecl vd : getTypestateFields()) {
 			if(vd.typestate == null)
-				vd.typestate = new TypestateField();
+				vd.typestate = new TypestateField(/*getMethodDecls()*/);
 			env.add(vd.typestate);
 		}
 
@@ -197,7 +196,7 @@ aspect getGraph {
 	syn GraphNode MethodDecl.getParameterTypestate(int i) {
 		if(getParameter(i).typestate == null)
 			getParameter(i).typestate = new TypestatePar();
-		return getParameter(i).typestate.getConnectionTypestate();
+		return getParameter(i).typestate.getConnectionTypestate(/*null*/);
 	}
 
 /*****************************************************************************************************/
@@ -641,23 +640,20 @@ aspect getGraph {
 		MethodDecl md = lookupMethod(getQualifiedType());		//TODO what if it is null??
 		if(md == null)
 			return false;
-/*		//TODO case of recursion
-		if(isThisAccess()) {
-			if(md.isGraph() == false) {
-				//System.out.println("dame" + md.isGraph());
-				//TODO is this correct? Maybe you lose current
-				md.getGraph();
-			}
+		//TODO case of recursion
+		/*if(isThisAccess()) {
 			for(VariableDecl vd : getTypestateFields())
-				vd.typestate.getMethodGraph(md);
-				//vd.typestate.current = vd.typestate.getConnectionTypestate();
+				vd.typestate.current = vd.typestate.getConnectionTypestate(md);
 		}
-		else */if(getQualifiedType().isTypestateClassDeclType()) {
+				//vd.typestate.current = vd.typestate.getConnectionTypestate();
+
+		else*/ if(getQualifiedType().isTypestateClassDeclType()) {
 			TypestateVar t = getQualifiedTypestateVar();
 			if (t != null)
 				t.current = new MethodNode(getID(), getParameterTypes()).addNext(t.current);
 		}
 
+		//TODO is the order correct here?
 		for(int i = getNumArg() - 1; i >= 0; i--) {
 			TypestateVar t = getArg(i).getTypestateVar();
 			if(t != null) {

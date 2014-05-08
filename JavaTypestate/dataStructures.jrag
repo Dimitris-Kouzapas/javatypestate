@@ -519,9 +519,9 @@ aspect dataStructures {
 			current = new EndNode();
 		}
 
-		protected void connectTypestate(MethodDecl m) {}
+		protected void connectTypestate(MethodDecl md) {}
 
-		protected GraphNode getConnectionTypestate() {
+		protected GraphNode getConnectionTypestate(/*MethodDecl md*/) {
 			return null;
 		}
 
@@ -538,7 +538,7 @@ aspect dataStructures {
 				n.normalise();
 //				System.out.println("-----------------------");
 				n.printPaths();
-//				System.out.println("------------------------");
+				System.out.println("------------------------");
 				if(!t.includes(n))
 					exprASTNode.get(i).addSemanticError(errorMessage);
 			}
@@ -558,7 +558,7 @@ aspect dataStructures {
 			parameterNode.addNext(current);
 		}
 
-		protected GraphNode getConnectionTypestate() {
+		protected GraphNode getConnectionTypestate(/*MethodDecl md*/) {
 			return parameterNode;
 		}
 	}
@@ -579,21 +579,20 @@ aspect dataStructures {
 		private Map<MethodDecl, GraphNode> methodEndGraph;
 		private Map<MethodDecl, Expr> methodEndExpr;
 
-//		private GraphNode startNode;
-//		private GraphNode endNode;
-
 		private GraphNode endGraph;
 		private Expr endExpr;
 
-		TypestateField() {
+		TypestateField(/*Set<MethodDecl> methodDecls*/) {
 			super();
 
 			methodStartGraph = new HashMap<MethodDecl, GraphNode>();
+
+		//	for(MethodDecl md : methodDecls)
+		//		methodStartGraph.put(md, new LoopNode());
+
 			methodEndGraph = new HashMap<MethodDecl, GraphNode>();
 			methodEndExpr = new HashMap<MethodDecl, Expr>();
-//			startNode = new LoopNode();
 			current = new LoopNode();
-//			current = endNode = new LoopNode().addNext(current);
 			endGraph = null;
 			endExpr = null;
 		}
@@ -614,27 +613,24 @@ aspect dataStructures {
 			//if has only LoopNodes
 			if(current.onlyEndNodes() == 0)
 				addTypestate((Expr) e);		//TODO add them somewhere for future check for only end/loopnode
-								//TODO is it a fact that at this point we expect e to be an Expr?
 		}
 
-		protected void connectTypestate(MethodDecl m) {
+		protected void connectTypestate(MethodDecl md) {
 			//EndGraph is the same as startNode
-//			current = startNode.addNext(current);
+		//	current = methodStartGraph.get(md).addNext(current);
 			if(endGraph == null)
 				endGraph = current;
 
-			methodStartGraph.put(m, current);
-			methodEndGraph.put(m, endGraph);
-			methodEndExpr.put(m, endExpr);
-//			startNode = new LoopNode();
-//			current = new LoopNode();
-//			current = endNode = new LoopNode().addNext(current);
+			methodStartGraph.put(md, current);
+			methodEndGraph.put(md, endGraph);
+			methodEndExpr.put(md, endExpr);
+			current = new LoopNode();
 			endGraph = null;
 			endExpr = null;
 		}
 
-//		protected GraphNode connectTypestate() {
-//			return startNode;
+//		protected GraphNode getConnectionTypestate(/*MethodDecl md*/) {
+//			return methodStartGraph.get(md);
 //		}
 
 		protected void getMethodGraph(MethodDecl md) {
