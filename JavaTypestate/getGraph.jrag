@@ -99,7 +99,8 @@ aspect getGraph {
 
 	syn lazy boolean ClassDecl.getGraph() {
 		for(MethodDecl md: getMethodDecls())
-			md.getGraph();
+			if(md.isGraph() == false)
+				md.getGraph();
 
 		if(isTypestateClassDeclType()) {
 			TypestateClassDecl cd = (TypestateClassDecl) this;
@@ -155,18 +156,22 @@ aspect getGraph {
 /*****************************************************************************************************/
 
 	syn Set<VariableDecl> MethodDecl.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
-//	syn Set<MethodDecl> MethodDecl.getMethodDecls() = getClassDeclAncestor().getMethodDecls();
+	syn Set<MethodDecl> MethodDecl.getMethodDecls() = getClassDeclAncestor().getMethodDecls();
 
 	private boolean MethodDecl.isGraph = false;
 	protected boolean MethodDecl.isGraph() {return isGraph;}
 	syn lazy boolean MethodDecl.getGraph() {
 		isGraph = true;
 
+		for(MethodDecl md : selfSuccessors())
+			if(md.isGraph() == false)
+				md.getGraph();
+
 		Set<TypestateVar> env = new HashSet<TypestateVar>();
 
 		for(VariableDecl vd : getTypestateFields()) {
 			if(vd.typestate == null)
-				vd.typestate = new TypestateField(/*getMethodDecls()*/);
+				vd.typestate = new TypestateField(getMethodDecls());
 			env.add(vd.typestate);
 		}
 
@@ -196,7 +201,7 @@ aspect getGraph {
 	syn GraphNode MethodDecl.getParameterTypestate(int i) {
 		if(getParameter(i).typestate == null)
 			getParameter(i).typestate = new TypestatePar();
-		return getParameter(i).typestate.getConnectionTypestate(/*null*/);
+		return getParameter(i).typestate.getConnectionTypestate(null);
 	}
 
 /*****************************************************************************************************/
@@ -634,33 +639,36 @@ aspect getGraph {
 
 	//TODO implement me
 	eq MethodAccess.getGraph(Set<TypestateVar> env) {
-		for(int i = getNumArg() - 1; i >= 0; i--)
-			getArg(i).getGraph(env);
 
-		MethodDecl md = lookupMethod(getQualifiedType());		//TODO what if it is null??
-		if(md == null)
-			return false;
-		//TODO case of recursion
-		/*if(isThisAccess()) {
-			for(VariableDecl vd : getTypestateFields())
-				vd.typestate.current = vd.typestate.getConnectionTypestate(md);
-		}
-				//vd.typestate.current = vd.typestate.getConnectionTypestate();
+		MethodDecl md = getTarget();
 
-		else*/ if(getQualifiedType().isTypestateClassDeclType()) {
-			TypestateVar t = getQualifiedTypestateVar();
-			if (t != null)
-				t.current = new MethodNode(getID(), getParameterTypes()).addNext(t.current);
-		}
+		if(md != null) {
+			//TODO case of recursion
+			if(isThisAccess()) {
+				if(isRecursiveCall())
+					for(VariableDecl vd : getTypestateFields())
+						vd.typestate.current = vd.typestate.getConnectionTypestate(md);
+				else
+					for(VariableDecl vd : getTypestateFields())
+						vd.typestate.getMethodAccessGraph(md);
+			}
+			else if(getQualifiedType().isTypestateClassDeclType()) {
+				TypestateVar t = getQualifiedTypestateVar();
+				if (t != null)
+					t.current = new MethodNode(getID(), getParameterTypes()).addNext(t.current);
+			}
 
-		//TODO is the order correct here?
-		for(int i = getNumArg() - 1; i >= 0; i--) {
-			TypestateVar t = getArg(i).getTypestateVar();
-			if(t != null) {
-				t.checkError(getArg(i));
-				t.current = md.getParameterTypestate(i);
+			for(int i = getNumArg() - 1; i >= 0; i--) {
+				TypestateVar t = getArg(i).getTypestateVar();
+				if(t != null) {
+					t.checkError(getArg(i));
+					t.current = md.getParameterTypestate(i);
+				}
 			}
 		}
+
+		for(int i = getNumArg() - 1; i >= 0; i--)
+			getArg(i).getGraph(env);
 
 		if(getType().isTypestateClassDeclType())
 			typestate.addTypestate(this);

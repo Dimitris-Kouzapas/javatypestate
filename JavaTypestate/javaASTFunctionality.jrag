@@ -68,7 +68,10 @@ aspect javaASTFunctionality {
 						return m;
 		}
 		return null;
-	} 
+	}
+
+	coll Set<MethodDecl> MethodDecl.selfSuccessors() [new HashSet<MethodDecl>()] with add root MethodDecl;
+	coll Set<MethodAccess> MethodDecl.selfMethodAccess() [new HashSet<MethodAccess>()] with add root MethodDecl;
 
 	syn lazy String MethodDecl.signature() {
 		// TODO Dont need getModifiers().toString();??
@@ -84,6 +87,34 @@ aspect javaASTFunctionality {
 	}
 
 	/*	MethodAccess							*/
+
+	MethodAccess contributes getTarget() when getTarget() != null && isThisAccess() == true
+	to MethodDecl.selfSuccessors() for getMethodDeclAncestor();
+
+	MethodAccess contributes this when getTarget() != null && isThisAccess() == true
+	to MethodDecl.selfMethodAccess() for getMethodDeclAncestor();
+
+	inh ClassDecl MethodAccess.getClassDeclAncestor();
+	inh MethodDecl MethodAccess.getMethodDeclAncestor();
+	syn Set<VariableDecl> MethodAccess.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
+
+	syn lazy Set<MethodDecl> MethodAccess.selfSuccessors() = getTarget() != null ? getTarget().selfSuccessors() : new HashSet<MethodDecl>(); 
+	syn Set<MethodDecl> MethodAccess.reachable() circular [new HashSet<MethodDecl>()];
+
+	eq MethodAccess.reachable() {
+		Set result = new HashSet<MethodDecl>();
+		result.addAll(selfSuccessors());
+		for(MethodDecl md: selfSuccessors())
+			for(MethodAccess ma : md.selfMethodAccess())
+				result.addAll(ma.reachable());
+
+		return result;
+	}
+
+	syn lazy boolean MethodAccess.isRecursiveCall() = reachable().contains(getMethodDeclAncestor());
+
+
+	syn lazy MethodDecl MethodAccess.getTarget() = lookupMethod(getQualifiedType());
 	syn lazy String MethodAccess.signature() {
 		String s = getID() + "(";
 		for(int i = 0; i < getNumArg(); i++) {
@@ -94,10 +125,6 @@ aspect javaASTFunctionality {
 
 		return s + ")";
 	}
-
-	inh ClassDecl MethodAccess.getClassDeclAncestor();
-	inh MethodDecl MethodAccess.getMethodDeclAncestor();
-	syn Set<VariableDecl> MethodAccess.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
 
 	/*	Access								*/
 	syn lazy boolean Expr.isAccess() = false;

@@ -521,10 +521,11 @@ aspect dataStructures {
 
 		protected void connectTypestate(MethodDecl md) {}
 
-		protected GraphNode getConnectionTypestate(/*MethodDecl md*/) {
+		protected GraphNode getConnectionTypestate(MethodDecl md) {
 			return null;
 		}
 
+		protected void getMethodAccessGraph(MethodDecl md) {}
 		protected void getMethodGraph(MethodDecl m) {}
 
 		protected void reportErrors(String errorMessage) {
@@ -558,7 +559,7 @@ aspect dataStructures {
 			parameterNode.addNext(current);
 		}
 
-		protected GraphNode getConnectionTypestate(/*MethodDecl md*/) {
+		protected GraphNode getConnectionTypestate(MethodDecl md) {
 			return parameterNode;
 		}
 	}
@@ -582,13 +583,13 @@ aspect dataStructures {
 		private GraphNode endGraph;
 		private Expr endExpr;
 
-		TypestateField(/*Set<MethodDecl> methodDecls*/) {
+		TypestateField(Set<MethodDecl> methodDecls) {
 			super();
 
 			methodStartGraph = new HashMap<MethodDecl, GraphNode>();
 
-		//	for(MethodDecl md : methodDecls)
-		//		methodStartGraph.put(md, new LoopNode());
+			for(MethodDecl md : methodDecls)
+				methodStartGraph.put(md, new LoopNode());
 
 			methodEndGraph = new HashMap<MethodDecl, GraphNode>();
 			methodEndExpr = new HashMap<MethodDecl, Expr>();
@@ -617,11 +618,11 @@ aspect dataStructures {
 
 		protected void connectTypestate(MethodDecl md) {
 			//EndGraph is the same as startNode
-		//	current = methodStartGraph.get(md).addNext(current);
+			current = methodStartGraph.get(md).addNext(current);
 			if(endGraph == null)
 				endGraph = current;
 
-			methodStartGraph.put(md, current);
+		//	methodStartGraph.put(md, current);
 			methodEndGraph.put(md, endGraph);
 			methodEndExpr.put(md, endExpr);
 			current = new LoopNode();
@@ -629,9 +630,22 @@ aspect dataStructures {
 			endExpr = null;
 		}
 
-//		protected GraphNode getConnectionTypestate(/*MethodDecl md*/) {
-//			return methodStartGraph.get(md);
-//		}
+		protected GraphNode getConnectionTypestate(MethodDecl md) {
+			return methodStartGraph.get(md);
+		}
+
+		//TODO redudancy
+		protected void getMethodAccessGraph(MethodDecl md) {
+			GraphNode n1 = methodStartGraph.get(md);
+			GraphNode n2 = methodEndGraph.get(md);
+
+			if(!n1.equals(n2)) {
+				current = n2.cloneGraph(current);
+				if(current.onlyEndNodes() == -1)
+					addTypestate(methodEndExpr.get(md));
+			}
+			current = n1.cloneGraph(current);
+		}
 
 		protected void getMethodGraph(MethodDecl md) {
 			GraphNode n1 = methodStartGraph.get(md);
