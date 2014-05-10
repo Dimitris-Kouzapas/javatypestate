@@ -56,6 +56,7 @@ aspect typestateSemanticCheck {
 				//	if(!t.getEnumDecl().getEnumLabels().contains(s))
 				//		addSemanticError("Label " + s + " is not defined in the enumeration type " + t.getEnumDecl().getID() + ".");
 				//}
+				//TODO recheck
 				for(String s : t.getEnumDecl().getEnumLabels()) {
 					if(!((TypestateSwitch) getTypestate()).getLabels().contains(s))
 						addSemanticError("Label " + s + " defined for the enumeration type " + t.getEnumDecl().getID() + " is not defined as a switch label.");

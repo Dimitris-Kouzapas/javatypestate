@@ -207,8 +207,8 @@ aspect javaASTFunctionality {
 	inh ClassDecl VariableDecl.getClassDeclAncestor();
 
 	/*	SwitchStmt							*/
-	coll Set<Expr> SwitchStmt.getCaseLabels() [new HashSet<Expr>()] with add root SwitchStmt;
-	ConstCase contributes getValue() to SwitchStmt.getCaseLabels() for getSwitchStmtAncestor();
+	coll Set<String> SwitchStmt.getCaseLabels() [new HashSet<String>()] with add root SwitchStmt;
+	ConstCase contributes getValue().toString() to SwitchStmt.getCaseLabels() for getSwitchStmtAncestor();
 
 	inh SwitchStmt Case.getSwitchStmtAncestor();
 	eq SwitchStmt.getBlock().getSwitchStmtAncestor() = this;
