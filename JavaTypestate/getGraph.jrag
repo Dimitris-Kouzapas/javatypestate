@@ -102,6 +102,10 @@ aspect getGraph {
 			if(md.isGraph() == false)
 				md.getGraph();
 
+		//for(ConstructorDecl cd : getConstructorDecls())
+		//	if(cd.isGraph() == false)
+		//		cd.getGraph();
+
 		if(isTypestateClassDeclType()) {
 			TypestateClassDecl cd = (TypestateClassDecl) this;
 			if(cd.existsTypestateDecl()) {
@@ -110,7 +114,12 @@ aspect getGraph {
 				for(VariableDecl vd: getTypestateFields()) {
 					vd.typestate.current = new EndNode();
 					cd.getFieldGraph(r, vd, new HashMap<GraphNode, GraphNode>());
-					vd.typestate.checkError(vd);
+				//	GraphNode n = vd.typestate.current;
+				//	for(ConstructorDecl c : getConstructorDecls()) {
+				//		vd.typestate.current = n;
+				//		vd.typestate.getMethodGraph(c);
+						vd.typestate.checkError(vd);
+				//	}
 				}
 			}
 		}
@@ -171,7 +180,7 @@ aspect getGraph {
 
 		for(VariableDecl vd : getTypestateFields()) {
 			if(vd.typestate == null)
-				vd.typestate = new TypestateField(getMethodDecls());
+				vd.typestate = new TypestateField(/*getMemberDecls()*/getMethodDecls());
 			env.add(vd.typestate);
 		}
 
@@ -204,6 +213,53 @@ aspect getGraph {
 		return getParameter(i).typestate.getConnectionTypestate(null);
 	}
 
+/*****************************************************************************************************/
+/*
+	inh ClassDecl ConstructorDecl.getClassDeclAncestor();
+	syn Set<VariableDecl> ConstructorDecl.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
+//	syn Set<MethodDecl> MethodDecl.getMethodDecls() = getClassDeclAncestor().getMethodDecls();
+
+	private boolean ConstructorDecl.isGraph = false;
+	protected boolean ConstructorDecl.isGraph() {return isGraph;}
+	syn lazy boolean ConstructorDecl.getGraph() {
+		isGraph = true;
+
+		for(ConstructorDecl md : selfSuccessors())
+			if(md.isGraph() == false)
+				md.getGraph();
+
+		Set<TypestateVar> env = new HashSet<TypestateVar>();
+
+		for(VariableDecl vd : getTypestateFields()) {
+			if(vd.typestate == null)
+				vd.typestate = new TypestateField(getMemberDecls());
+			env.add(vd.typestate);
+		}
+
+		for(int i = 0; i < getNumParameter(); i++)
+			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
+				if(getParameter(i).typestate == null)
+					getParameter(i).typestate = new TypestatePar();
+				env.add(getParameter(i).typestate);
+			}
+
+		getBlock().getGraph(env);
+
+		for(int i = 0; i < getNumParameter(); i++)
+			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
+				getParameter(i).typestate.connectTypestate(null);
+				env.remove(getParameter(i).typestate);
+			}
+
+		for(TypestateVar tv : env) {
+			tv.connectTypestate(this);
+			env.remove(tv);
+		}
+
+		return true;
+	}
+
+*/
 /*****************************************************************************************************/
 
 	//Note: the next case of code is not a valid java statement

@@ -93,9 +93,7 @@ aspect typestateFunctionality {
 	syn TType TTypeList.getTType(int i) = null;
 
 	syn lazy String TypestateMethod.signature() {
-		//TODO does the signature includes return type??
-//		String s = getTType().getAccess().toString() + " " + getID() + "(";
-		String s = getID() + "(";
+		String s = getTType().getAccess().toString() + " " + getID() + "(";
 		for(int i = 0; i < getTTypeList().getNumTType(); i ++) {
 			if(i != 0)
 				s += ", ";

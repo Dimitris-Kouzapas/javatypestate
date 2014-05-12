@@ -75,9 +75,7 @@ aspect javaASTFunctionality {
 
 	syn lazy String MethodDecl.signature() {
 		// TODO Dont need getModifiers().toString();??
-		// TODO Dont need return type????
-		// String s = getTypeAccess().toString() + " " + getID() + "(";
-		String s = getID() + "(";
+		String s = getTypeAccess().toString() + " " + getID() + "(";
 		for(int i = 0; i < getNumParameter(); i++) {
 			if (i != 0)
 				s += ", ";
