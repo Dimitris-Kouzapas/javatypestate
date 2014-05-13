@@ -31,21 +31,21 @@ class Main {
 		AgreementLabel buyer1RecAgreement = buyer1.receiveLabelFromBuyer2();
 		AgreementLabel sellerRecAgreement = seller.receiveLabelFromBuyer2();
 		
-		switch (buyer2SendAgreement.getEnum()) {
+		switch (buyer2.sendToSellerBuyer1("AGREE").getEnum()) {
 			case AgreementLabel.AGREE:
 				buyer2.transferMoneyToSeller("42 pounds");
 			case AgreementLabel.QUIT:
 				System.out.println("The book is too expensive! I am not paying for it!");
 		}
 
-		switch (buyer1RecAgreement.getEnum()) {
+		switch (buyer1.receiveLabelFromBuyer2().getEnum()) {
 			case AgreementLabel.AGREE:
 				buyer1.transferMoneyToSeller("38 pounds");
 			case AgreementLabel.QUIT:
 				System.out.println("Buyer2 does not agree to the specified quote.");
 		}
 
-		switch (sellerRecAgreement.getEnum()) {
+		switch (seller.receiveLabelFromBuyer2().getEnum()) {
 			case AgreementLabel.AGREE:
 				String money;
 				money = seller.receiveMoneyFromBothBuyers();
