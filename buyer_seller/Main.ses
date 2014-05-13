@@ -26,10 +26,10 @@ class Main {
 		buyer1.sendQuoteToBuyer2("42 pounds");
 		String quote = buyer2.receiveQuoteFromBuyer1();
 		// Buyer2 can choose between AGREE and QUIT and send the label to buyer1 and seller
-		AgreementLabel buyer2SendAgreement = buyer2.sendToSellerBuyer1("AGREE");
+//		AgreementLabel buyer2SendAgreement = buyer2.sendToSellerBuyer1("AGREE");
 		// Buyer1 and seller receive the agreement label
-		AgreementLabel buyer1RecAgreement = buyer1.receiveLabelFromBuyer2();
-		AgreementLabel sellerRecAgreement = seller.receiveLabelFromBuyer2();
+//		AgreementLabel buyer1RecAgreement = buyer1.receiveLabelFromBuyer2();
+//		AgreementLabel sellerRecAgreement = seller.receiveLabelFromBuyer2();
 		
 		switch (buyer2.sendToSellerBuyer1("AGREE").getEnum()) {
 			case AgreementLabel.AGREE:
