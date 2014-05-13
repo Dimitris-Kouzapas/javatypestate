@@ -1,0 +1,49 @@
+aspect LookupConstructor {
+
+	syn lazy TypeDecl[] ConstructorAccess.getParameterTypes() {
+		TypeDecl[] ParameterAccess = new TypeDecl[getNumArg()];
+		for(int i = 0; i < getNumArg(); i++)
+			ParameterAccess[i] = getArg(i).getType();
+		return ParameterAccess;
+	}
+
+	inh ClassDecl ConstructorAccess.getClassDeclAncestor();
+
+	syn ConstructorDecl ConstructorAccess.getTarget() = getClassDeclAncestor().lookupConstructor(getParameterTypes());
+	//For future work
+	syn ConstructorDecl SuperConstructorAccess.getTarget() {
+		if(getClassDeclAncestor().hasSuperClassAccess())
+			return getClassDeclAncestor().getSuperClassAccess().lookupType().lookupConstructor(getParameterTypes());
+		return null;
+	}
+
+	coll Set<ConstructorDecl> ClassDecl.getConstructorDecls() [new HashSet<ConstructorDecl>()] with add root ClassDecl;
+	ConstructorDecl contributes this to ClassDecl.getConstructorDecls() for getClassDeclAncestor();
+
+	syn ConstructorDecl TypeDecl.lookupConstructor(TypeDecl[] parameters) = null;
+	eq ClassDecl.lookupConstructor(TypeDecl[] parameters) {
+		for(ConstructorDecl cd: getConstructorDecls())
+			if(cd.isTarget(parameters))
+				return cd;
+
+		return null;
+	}
+
+	syn boolean ConstructorDecl.isTarget(TypeDecl[] parameters) {
+		if(getNumParameter() != parameters.length)
+			return false;
+
+		for(int i = 0; i < getNumParameter(); i++) {
+			TypeDecl t = getParameter(i).getTypeAccess().lookupType();
+			//null type should not be matched with primitive type
+			//noname type should be matched with any type
+			//t can never be instanceof NullType
+			//overriden equals(Object o) method
+			if(!parameters[i].equals(t) && !(t instanceof NoNameType))
+				return false;
+		}
+
+		return true;
+	}
+
+}

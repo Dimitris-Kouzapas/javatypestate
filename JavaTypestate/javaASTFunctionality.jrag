@@ -49,7 +49,7 @@ aspect javaASTFunctionality {
 		getTypestateArg().lookupType().isTypestateDeclType() ? getTypestateArg().lookupType().getTypestateDecl() : null;
 
 	/*	MethodDecl								*/
-	inh ClassDecl MethodDecl.getClassDeclAncestor();
+	//inh ClassDecl MethodDecl.getClassDeclAncestor();
 
 	eq MethodDecl.getBlock().getMethodDeclAncestor() = this;
 	eq CompilationUnit.getTypeDecl().getMethodDeclAncestor() = null;
@@ -110,9 +110,8 @@ aspect javaASTFunctionality {
 	}
 
 	syn lazy boolean MethodAccess.isRecursiveCall() = reachable().contains(getMethodDeclAncestor());
-
-
 	syn lazy MethodDecl MethodAccess.getTarget() = lookupMethod(getQualifiedType());
+
 	syn lazy String MethodAccess.signature() {
 		String s = getID() + "(";
 		for(int i = 0; i < getNumArg(); i++) {

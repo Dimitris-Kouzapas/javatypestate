@@ -1,0 +1,72 @@
+Java Typestate
+
+- Semantic check
+	i) Typestate check
+		Check for duplicate states.
+		Check for non-reachable states.
+		Check for circular references in state definitions.
+		Check return and parameters that are defined as typestate types that
+		their typestate is defined.
+		Check return and parameters that are not defined as typestates that
+		their types exist.
+		Check for duplicate labels on switch.
+		Check that a switch is preceded by a method that returns an enumeration type.
+		Check that a switch implements all the enumerations from the range of
+		the return values of its preceding method.
+		Check that a typestate is deterministic, i.e. it has no duplicate methods
+		on its continuation list.
+
+	ii) Java Check
+		Check that the typestate for a class exists.
+		Check that typestate fields are defined only in typestate class.
+		Check that typestate fields are private and non static.
+		Check that typestate variables are not arrays.
+		Check that the methods that return typestate types are defined
+		in the typestate.
+		Check that methods not defined in the typestate definition
+		and change the typestate of the fields of the class, cannot be
+		used outside the class, i.e. they are private.
+		Check that we cannot self-call a method that changes the typestate of the
+		fields on the self object.
+		Check that an enumeration switch implements all the cases in
+		its enumeration argument.
+
+- Typestate check
+	i)   Local Variables.
+	ii)  Fields.
+	iii) Return types.
+	iii) Method Recursion.
+
+- Limitations
+	i)  Should allow methods not defined in the typestate to return
+	typestate objects.
+	ii) Do not have a link type for switch yet. An enumeration method should
+	be called inside the switch condition
+	e.g.
+	switch(o.foo().getEnum()) {
+		case E.A:
+		case E.B:
+	}
+	will typecheck. On the other hand
+
+	E e = o.foo();
+	switch(e.getEnum()) {
+		case E.A:
+		case E.B:
+	}
+	will not typecheck.
+
+	iii) Cannot typestate the instantiation of an object inside a parameter list.
+	e.g.
+	foo(new O());
+	will not typecheck for typestate object O, but
+	foo(o = new O())
+	will typecheck.
+	The reason the former won't typecheck
+	is because their is no handler to make the check on.
+	I am working on how to solve this problem.
+
+
+
+
+
