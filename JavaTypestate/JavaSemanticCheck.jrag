@@ -1,9 +1,5 @@
 aspect JavaSemanticCheck {
 	//TODO check for no linear expressions in the throw and try stmts??
-	//TODO check for calling linear methods on the this keyword (inside linear methods)??
-	//TODO how about constructor calls??... no linear calls.
-
-	//TODO check the use of typestate fields in non typestate method
 
 	protected void TypestateClassDecl.semanticCheck() {
 		if(!existsTypestateDecl())
@@ -121,7 +117,7 @@ aspect JavaSemanticCheck {
 		}
 
 		if(isThisAccess()) {
-			MethodDecl md = lookupMethod(getQualifiedType());	//TODO what if md == null
+			MethodDecl md = lookupMethod(getQualifiedType());
 			if(md != null && !md.getUsedTypestateFields().isEmpty() && !getMethodDeclAncestor().isTypestateMethod())
 				addSemanticError(
 					"Cannot call a method that uses typestate fields inside a method that is not defined in the typestate."
@@ -151,5 +147,4 @@ aspect JavaSemanticCheck {
 			}
 		}
 	}
-	//TODO check assignments (and new variable assigments) or maybe they are ok due to private typestate types
 }

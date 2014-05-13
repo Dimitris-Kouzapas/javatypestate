@@ -209,10 +209,8 @@ aspect getGraph {
 				env.remove(getParameter(i).typestate);
 			}
 
-		for(TypestateVar tv : env) {
+		for(TypestateVar tv : env)
 			tv.connectTypestate(this);
-			env.remove(tv);
-		}
 
 		return true;
 	}
@@ -265,10 +263,8 @@ aspect getGraph {
 				env.remove(getParameter(i).typestate);
 			}
 
-		for(TypestateVar tv : env) {
+		for(TypestateVar tv : env)
 			tv.connectTypestate(this);
-			env.remove(tv);
-		}
 
 		return true;
 	}
