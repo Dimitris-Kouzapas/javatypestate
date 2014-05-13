@@ -9,30 +9,27 @@ class Buyer1 typestate Buyer1Protocol {
 		this.socketBuyer2 = socketBuyer2;
 	}
 
-	void sendTitleToSeller(String title) {
+	public void sendTitleToSeller(String title) {
 		this.socketSeller.send(this, title);
 	}
 
-	String receivePriceFromSeller() {
+	public String receivePriceFromSeller() {
 		return this.socketSeller.receive(this);
 	}
 
-	void sendQuoteToBuyer2(String quote) {
+	public void sendQuoteToBuyer2(String quote) {
 		this.socketBuyer2.send(this, quote);
 	}
 
-	AgreementLabel receiveLabelFromBuyer2() {
+	public AgreementLabel receiveLabelFromBuyer2() {
 		String label = this.socketBuyer2.receive(this);
 		if (label.equals("AGREE")) {
-			// If it is agree, TalkToSeller ...
-
 			return new AgreementLabel(AgreementLabel.AGREE);
 		}
-
 		return new AgreementLabel(AgreementLabel.QUIT);	
 	}
 
-	void transferMoneyToSeller(String money) {
+	public void transferMoneyToSeller(String money) {
 		this.socketSeller.send(this, money);
 	}
 }

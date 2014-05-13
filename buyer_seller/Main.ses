@@ -1,5 +1,7 @@
 package buyer_seller;
 
+import java.io.*;
+
 class Main {
 	
 	public static void main(String[] args) {
@@ -17,7 +19,69 @@ class Main {
 		socketSellerBuyer2.setEndpoints(seller, buyer2);
 		socketBuyer1Buyer2.setEndpoints(buyer1, buyer2);
 
-		//
+		buyer1.sendTitleToSeller("Alice's Adventures In Wonderland");
+		String title = seller.receiveTitleFromBuyer1();
+		seller.sendPriceToBuyer1("The book costs 80 pounds");
+		buyer1.receivePriceFromSeller();
+		buyer1.sendQuoteToBuyer2("42 pounds");
+		String quote = buyer2.receiveQuoteFromBuyer1();
+		// Buyer2 can choose between AGREE and QUIT and send the label to buyer1 and seller
+		AgreementLabel buyer2SendAgreement = buyer2.sendToSellerBuyer1("AGREE");
+		// Buyer1 and seller receive the agreement label
+		AgreementLabel buyer1RecAgreement = buyer1.receiveLabelFromBuyer2();
+		AgreementLabel sellerRecAgreement = seller.receiveLabelFromBuyer2();
+		
+		switch (buyer2SendAgreement.getEnum()) {
+			case AgreementLabel.AGREE:
+				buyer2.transferMoneyToSeller("42 pounds");
+			case AgreementLabel.QUIT:
+				System.out.println("The book is too expensive! I am not paying for it!");
+		}
 
+		switch (buyer1RecAgreement.getEnum()) {
+			case AgreementLabel.AGREE:
+				buyer1.transferMoneyToSeller("38 pounds");
+			case AgreementLabel.QUIT:
+				System.out.println("Buyer2 does not agree to the specified quote.");
+		}
+
+		switch (sellerRecAgreement.getEnum()) {
+			case AgreementLabel.AGREE:
+				String money;
+				money = seller.receiveMoneyFromBothBuyers();
+			case AgreementLabel.QUIT:
+				System.out.println("Bye bye!");
+		}
+
+		// // This is the protocol for buyer1
+		// buyer1.receivePriceFromSeller();
+		// buyer1.sendQuoteToBuyer2("42 pounds");
+		// switch (buyer1.receiveLabelFromBuyer2().getEnum()) {
+		// 	case AgreementLabel.AGREE:
+		// 		buyer1.transferMoneyToSeller("38 pounds");
+		// 	case AgreementLabel.QUIT:
+		// 		System.out.println("Buyer2 does not agree to the specified quote.");
+		// }
+		
+		// // This is the protocol for buyer2
+		// // Buyer2 can choose between AGREE and QUIT
+		// AgreementLabel sendAgreement = buyer2.sendToSellerBuyer1("AGREE");
+		// switch (sendAgreement.getEnum()) {
+		// 	case AgreementLabel.AGREE:
+		// 		buyer2.transferMoneyToSeller("42 pounds");
+		// 	case AgreementLabel.QUIT:
+		// 		System.out.println("The book is too expensive! I am not paying for it!");
+		// }
+
+		// // This is the protocol for seller
+		// seller.sendPriceToBuyer1("The book costs 80 pounds");
+		// AgreementLabel recAgreement = seller.receiveLabelFromBuyer2();
+		// switch (recAgreement.getEnum()) {
+		// 	case AgreementLabel.AGREE:
+		// 		String money;
+		// 		money = seller.receiveMoneyFromBothBuyers();
+		// 	case AgreementLabel.QUIT:
+		// 		System.out.println("Bye bye!");
+		// }
 	}
 }
