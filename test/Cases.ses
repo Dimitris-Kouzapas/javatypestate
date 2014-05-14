@@ -5,7 +5,7 @@ class Cases {
 	number n = new number(number.ena);
 
 	static void main(MyObject d) {
-		MyObject a = new MyObject();
+		//MyObject a = new MyObject();
 		int c;
 //		switch(a.s.s.s.s.s.ee) {
 //		switch(test.mytypestate.MyObject.s) {
@@ -19,5 +19,5 @@ class Cases {
 		}
 	}
 
-	MyObject foo() {}
+	int foo() {}
 }

@@ -4,7 +4,7 @@ class MyObject typestate ABCD {
 	Choice cc;
 	number e;
 
-	MyObject foo(MyObject aa) {
+	void foo(MyObject aa) {
 		MyObject s = new MyObject();
 		s.foo(new My());
 		s = new MyObject();
