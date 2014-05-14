@@ -156,7 +156,6 @@ aspect getGraph {
 			vd.typestate.getMethodGraph(md);
 
 		vd.typestate.current = s.addNext(vd.typestate.current);
-		
 
 		return vd.typestate.current;
 	}
@@ -615,6 +614,8 @@ aspect getGraph {
 			else if((s = getSource().getTypestateVar()) != null) {
 				s.checkError(getSource());
 				s.current = d.current;
+				//TODO problem here... when assigning a field we might lose the continuation in another method -
+				//TODO do the same for variableDecl and argument passing.
 				d.resetCurrent();
 			}
 		}
