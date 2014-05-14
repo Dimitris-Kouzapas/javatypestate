@@ -20,23 +20,23 @@
 		}
 
 		public void unexpectedTokenRemoved(Symbol token) {
-			String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
-			errors.add(new TypestateWarning("Unexpected token removed \"" + value + "\"", null, token.getStart(), token.getEnd()));
+//			String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
+//			errors.add(new TypestateWarning("Unexpected token removed \"" + value + "\"", null, token.getStart(), token.getEnd()));
 		}
 
 		public void missingTokenInserted(Symbol token) {
-			String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
-			errors.add(new TypestateWarning("Missing token inserted \"" + value + "\"", null, token.getStart(), token.getEnd()));
+//			String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
+//			errors.add(new TypestateWarning("Missing token inserted \"" + value + "\"", null, token.getStart(), token.getEnd()));
 		}
 
 		public void misspelledTokenReplaced(Symbol token) {
-			String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
-			errors.add(new TypestateWarning("Misspelled token replaced \"" + value + "\"", null, token.getStart(), token.getEnd()));
+//			String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
+//			errors.add(new TypestateWarning("Misspelled token replaced \"" + value + "\"", null, token.getStart(), token.getEnd()));
 		}
 
 		public void errorPhraseRemoved(Symbol error) {
-			String value = error.value != null ? error.value.toString() : Terminals.NAMES[error.getId()];
-			errors.add(new TypestateWarning("Error phrase removed \"" + value + "\"", null, error.getStart(), error.getEnd()));
+//			String value = error.value != null ? error.value.toString() : Terminals.NAMES[error.getId()];
+//			errors.add(new TypestateWarning("Error phrase removed \"" + value + "\"", null, error.getStart(), error.getEnd()));
 		}
 	}
 

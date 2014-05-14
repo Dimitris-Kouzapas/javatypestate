@@ -255,6 +255,8 @@ aspect getGraph {
 				env.add(getParameter(i).typestate);
 			}
 
+		if(hasConstructorInvocation())
+			getConstructorInvocation().getGraph(env);
 		getBlock().getGraph(env);
 
 		for(int i = 0; i < getNumParameter(); i++)
@@ -711,13 +713,29 @@ aspect getGraph {
 			for(VariableDecl vd : getTypestateFields())
 				vd.typestate.getMethodAccessGraph(md);
 
-			for(int i = getNumArg() - 1; i >= 0; i--) {
-				TypestateVar t = getArg(i).getTypestateVar();
-				if(t != null) {
-					t.checkError(getArg(i));
-					t.current = md.getParameterTypestate(i);
-				}
+			for(int i = md.getNumParameter() - 1; i >= 0; i--) {
+				TypestateVar dest = md.getParameter(i).typestate;
+				TypestateVar source;
+				if(dest != null) {
+					if(getArg(i) instanceof ClassInstanceExpr) {
+						dest.current = new InitNode().addNext(md.getParameterTypestate(i));
+						dest.addTypestate(getArg(i));
+					}
+					else if((source = getArg(i).getTypestateVar()) != null) {
+						source.checkError(getArg(i));
+						source.current = md.getParameterTypestate(i);
+					}
+				}				
+
 			}
+
+//			for(int i = getNumArg() - 1; i >= 0; i--) {
+//				TypestateVar t = getArg(i).getTypestateVar();
+//				if(t != null) {
+//					t.checkError(getArg(i));
+//					t.current = md.getParameterTypestate(i);
+//				}
+//			}
 		}
 
 
@@ -746,17 +764,34 @@ aspect getGraph {
 					t.current = new MethodNode(getID(), getParameterTypes()).addNext(t.current);
 			}
 
-			for(int i = getNumArg() - 1; i >= 0; i--) {
-				TypestateVar t = getArg(i).getTypestateVar();
-				if(t != null) {
-					t.checkError(getArg(i));
-					t.current = md.getParameterTypestate(i);
-				//	if(getArg(i) instanceof ClassInstanceExpr) {
-				//		md.getParameter(i).typestate.current = new InitNode().addNext(t.current);
-				//		md.getParameter(i).typestate.addTypestate(getArg(i));
-				//	}
-				}
+			for(int i = md.getNumParameter() - 1; i >= 0; i--) {
+				TypestateVar dest = md.getParameter(i).typestate;
+				TypestateVar source;
+				if(dest != null) {
+					if(getArg(i) instanceof ClassInstanceExpr) {
+						dest.current = new InitNode().addNext(md.getParameterTypestate(i));
+						dest.addTypestate(getArg(i));
+					}
+					else if((source = getArg(i).getTypestateVar()) != null) {
+						source.checkError(getArg(i));
+						source.current = md.getParameterTypestate(i);
+					}
+				}				
+
 			}
+
+
+		//	for(int i = getNumArg() - 1; i >= 0; i--) {
+		//		TypestateVar t = getArg(i).getTypestateVar();
+		//		if(t != null) {
+		//			t.checkError(getArg(i));
+		//			t.current = md.getParameterTypestate(i);
+		//		//	if(getArg(i) instanceof ClassInstanceExpr) {
+		//		//		md.getParameter(i).typestate.current = new InitNode().addNext(t.current);
+		//		//		md.getParameter(i).typestate.addTypestate(getArg(i));
+		//		//	}
+		//		}
+		//	}
 		}
 
 		for(int i = getNumArg() - 1; i >= 0; i--)
