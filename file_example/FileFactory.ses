@@ -2,8 +2,18 @@ package file_example;
 
 class FileFactory typestate FactoryProtocol {
 	private File myFile;
+	FactoryProtocol() {
+		File a  = new File("txt");
+		this(a);
+		//myFile = new myFile();
+	}
+
+	FactoryProtocol(File f) {
+		myFile = f;//new myFile();
+	}
+
 	File new_File() {
-		myFile = new File("file.txt");
+		//myFile = new File("file.txt");
 		//myFile.open();
 		//foo();
 		return myFile;

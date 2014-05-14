@@ -34,10 +34,16 @@ class File typestate FileProtocol {
 		readBuffer[i++] = reader.read();
 	}
 
+	//The next two methods demonstrate that
+	// a created typestate object can
+	// be assigned in a linear way and
+	// passed around as an argument
+
 	public static void main(String[] args) {
-	//	File myFile = new File("file.txt");
-	//	File a = myFile;
-	//	processFile(a);
+		//File myFile = new File("file.txt");
+		//File a = myFile;
+		//processFile(a);
+		processFile(new File("file.txt"));
 	}
 
 	public static void processFile(File myFile) {
@@ -56,12 +62,9 @@ class File typestate FileProtocol {
 				myFile.close();
 				break;
 			case Status.ERROR:
-				System.out.println("file not found!");
+				System.out.println("file not found!!!!");
 				break;
 		}
-
-		//myFile.close();
-
 	}
 
 }
