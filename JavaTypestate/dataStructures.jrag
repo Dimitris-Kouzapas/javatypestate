@@ -485,6 +485,8 @@ aspect dataStructures {
 		private ArrayList<GraphNode> errorTypestate;
 		private ArrayList<ASTNode> errorNode;
 
+//		private TypestateVar fieldVar;
+
 		TypestateVar() {
 			current = new EndNode();
 
@@ -495,6 +497,7 @@ aspect dataStructures {
 
 			errorTypestate = new ArrayList<GraphNode>();
 			errorNode = new ArrayList<ASTNode>();
+//			fieldVar = null;
 		}
 
 		protected void addTypestate(Expr e) {
@@ -524,6 +527,10 @@ aspect dataStructures {
 		protected GraphNode getConnectionTypestate(BodyDecl md) {
 			return null;
 		}
+
+//		protected void setFieldVar(TypestateVar fv) {
+//			fieldVar = fv;
+//		}
 
 		protected void getMethodAccessGraph(BodyDecl md) {}
 		protected void getMethodGraph(BodyDecl m) {}
@@ -581,6 +588,7 @@ aspect dataStructures {
 		private Map<BodyDecl, GraphNode> methodEndGraph;
 		private Map<BodyDecl, Expr> methodEndExpr;
 
+//		private boolean setEndGraph;
 		private GraphNode endGraph;
 		private Expr endExpr;
 
@@ -595,12 +603,14 @@ aspect dataStructures {
 			methodEndGraph = new HashMap<BodyDecl, GraphNode>();
 			methodEndExpr = new HashMap<BodyDecl, Expr>();
 			current = new LoopNode();
+//			setEndGraph = false;
 			endGraph = null;
 			endExpr = null;
 		}
 
 		protected void addTypestate(Expr e) {
-			if(endGraph == null) {
+			if(endGraph == null/*setEndGraph == false*/) {
+//				setEndGraph = true;
 				endGraph = current;
 				endExpr = e;
 				resetCurrent();
@@ -627,6 +637,7 @@ aspect dataStructures {
 			methodEndGraph.put(md, endGraph);
 			methodEndExpr.put(md, endExpr);
 			current = new LoopNode();
+//			setEndGraph = false;
 			endGraph = null;
 			endExpr = null;
 		}

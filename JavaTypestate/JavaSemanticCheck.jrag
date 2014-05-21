@@ -118,7 +118,7 @@ aspect JavaSemanticCheck {
 
 		if(isThisAccess()) {
 			MethodDecl md = lookupMethod(getQualifiedType());
-			if(md != null && !md.getUsedTypestateFields().isEmpty() && !getMethodDeclAncestor().isTypestateMethod())
+			if(md != null && !md.getUsedTypestateFields().isEmpty() && getMethodDeclAncestor() != null && !getMethodDeclAncestor().isTypestateMethod())
 				addSemanticError(
 					"Cannot call a method that uses typestate fields inside a method that is not defined in the typestate."
 				);

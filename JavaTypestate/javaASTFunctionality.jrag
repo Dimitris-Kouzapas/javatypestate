@@ -96,6 +96,9 @@ aspect javaASTFunctionality {
 	inh MethodDecl MethodAccess.getMethodDeclAncestor();
 	syn Set<VariableDecl> MethodAccess.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
 
+//	inh ConstructorDecl MethodAccess.getConstructorDeclAncestor();
+//	eq ConstructorDecl.getBlock().getConstructorDeclAncestor() = this;
+
 	syn lazy Set<MethodDecl> MethodAccess.selfSuccessors() = getTarget() != null ? getTarget().selfSuccessors() : new HashSet<MethodDecl>(); 
 	syn Set<MethodDecl> MethodAccess.reachable() circular [new HashSet<MethodDecl>()];
 

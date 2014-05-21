@@ -614,6 +614,7 @@ aspect getGraph {
 			else if((s = getSource().getTypestateVar()) != null) {
 				s.checkError(getSource());
 				s.current = d.current;
+			//	s.setFieldVar(d);
 				//TODO problem here... when assigning a field we might lose the continuation in another method -
 				//TODO do the same for variableDecl and argument passing.
 				d.resetCurrent();
@@ -767,14 +768,21 @@ aspect getGraph {
 
 			for(int i = md.getNumParameter() - 1; i >= 0; i--) {
 				TypestateVar dest = md.getParameter(i).typestate;
+				//GraphNode n;
+				//if(isRecursiveCall())
+				//	n = md.getParameterTypestate(i);
+				//else
+				//	n = md.getParameterTypestate(i).cloneGraph(new EndNode());
 				TypestateVar source;
 				if(dest != null) {
 					if(getArg(i) instanceof ClassInstanceExpr) {
 						dest.current = new InitNode().addNext(md.getParameterTypestate(i));
+				//		dest.current = new InitNode().addNext(n);
 						dest.addTypestate(getArg(i));
 					}
 					else if((source = getArg(i).getTypestateVar()) != null) {
 						source.checkError(getArg(i));
+				//		source.current = n;
 						source.current = md.getParameterTypestate(i);
 					}
 				}				
