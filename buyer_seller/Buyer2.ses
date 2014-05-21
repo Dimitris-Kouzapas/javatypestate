@@ -21,6 +21,11 @@ class Buyer2 typestate Buyer2Protocol {
 		return new AgreementLabel(AgreementLabel.QUIT);
 	}
 
+	// public AgreementLabel sendToSellerBuyer1(AgreementLabel agreement) {
+	// 	this.socketBuyer1.send(this, agreement.getEnum() == AgreementLabel.AGREE ? "AGREE" : "QUIT" );
+	// 	return agreement;
+	// }
+
 	public void transferMoneyToSeller(String money) {
 		this.socketSeller.send(this, money);
 	}
