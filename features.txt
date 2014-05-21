@@ -66,6 +66,26 @@ Java Typestate
 	is because their is no handler to make the check on.
 	I am working on how to solve this problem.
 
+- Bugs
+
+	Cannot assign the "last" field object of a method e.g.
+
+	void method() {
+		Obj o;
+		o.foo();
+		f = o;
+	}
+
+	but you can do 
+
+	void method() {
+		Obj o;
+		o.foo();
+		f = o;
+		f.foo();
+		f = new Obj();
+	}
+
 
 
 
