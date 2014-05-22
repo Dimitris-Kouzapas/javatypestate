@@ -8,8 +8,6 @@ typestate Buyer2Protocol {
 	where
 		QuoteReceived = {
 							AgreementLabel sendToSellerBuyer1(String): <AGREE:TalktoSeller, QUIT:end>
-							//AgreementLabel sendToSellerBuyer1(AgreementLabel): <AGREE:TalktoSeller, QUIT:end>
-
 						}
 
 		TalktoSeller = 	{

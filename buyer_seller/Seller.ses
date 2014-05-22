@@ -15,6 +15,7 @@ class Seller typestate SellerProtocol {
 
 	public void sendPriceToBuyer1(String price) {
 		this.socketBuyer1.send(this, price);
+		System.out.println("Seller to Buyer1: The price of the book is " + price);
 	}
 
 	public AgreementLabel receiveLabelFromBuyer2() {
@@ -28,7 +29,7 @@ class Seller typestate SellerProtocol {
 	public String receiveMoneyFromBothBuyers() {
 		String fromBuyer2 = this.socketBuyer2.receive(this);
 		String fromBuyer1 = this.socketBuyer1.receive(this);
-		String total = "Total: 42 + 38 = 80";
+		String total = "£42 + £38 = £80";
 		return total;
 	}
 }

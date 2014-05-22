@@ -5,8 +5,6 @@ import java.io.*;
 class Main {
 	
 	public static void main(String[] args) {
-		System.out.println("Hello World: I love coding!!");
-
 		Socket socketSellerBuyer1 = new Socket();
 		Socket socketSellerBuyer2 = new Socket();
 		Socket socketBuyer1Buyer2 = new Socket();
@@ -21,26 +19,24 @@ class Main {
 
 		buyer1.sendTitleToSeller("Alice's Adventures In Wonderland");
 		String title = seller.receiveTitleFromBuyer1();
-		seller.sendPriceToBuyer1("The book costs 80 pounds");
+		seller.sendPriceToBuyer1("£80");
 		buyer1.receivePriceFromSeller();
-		buyer1.sendQuoteToBuyer2("42 pounds");
+		buyer1.sendQuoteToBuyer2("£42");
 		String quote = buyer2.receiveQuoteFromBuyer1();
 		
 		switch (buyer2.sendToSellerBuyer1("AGREE").getEnum()) {
 			case AgreementLabel.AGREE:
-				buyer2.transferMoneyToSeller("42 pounds");
+				buyer2.transferMoneyToSeller("£42");
 				break;
 			case AgreementLabel.QUIT:
-				System.out.println("The book is too expensive! I am not paying for it!");
 				break;
 		}
 
 		switch (buyer1.receiveLabelFromBuyer2().getEnum()) {
 			case AgreementLabel.AGREE:
-				buyer1.transferMoneyToSeller("38 pounds");
+				buyer1.transferMoneyToSeller("£38");
 				break;
 			case AgreementLabel.QUIT:
-				System.out.println("Buyer2 does not agree to the specified quote.");
 				break;
 		}
 
@@ -48,9 +44,10 @@ class Main {
 			case AgreementLabel.AGREE:
 				String money;
 				money = seller.receiveMoneyFromBothBuyers();
+				System.out.println("Seller: I received a total of " + money);
 				break;
 			case AgreementLabel.QUIT:
-				System.out.println("Bye bye!");
+				System.out.println("Seller: We end the communication!");
 				break;
 		}
 
