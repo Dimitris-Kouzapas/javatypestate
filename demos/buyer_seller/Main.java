@@ -1,6 +1,6 @@
 package demos.buyer_seller;
 import java.io.*;
-class Main  {
+public class Main  {
 	public static void main(String[] args) {
 		Socket socketSellerBuyer1 = new Socket();
 		Socket socketSellerBuyer2 = new Socket();

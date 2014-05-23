@@ -1,0 +1,15 @@
+package old_example.buyer_seller;
+
+import java.lang.Thread;
+
+public class Buyer1Thread extends Thread {
+	private Buyer1 buyer1;
+
+	public Buyer1Thread(Buyer1 buyer1) {
+		this.buyer1 = buyer1;
+	}
+
+	public void run () {
+		buyer1.sendTitleToSeller("''Alice's Adventures In Wonderland''");
+	}
+}

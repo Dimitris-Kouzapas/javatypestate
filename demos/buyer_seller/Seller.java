@@ -1,5 +1,5 @@
 package demos.buyer_seller;
-class Seller  {
+public class Seller  {
 	private final Socket socketBuyer1;
 	private final Socket socketBuyer2;
 	public Seller(Socket socketBuyer1, Socket socketBuyer2){

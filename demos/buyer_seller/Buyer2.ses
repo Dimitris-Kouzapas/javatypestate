@@ -1,6 +1,6 @@
 package demos.buyer_seller;
 
-class Buyer2 typestate Buyer2Protocol {
+public class Buyer2 typestate Buyer2Protocol {
 	private final Socket socketSeller;
 	private final Socket socketBuyer1;
 

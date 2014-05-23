@@ -1,6 +1,6 @@
-package buyer_seller;
+package old_example.buyer_seller;
 
-class Seller typestate SellerProtocol {
+public class Seller typestate SellerProtocol {
 	private final Socket socketBuyer1;
 	private final Socket socketBuyer2;
 

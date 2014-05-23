@@ -1,5 +1,6 @@
-package buyer_seller;
+package old_example.buyer_seller;
 import java.io.*;
+import java.lang.Thread;
 class Main  {
 	public static void main(String[] args) {
 		Socket socketSellerBuyer1 = new Socket();

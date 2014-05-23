@@ -1,4 +1,4 @@
-package buyer_seller;
+package old_example.buyer_seller;
 class Buyer2  {
 	private final Socket socketSeller;
 	private final Socket socketBuyer1;

@@ -1,8 +1,8 @@
-package buyer_seller;
+package old_example.buyer_seller;
 
 import java.io.*;
 
-class Main {
+public class Main {
 	
 	public static void main(String[] args) {
 		Socket socketSellerBuyer1 = new Socket();
@@ -16,6 +16,8 @@ class Main {
 		socketSellerBuyer1.setEndpoints(seller, buyer1);
 		socketSellerBuyer2.setEndpoints(seller, buyer2);
 		socketBuyer1Buyer2.setEndpoints(buyer1, buyer2);
+
+		Buyer1Thread buyer1thread = new Buyer1Thread(buyer1);
 
 		System.out.println("Begin Protocol");
 		buyer1.sendTitleToSeller("''Alice's Adventures In Wonderland''");
