@@ -17,8 +17,12 @@ public class Main {
 		socketSellerBuyer2.setEndpoints(seller, buyer2);
 		socketBuyer1Buyer2.setEndpoints(buyer1, buyer2);
 
+		//
 		Buyer1Thread buyer1thread = new Buyer1Thread(buyer1);
-
+		Buyer2Thread buyer2thread = new Buyer2Thread(buyer2);
+		SellerThread sellerthread = new SellerThread(seller);
+		//
+		
 		System.out.println("Begin Protocol");
 		buyer1.sendTitleToSeller("''Alice's Adventures In Wonderland''");
 		String title = seller.receiveTitleFromBuyer1();
