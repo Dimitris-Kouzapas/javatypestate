@@ -1,4 +1,4 @@
-package buyer_seller;
+package demos.buyer_seller;
 
 enum AgreementLabel {
 	AGREE, QUIT;

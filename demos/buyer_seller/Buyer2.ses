@@ -1,4 +1,4 @@
-package buyer_seller;
+package demos.buyer_seller;
 
 class Buyer2 typestate Buyer2Protocol {
 	private final Socket socketSeller;

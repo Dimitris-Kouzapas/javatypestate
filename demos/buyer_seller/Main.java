@@ -1,4 +1,4 @@
-package buyer_seller;
+package demos.buyer_seller;
 import java.io.*;
 class Main  {
 	public static void main(String[] args) {
@@ -18,7 +18,7 @@ class Main  {
 		buyer1.receivePriceFromSeller();
 		buyer1.sendQuoteToBuyer2("£42");
 		String quote = buyer2.receiveQuoteFromBuyer1();
-		switch(buyer2.sendToSellerBuyer1("QUIT").getEnum()){
+		switch(buyer2.sendToSellerBuyer1("AGREE").getEnum()){
 			case AgreementLabel.AGREE:
 			buyer2.transferMoneyToSeller("£42");
 			break;

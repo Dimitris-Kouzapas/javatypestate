@@ -1,4 +1,4 @@
-package buyer_seller;
+package demos.buyer_seller;
 
 import java.io.*;
 
@@ -18,6 +18,8 @@ class Main {
 		socketBuyer1Buyer2.setEndpoints(buyer1, buyer2);
 
 		System.out.println("Begin Protocol");
+		////
+		
 		buyer1.sendTitleToSeller("''Alice's Adventures In Wonderland''");
 		String title = seller.receiveTitleFromBuyer1();
 		seller.sendPriceToBuyer1("£80");
@@ -25,7 +27,7 @@ class Main {
 		buyer1.sendQuoteToBuyer2("£42");
 		String quote = buyer2.receiveQuoteFromBuyer1();
 		
-		switch (buyer2.sendToSellerBuyer1("QUIT").getEnum()) {
+		switch (buyer2.sendToSellerBuyer1("AGREE").getEnum()) {
 			case AgreementLabel.AGREE:
 				buyer2.transferMoneyToSeller("£42");
 				break;
@@ -52,6 +54,7 @@ class Main {
 				break;
 		}
 
+		////
 		System.out.println("End Protocol");
 	}
 }

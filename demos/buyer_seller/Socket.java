@@ -1,4 +1,4 @@
-package buyer_seller;
+package demos.buyer_seller;
 import java.util.LinkedList;
 public class Socket  {
 	private LinkedList ep1_to_ep2 = new LinkedList();

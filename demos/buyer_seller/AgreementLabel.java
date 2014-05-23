@@ -1,4 +1,4 @@
-package buyer_seller;
+package demos.buyer_seller;
 class AgreementLabel  {
 	public static final int AGREE = 1, QUIT = 2;
 	private final int enumValue;
