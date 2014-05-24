@@ -1,4 +1,4 @@
-package buyer_seller;
+package old_example.buyer_seller;
 
 import java.util.LinkedList;
 
@@ -21,11 +21,12 @@ public class Socket {
 		}
 	}
 
-	public String receive(Object from_endpoint) {
-		if (from_endpoint == endpoint1) {
-			return (String)ep1_to_ep2.remove();
-		} else {
-			return (String)ep2_to_ep1.remove();
-		}
-	}
+	public String receive(Object receiving_endpoint) {
+    if (receiving_endpoint == endpoint1) {
+        return (String)ep2_to_ep1.remove();
+    } else {
+        return (String)ep1_to_ep2.remove();
+    }
+ }
+
 }

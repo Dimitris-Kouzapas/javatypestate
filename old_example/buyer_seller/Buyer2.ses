@@ -1,6 +1,6 @@
-package buyer_seller;
+package old_example.buyer_seller;
 
-class Buyer2 typestate Buyer2Protocol {
+public class Buyer2 typestate Buyer2Protocol {
 	private final Socket socketSeller;
 	private final Socket socketBuyer1;
 
@@ -15,18 +15,18 @@ class Buyer2 typestate Buyer2Protocol {
 
 	public AgreementLabel sendToSellerBuyer1(String agreement) {
 		this.socketBuyer1.send(this, agreement);
+		this.socketSeller.send(this, agreement);
+
 		if (agreement.equals("AGREE")) {
+			System.out.println("Buyer2 to Seller and Buyer1: I agree to pay the quote");
 			return new AgreementLabel(AgreementLabel.AGREE);
 		}
+		System.out.println("Buyer2 to Seller and Buyer1: I do not agree to pay the quote");
 		return new AgreementLabel(AgreementLabel.QUIT);
 	}
 
-	// public AgreementLabel sendToSellerBuyer1(AgreementLabel agreement) {
-	// 	this.socketBuyer1.send(this, agreement.getEnum() == AgreementLabel.AGREE ? "AGREE" : "QUIT" );
-	// 	return agreement;
-	// }
-
 	public void transferMoneyToSeller(String money) {
 		this.socketSeller.send(this, money);
+		System.out.println("Buyer2 to Seller: I transfer " + money);
 	}
 }

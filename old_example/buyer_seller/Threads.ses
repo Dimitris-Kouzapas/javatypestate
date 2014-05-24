@@ -1,0 +1,68 @@
+package old_example.buyer_seller;
+
+import java.lang.Thread;
+
+public class Buyer1Thread extends Thread {
+	private Buyer1 buyer1;
+
+	public Buyer1Thread(Buyer1 buyer1) {
+		this.buyer1 = buyer1;
+	}
+
+	public void run () {
+		buyer1.sendTitleToSeller("''Alice's Adventures In Wonderland''");
+		buyer1.receivePriceFromSeller();
+		buyer1.sendQuoteToBuyer2("£42");
+		switch (buyer1.receiveLabelFromBuyer2().getEnum()) {
+			case AgreementLabel.AGREE:
+				buyer1.transferMoneyToSeller("£38");
+				break;
+			case AgreementLabel.QUIT:
+				break;
+		}
+	}
+}
+
+public class Buyer2Thread extends Thread {
+	private Buyer2 buyer2;
+
+	public Buyer2Thread(Buyer2 buyer2) {
+		this.buyer2 = buyer2;
+	}
+
+	public void run() {
+		String quote = buyer2.receiveQuoteFromBuyer1();
+		switch (buyer2.sendToSellerBuyer1("QUIT").getEnum()) {
+			case AgreementLabel.AGREE:
+				buyer2.transferMoneyToSeller("£42");
+				break;
+			case AgreementLabel.QUIT:
+				break;
+		}
+
+	}
+
+}
+
+public void class SellerThread extends Thread {
+	private Seller seller;
+
+	public SellerThread(Seller seller) {
+		this.seller = seller;
+	}
+
+	public void run() {
+		String title = seller.receiveTitleFromBuyer1();
+		seller.sendPriceToBuyer1("£80");
+		switch (seller.receiveLabelFromBuyer2().getEnum()) {
+			case AgreementLabel.AGREE:
+				String money;
+				money = seller.receiveMoneyFromBothBuyers();
+				System.out.println("Seller: I received a total amount of " + money);
+				break;
+			case AgreementLabel.QUIT:
+				System.out.println("Seller: We end the communication!");
+				break;
+		}
+	}
+}
