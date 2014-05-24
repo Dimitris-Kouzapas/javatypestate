@@ -43,7 +43,9 @@ class File typestate FileProtocol {
 		//File myFile = new File("file.txt");
 		//File a = myFile;
 		//processFile(a);
-		processFile(new File("file.txt"));
+//		processFile(new File("file.txt"));
+//		File myFile;
+//		processFile(myFile);
 	}
 
 	public static void processFile(File myFile) {
