@@ -23,7 +23,7 @@
   "for"                          { return sym(Terminals.FOR); }
   "goto"                         { return sym(Terminals.EOF); }
   "if"                           { return sym(Terminals.IF); }
-/*  "implements"                   { return sym(Terminals.IMPLEMENTS); }*/
+  "implements"                   { return sym(Terminals.IMPLEMENTS); }
   "import"                       { return sym(Terminals.IMPORT); }
   "instanceof"                   { return sym(Terminals.INSTANCEOF); }
   "int"                          { return sym(Terminals.INT); }
