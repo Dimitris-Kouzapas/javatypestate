@@ -1,0 +1,11 @@
+package buyer_seller;
+
+class B1 implements Runnable {
+
+	Socket socketSellerBuyer1;
+	Socket socketBuyer1Buyer2;
+	
+	public void run() {
+		
+	}
+}

@@ -1,0 +1,26 @@
+package buyer_seller;
+
+class S implements Runnable {
+
+	Socket socketSellerBuyer1;
+	Socket socketSellerBuyer2;
+	
+	Seller seller;
+	
+	public S(Socket sb1, Socket sb2) {
+		socketSellerBuyer1 = sb1;
+		socketSellerBuyer2 = sb2;
+		seller = new Seller(socketSellerBuyer1,socketSellerBuyer2);
+	}
+	
+	public void run() {
+		String quote = buyer2.receiveQuoteFromBuyer1();
+		switch (buyer2.sendToSellerBuyer1("AGREE").getEnum()) {
+			case AgreementLabel.AGREE:
+				buyer2.transferMoneyToSeller("£42");
+				break;
+			case AgreementLabel.QUIT:
+				break;
+		}
+	}
+}

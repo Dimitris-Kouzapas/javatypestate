@@ -1,0 +1,28 @@
+package buyer_seller;
+
+class B1 implements Runnable {
+
+	Socket socketSellerBuyer1;
+	Socket socketBuyer1Buyer2;
+	
+	Buyer1 buyer1;
+	
+	public B1(Socket sb1, Socket b1b2) {
+		socketSellerBuyer1 = sb1;
+		socketBuyer1Buyer2 = b1b2;
+		buyer1 = new Buyer1(socketSellerBuyer1,socketBuyer1Buyer2);
+	}
+	
+	public void run() {
+		buyer1.sendTitleToSeller("''Alice's Adventures In Wonderland''");
+		buyer1.receivePriceFromSeller();
+		buyer1.sendQuoteToBuyer2("£42");
+		switch (buyer1.receiveLabelFromBuyer2().getEnum()) {
+			case AgreementLabel.AGREE:
+				buyer1.transferMoneyToSeller("£38");
+				break;
+			case AgreementLabel.QUIT:
+				break;
+		}
+	}
+}
