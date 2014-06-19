@@ -53,11 +53,11 @@ Access class_or_interface_type	=
 Access class_type		=
 					class_or_interface_type.n	{: return n; :}
 				;
-/*
+
 Access interface_type		=
 					class_or_interface_type.n	{: return n; :}
 				;
-*/
+
 Access array_type		=
 					primitive_type.t dims.d		{: return t.addArrayDims(d); :}
 				|	name.n dims.d			{: return n.addArrayDims(d); :}
@@ -174,9 +174,13 @@ Modifier modifier		=
 */				;
 
 ClassDecl class_declaration	=
-					modifiers.m? CLASS IDENTIFIER typestate_type? class_body.b 
+/*					modifiers.m? CLASS IDENTIFIER typestate_type? class_body.b 
 					{:
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), new List(), b);
+					:}
+*/					modifiers.m? CLASS IDENTIFIER /*super.s?*/ interfaces.i? typestate_type? class_body.b 
+					{:
+						return new ClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), i, b);
 					:}
 /*					modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? typestate_type.t? class_body.b 
 					{:
@@ -191,7 +195,7 @@ ClassDecl class_declaration	=
 /*Opt super			=
 					EXTENDS class_type.c		{: return new Opt(c); :}
 				;
-
+*/
 List interfaces			=
 					IMPLEMENTS interface_type_list.i	{: return i; :}
 				;
@@ -203,7 +207,7 @@ List interface_type_list	=
 						return l.add(i);
 					:}
 				;
-*/
+
 Access typestate_type		=
 					TYPESTATE simple_name.n		{: return n; :}
 				;
