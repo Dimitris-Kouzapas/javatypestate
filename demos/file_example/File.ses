@@ -61,7 +61,7 @@ class File typestate FileProtocol {
 				myFile.close();
 				break;
 			case Status.ERROR:
-				System.out.println("file not found!!!!");
+				System.out.println("File <file.txt> not found!");
 				break;
 		}
 	}

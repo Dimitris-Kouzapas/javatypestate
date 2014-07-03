@@ -1,0 +1,11 @@
+package demos.threads;
+
+typestate AliceProtocol {
+	session
+			Init =	{
+					void sendStringToBob(String) :
+					{
+						String receiveStringFromBob() : end
+					}
+				}
+}
