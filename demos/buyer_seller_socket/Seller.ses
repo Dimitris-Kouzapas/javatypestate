@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Seller {
+public class Seller typestate SellerProtocol {
     private BufferedReader socketBuyer1In = null;
     private PrintWriter socketBuyer1Out = null;
 

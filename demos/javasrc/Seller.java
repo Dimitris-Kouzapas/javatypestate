@@ -65,13 +65,11 @@ public class Seller {
         return new AgreementLabel(AgreementLabel.QUIT);
     }
 
-    public String receiveMoneyFromBothBuyers() throws IOException {
+    public int receiveMoneyFromBothBuyers() throws IOException {
         String fromBuyer1 = this.socketBuyer1In.readLine();
         String fromBuyer2 = this.socketBuyer2In.readLine();
 
-        //String total = "£42 + £38 = £80";
-        String total = "£" + fromBuyer1 + " + " + "£" + fromBuyer2;
-        return total;
+        return Integer.parseInt(fromBuyer1) + Integer.parseInt(fromBuyer2);
 
     }
 
@@ -95,7 +93,7 @@ public class Seller {
                 case AgreementLabel.AGREE:
                     System.out.println("Buyer2 agrees to contribute");
                     System.out.print("Seller to Buyer1 and Buyer2: I am receiveing the amount of ");
-                    String total = seller.receiveMoneyFromBothBuyers();
+                    int total = seller.receiveMoneyFromBothBuyers();
                     System.out.println(total);
                     System.out.println("Thanks! Bye!");
                     break;
