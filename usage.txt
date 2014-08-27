@@ -10,3 +10,11 @@
 	-Semantic -semantic -s:		Perform only typecheck. No java files are created.
 	-Verbose -verbose -v:		Print the steps the typestate typechecker does.
 
+
+To compile and run:
+
+1) java TypestateMain [main].ses  --> typechecks your code + creates the java files from your code.
+
+2) javac [main].java  -->  the javac compiler will create the .class files
+
+3) java [main]  -->  runs the main method in the [main].class file

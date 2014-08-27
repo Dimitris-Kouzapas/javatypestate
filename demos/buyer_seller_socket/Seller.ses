@@ -1,5 +1,4 @@
 package demos.buyer_seller_socket;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,11 +26,11 @@ public class Seller typestate SellerProtocol {
         Socket socketBuyer1 = null;
         Socket socketBuyer2 = null;
         try {
-            System.out.println("Accepting ...");
+            System.out.println("Accepting...");
             socketBuyer1 = serverBuyer1.accept();
-            System.out.println("buyer1 accepted");
+            System.out.println("Buyer1 accepted");
             socketBuyer2 = serverBuyer2.accept();
-            System.out.println("buyer2 accepted");
+            System.out.println("Buyer2 accepted");
         } catch (IOException e) {
             System.out.println("Accept failed");
             System.exit(-1);
@@ -49,17 +48,32 @@ public class Seller typestate SellerProtocol {
         }
     }
 
-    public String receiveTitleFromBuyer1() throws IOException {
-        return this.socketBuyer1In.readLine();
+    public String receiveTitleFromBuyer1() {
+        String title = "";
+        try {
+            title = this.socketBuyer1In.readLine();
+        } catch (IOException e) {
+            System.out.println("Input/Output error, unable to get title from buyer1");
+            System.exit(-1);
+        }
+
+        return title;
     }
 
-    public void sendPriceToBuyer1(String price) {
+    public void sendPriceToBuyer1(int price) {
         this.socketBuyer1Out.println(price);
-        System.out.println("Seller to Buyer1: The price of the book is " + price);
+        //System.out.println("Seller to Buyer1: The price of the book is " + price);
     }
 
-    public AgreementLabel receiveLabelFromBuyer2() throws IOException {
-        String label = this.socketBuyer2In.readLine();
+    public AgreementLabel receiveLabelFromBuyer2() {
+        String label = "";
+
+        try {
+            label = this.socketBuyer2In.readLine();
+        } catch (IOException e) {
+            System.out.println("Input/Output error, unable to get label from buyer2");
+            System.exit(-1);
+        }
 
         if (label.equals("AGREE")) {
             return new AgreementLabel(AgreementLabel.AGREE);
@@ -67,39 +81,62 @@ public class Seller typestate SellerProtocol {
         return new AgreementLabel(AgreementLabel.QUIT);
     }
 
-    public String receiveMoneyFromBothBuyers() throws IOException {
-        String fromBuyer1 = this.socketBuyer1In.readLine();
-        String fromBuyer2 = this.socketBuyer2In.readLine();
+    public int receiveMoneyFromBothBuyers() {
+        String fromBuyer1 = "";
+        String fromBuyer2 = "";
 
-        String total = "£42 + £38 = £80";
-        return total;
+        try {
+            fromBuyer1 = this.socketBuyer1In.readLine();
+            fromBuyer2 = this.socketBuyer2In.readLine();
+        } catch (IOException e) {        
+            System.out.println("Input/Output error, unable to get money from buyers");
+            System.exit(-1);
+        }
+
+        return Integer.parseInt(fromBuyer1) + Integer.parseInt(fromBuyer2);
+    }
+
+    public static String safeRead(BufferedReader sl) {
+        String line = "";
+
+        try {
+            line = sl.readLine();
+        } catch (IOException e) {
+            System.out.println("Input/Outpur error, unable to read");
+            System.exit(-1);
+        }
+
+        return line;
     }
 
     public static void main(String [] args) {
         Seller seller = new Seller();
+        BufferedReader sl = new BufferedReader(new InputStreamReader(System.in));
 
-        try {
-            System.out.println("Waiting to receive title from buyer1 ...");
+        // Waiting for title of the book
+            System.out.println("Waiting to receive title from Buyer1...");
             String title = seller.receiveTitleFromBuyer1();
-            seller.sendPriceToBuyer1("60");
-            //AgreementLabel label = seller.receiveLabelFromBuyer2();
+            System.out.println("Buyer1 to Seller: I would like to buy the book " + title);
+
+            // Ask user for the price
+            System.out.print("Seller to Buyer1: The price of the book is £");
+            int price = Integer.parseInt(safeRead(sl));
+            seller.sendPriceToBuyer1(price);
+
             switch (seller.receiveLabelFromBuyer2().getEnum()) {
                 case AgreementLabel.AGREE:
                     System.out.println("Buyer2 agrees to contribute");
-                   // seller.receiveMoneyFromBothBuyers();
-                    String money;
-                    money = seller.receiveMoneyFromBothBuyers();
-                    System.out.println("Seller: I received a total amount of " + money);
+                    System.out.print("Seller to Buyer1 and Buyer2: I am receiveing the amount of ");
+                    int total = seller.receiveMoneyFromBothBuyers();
+                    System.out.println(total);
+                    if (total != price) {
+                        System.out.println("I have not received the correct amount! Bye!");
+                    }
+                    System.out.println("Thanks! Bye!");
                     break;
                 case AgreementLabel.QUIT:
                     System.out.println("Buyer2 does not want to contribute");
                     break;
-                default:
-                    System.out.println("Invalid response from buyer2");
             }
-        } catch (IOException e ) {
-            System.out.println("Input/Output error");
-            System.exit(-1);
-        }
     }
 }

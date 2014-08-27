@@ -27,7 +27,7 @@ public class Buyer2 typestate Buyer2Protocol {
         // Accept a client connection
         Socket socketBuyer1 = null;
         try {
-            System.out.println("Accepting...");
+            System.out.println("Accepting");
             socketBuyer1 = serverBuyer1.accept();
         } catch (IOException e) {
             System.out.println("Accept failed");
@@ -43,7 +43,7 @@ public class Buyer2 typestate Buyer2Protocol {
             System.exit(-1);
         }
 
-        System.out.println("Accepted connection from Buyer1");
+        System.out.println("Accepted connection from buyer1");
 
         // Must connect to the Seller
         try {
@@ -53,7 +53,7 @@ public class Buyer2 typestate Buyer2Protocol {
             // Create the read/write streams
             socketSellerIn = new BufferedReader(new InputStreamReader(socketSeller.getInputStream()));
             socketSellerOut = new PrintWriter(socketSeller.getOutputStream(), true);
-            System.out.println("Connected to the Seller");
+            System.out.println("Connected to the seller");
         } catch(UnknownHostException e) {
             System.out.println("Unable to connect to the remote host");
             System.exit(-1);
@@ -63,18 +63,9 @@ public class Buyer2 typestate Buyer2Protocol {
         }
     }
 
-    public int receiveQuoteFromBuyer1() {
-        String quote = "";
-
-        try {
-            //System.out.println("receiving quote ... " + this.socketBuyer1In.ready());
-            quote = this.socketBuyer1In.readLine();
-        } catch (IOException e) {
-            System.out.println("Input/Output error, unable to get quote from buyer1");
-            System.exit(-1);
-        }
-
-        return Integer.parseInt(quote);
+    public String receiveQuoteFromBuyer1() throws IOException {
+        System.out.println("receiving quote ... " + this.socketBuyer1In.ready());
+        return this.socketBuyer1In.readLine();
     }
 
     public AgreementLabel sendToSellerBuyer1(String agreement) {
@@ -82,58 +73,39 @@ public class Buyer2 typestate Buyer2Protocol {
         this.socketSellerOut.println(agreement);
 
         if (agreement.equals("AGREE")) {
-            //System.out.println("Buyer2 to Seller and Buyer1: I agree to pay the quote");
+            System.out.println("Buyer2 to Seller and Buyer1: I agree to pay the quote");
             return new AgreementLabel(AgreementLabel.AGREE);
         }
 
-        //System.out.println("Buyer2 to Seller and Buyer1: I do not agree to pay the quote");
+        System.out.println("Buyer2 to Seller and Buyer1: I do not agree to pay the quote");
         return new AgreementLabel(AgreementLabel.QUIT);
     }
 
-    public void transferMoneyToSeller(int money) {
+    public void transferMoneyToSeller(String money) {
         this.socketSellerOut.println(money);
-        //System.out.println("Buyer2 to Seller: I transfer " + money);
-        System.out.println("Bye!");
-    }
-
-    public static String safeRead(BufferedReader br) {
-        String line = "";
-
-        try {
-            line = br.readLine();
-        } catch (IOException e) {
-            System.out.println("Input/Outpur error, unable to read");
-            System.exit(-1);
-        }
-
-        return line;
+        System.out.println("Buyer2 to Seller: I transfer " + money);
     }
 
     public static void main(String [] args) {
         Buyer2 buyer2 = new Buyer2();
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        // Waiting for the quote
-            System.out.println("Waiting to receive quote from Buyer1...");
-            int quote = buyer2.receiveQuoteFromBuyer1();
-            System.out.println("Received quote from Buyer1 £" + quote);
-
-            // Agreement decision for Buyer2
+        try {
+            System.out.println("Waiting for the quote from buyer1");
+            String quote = buyer2.receiveQuoteFromBuyer1();
+            System.out.println("Received quote from buyer2");
             //buyer2.sendToSellerBuyer1("AGREE");
             //buyer2.transferMoneyToSeller("30");
-            System.out.print("Buyer2 to Seller and Buyer1: AGREE [y/n]? ");
-            String reply = safeRead(br);
-            String agreement = reply.equals("y") ? "AGREE" : "QUIT";
-            
-            switch (buyer2.sendToSellerBuyer1(agreement).getEnum()) {
+            switch (buyer2.sendToSellerBuyer1("AGREE").getEnum()) {
             case AgreementLabel.AGREE:
-                //System.out.println("Buyer2 agrees to contribute");
-                System.out.print("Buyer2 to Seller: I am transfering you £");
-                int money = Integer.parseInt(safeRead(br));
-                buyer2.transferMoneyToSeller(money);
+                buyer2.transferMoneyToSeller("£42");
                 break;
             case AgreementLabel.QUIT:
                 break;
-            }
+        }
+            System.out.println("Done!");
+        } catch (IOException e) {
+            System.out.println("Input/Output error");
+            System.exit(-1);
+        }
     }
 }
