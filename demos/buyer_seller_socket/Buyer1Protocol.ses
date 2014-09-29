@@ -15,7 +15,8 @@ typestate Buyer1Protocol {
 						}
 		
 		QuoteSent = 	{
-							AgreementLabel receiveLabelFromBuyer2(): <AGREE: TalktoSeller, QUIT: end>
+							AgreementLabel receiveLabelFromBuyer2():
+							<AGREE: TalktoSeller, QUIT: end>
 						}
 
 		TalktoSeller =	{

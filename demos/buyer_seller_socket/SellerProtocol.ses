@@ -11,7 +11,8 @@ typestate SellerProtocol {
 							}
 
 		PriceSent =			{
-								AgreementLabel receiveLabelFromBuyer2(): <AGREE: TalktoBothBuyers, QUIT: end>
+								AgreementLabel receiveLabelFromBuyer2():
+								<AGREE: TalktoBothBuyers, QUIT: end>
 							}
 
 		TalktoBothBuyers =	{
