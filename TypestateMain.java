@@ -33,6 +33,10 @@ class TypestateMain {
 				System.out.println("Checking java 1.4.");
 			j = jc.compile(files);
 		}
+
+		if (j == false)
+			return false;
+
 		if((mode & TYPESTATE) != 0) {
 			if(verbose == true)
 				System.out.println("Typestate check.");
