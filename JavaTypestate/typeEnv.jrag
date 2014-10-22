@@ -1,0 +1,203 @@
+aspect typeEnv {
+
+	/*******************************************************************************/
+	/*                 Type Environment Structures                                 */
+	/*******************************************************************************/
+
+	class TypestateVar {
+		GraphNode current;
+		Map<ASTNode, GraphNode> end;
+		Map<ASTNode, GraphNode> start;
+
+		private ArrayList<GraphNode> startTypestate;
+		private ArrayList<Expr> exprASTNode;
+		private ArrayList<GraphNode> errorTypestate;
+		private ArrayList<ASTNode> errorNode;
+
+//		private TypestateVar fieldVar;
+
+		TypestateVar() {
+			current = new EndNode();
+
+			end = new HashMap<ASTNode, GraphNode>();
+			start = new HashMap<ASTNode, GraphNode>();
+			startTypestate = new ArrayList<GraphNode>();
+			exprASTNode = new ArrayList<Expr>();
+
+			errorTypestate = new ArrayList<GraphNode>();
+			errorNode = new ArrayList<ASTNode>();
+//			fieldVar = null;
+		}
+
+		protected void addTypestate(Expr e) {
+			startTypestate.add(current);
+			exprASTNode.add(e);
+			resetCurrent();
+		}
+
+		private void addErrorTypestate(ASTNode e) {
+			errorTypestate.add(current);
+			errorNode.add(e);
+			resetCurrent();
+		}
+
+		protected void checkError(ASTNode e) {
+			//has more than EndNodes/LoopNodes
+			if(current.onlyEndNodes() == -1)
+				addErrorTypestate(e);
+		}
+
+		protected void resetCurrent() {
+			current = new EndNode();
+		}
+
+		protected void connectTypestate(BodyDecl md) {}
+
+		protected GraphNode getConnectionTypestate(BodyDecl md) {
+			return null;
+		}
+
+//		protected void setFieldVar(TypestateVar fv) {
+//			fieldVar = fv;
+//		}
+
+		protected void getMethodAccessGraph(BodyDecl md) {}
+		protected void getMethodGraph(BodyDecl m) {}
+
+		protected void reportErrors(String errorMessage) {
+			for(int i = errorTypestate.size() - 1; i >= 0; i--)
+				errorNode.get(i).addSemanticError(errorMessage);
+		}
+
+		protected void checkTypestate(GraphNode t, String errorMessage) {
+			for(int i = startTypestate.size() - 1; i >= 0; i--) {
+				GraphNode n = startTypestate.get(i);
+				n.normalise();
+//				System.out.println("-----------------------");
+//				System.out.println(exprASTNode.get(i));
+//				n.printPaths();
+//				System.out.println("------------------------");
+				if(!t.includes(n))
+					exprASTNode.get(i).addSemanticError(errorMessage);
+			}
+
+		}
+	}
+
+	class TypestatePar extends TypestateVar {
+		private LoopNode parameterNode;
+
+		TypestatePar() {
+			super();
+			parameterNode = new LoopNode();
+		}
+
+		protected void connectTypestate(BodyDecl m) {		//TODO dont like
+			parameterNode.addNext(current);
+		}
+
+		protected GraphNode getConnectionTypestate(BodyDecl md) {
+			return parameterNode;
+		}
+	}
+
+	class TypestateAccess extends TypestateVar {
+		TypestateAccess() {
+			super();
+		}
+
+		protected void addTypestate(Expr e) {
+			current = new LoopNode().addNext(current);
+			super.addTypestate(e);
+		}	
+	}
+
+	class TypestateField extends TypestateVar {
+		private Map<BodyDecl, GraphNode> methodStartGraph;
+		private Map<BodyDecl, GraphNode> methodEndGraph;
+		private Map<BodyDecl, Expr> methodEndExpr;
+
+//		private boolean setEndGraph;
+		private GraphNode endGraph;
+		private Expr endExpr;
+
+		TypestateField(Set<BodyDecl> methodDecls) {
+			super();
+
+			methodStartGraph = new HashMap<BodyDecl, GraphNode>();
+
+			for(BodyDecl md : methodDecls)
+				methodStartGraph.put(md, new LoopNode());
+
+			methodEndGraph = new HashMap<BodyDecl, GraphNode>();
+			methodEndExpr = new HashMap<BodyDecl, Expr>();
+			current = new LoopNode();
+//			setEndGraph = false;
+			endGraph = null;
+			endExpr = null;
+		}
+
+		protected void addTypestate(Expr e) {
+			if(endGraph == null/*setEndGraph == false*/) {
+//				setEndGraph = true;
+				endGraph = current;
+				endExpr = e;
+				resetCurrent();
+			}
+			else {
+				super.addTypestate(e);
+			}
+		}
+
+		protected void checkError(ASTNode e) {
+			super.checkError(e);
+			//if has only LoopNodes
+			if(current.onlyEndNodes() == 0)
+				addTypestate((Expr) e);		//TODO add them somewhere for future check for only end/loopnode
+		}
+
+		protected void connectTypestate(BodyDecl md) {
+			//EndGraph is the same as startNode
+			current = methodStartGraph.get(md).addNext(current);
+			if(endGraph == null)
+				endGraph = current;
+
+//			methodStartGraph.put(md, current);
+			methodEndGraph.put(md, endGraph);
+			methodEndExpr.put(md, endExpr);
+			current = new LoopNode();
+//			setEndGraph = false;
+			endGraph = null;
+			endExpr = null;
+		}
+
+		protected GraphNode getConnectionTypestate(BodyDecl md) {
+			return methodStartGraph.get(md);
+		}
+
+		//TODO redudancy
+		protected void getMethodAccessGraph(BodyDecl md) {
+			GraphNode n1 = methodStartGraph.get(md);
+			GraphNode n2 = methodEndGraph.get(md);
+
+			if(!n1.equals(n2)) {
+				current = n2.cloneGraph(current);
+				if(current.onlyEndNodes() == -1)
+					addTypestate(methodEndExpr.get(md));
+			}
+			current = n1.cloneGraph(current);
+		}
+
+		protected void getMethodGraph(BodyDecl md) {
+			GraphNode n1 = methodStartGraph.get(md);
+			GraphNode n2 = methodEndGraph.get(md);
+
+			if(!n1.equals(n2)) {
+				current = n2.cloneGraph(current);
+				if(current.onlyEndNodes() == -1)
+					super.addTypestate(methodEndExpr.get(md));
+			}
+			current = n1.cloneGraph(current);
+		}
+	}
+}
