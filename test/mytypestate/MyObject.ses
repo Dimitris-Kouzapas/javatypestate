@@ -1,7 +1,0 @@
-package test.mytypestate;
-import test.ABCD;
-class MyObject typestate ABCD {
-	int s;
-
-	int foo(My m) {} 
-}

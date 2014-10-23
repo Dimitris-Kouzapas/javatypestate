@@ -1,4 +1,0 @@
-typestate test1 {
-	session
-		Start = {int foo(): {int foo(): end}}
-}

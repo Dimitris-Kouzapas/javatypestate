@@ -1,4 +1,0 @@
-package test;
-enum number {
-	ena, dio, tria, tessera, pente, eksi, efta, okto, ennia, miden;
-}
