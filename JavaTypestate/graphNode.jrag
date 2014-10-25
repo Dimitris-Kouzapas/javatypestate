@@ -224,6 +224,24 @@ aspect graphNode {
 			return onlyEndNodes(new HashSet<GraphNode>());
 		}
 
+		//polymorphic on PlugNode
+		protected boolean isPlugged() {
+			return isPlugged(new HashSet<GraphNode>());
+		}
+
+		protected boolean isPlugged(Set<GraphNode> visited) {
+			if(visited.contains(this))
+				return false;
+
+			visited.add(this);
+
+			for(GraphNode n: next)
+				if(n.isPlugged(visited))
+					return true;
+
+			return false;
+		}
+
 		/***********************************************************/
 		/*               Clone Graphs			           */
 		/***********************************************************/
@@ -244,6 +262,24 @@ aspect graphNode {
 
 			for(GraphNode n: next)
 				r.addNext(n.cloneGraph(end, visited));
+
+			return r;
+		}
+
+		protected GraphNode plugGraph() {
+			return plugGraph(new HashMap<GraphNode, GraphNode>());
+		}
+
+		//Polymorphic on PlugNode
+		protected GraphNode plugGraph(Map<GraphNode, GraphNode> visited) {
+			if(visited.get(this) != null)
+				return visited.get(this);
+
+			GraphNode r = cloneNode();
+			visited.put(this, r);
+
+			for(GraphNode n: next)
+				r.addNext(n.plugGraph(visited));
 
 			return r;
 		}
@@ -468,6 +504,30 @@ aspect graphNode {
 
 		protected GraphNode cloneNode() {
 			return new InitNode();
+		}
+	}
+
+	public class PlugNode extends LoopNode {
+		VariableDecl vd;
+
+		public PlugNode(VariableDecl vd) {
+			super();
+			this.vd = vd;
+		}
+
+		public String toString() {
+			return "PlugNode";
+		}
+
+		protected boolean isPlugged(Set<GraphNode> visited) {
+			//this means that if there are next nodes then this is not plugged
+			if(next.size() == 0)
+				return true;
+			return super.isPlugged(visited);
+		}
+
+		protected GraphNode plugGraph(Map<GraphNode, GraphNode> visited) {
+			return vd.typestate.current.cloneGraph(null);
 		}
 	}
 }
