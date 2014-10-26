@@ -34,9 +34,10 @@ aspect typestateSemanticCheck {
 		TypeDecl t = getAccess().lookupType();
 		if(t.isTypestateDeclType())
 			addSemanticError(getAccess().toString() + " is not a proper type.");
-		else if(t.isTypestateClassDeclType())
-			addSemanticError("Class Type " + getAccess().toString() + " has a typestate type.");
-	}
+		//TODO recheck the next check
+/*		else if(t.isTypestateClassDeclType())
+			addSemanticError("Class " + getAccess().toString() + " has a typestate type.");
+*/	}
 
 	protected void TypestateSwitch.semanticCheck() {
 		for(int i = 0; i < getNumTypestateSwitchCase(); i++)

@@ -98,7 +98,13 @@ aspect getGraph {
 			TypestateVar t = pluggedTypestate.get(i);
 			GraphNode tmp = t.current;
 			t.current = pluggedGraph.get(i).plugGraph();
-			t.addTypestate(((Expr) pluggedExpr.get(i)), null);	//TODO dont like the null
+			//TODO I dont like the implementation here
+			if(t.current instanceof InitNode)
+				t.addTypestate(((Expr) pluggedExpr.get(i)), this);
+			else
+				t.checkError(((Expr) pluggedExpr.get(i)));
+//			t.checkError(((Expr) pluggedExpr.get(i)));//, this);	//TODO fix here
+//			t.addTypestate(((Expr) pluggedExpr.get(i)), this);	//TODO is this correct here?
 			t.current = tmp;
 		}
 		return true;
@@ -206,7 +212,7 @@ aspect getGraph {
 
 		for(VariableDecl vd : getTypestateFields()) {
 			if(vd.typestate == null)
-				vd.typestate = new TypestateField(vd, getMethods());
+				vd.typestate = new TypestateField(getMethods());
 			env.add(vd.typestate);
 		}
 
@@ -260,7 +266,7 @@ aspect getGraph {
 
 		for(VariableDecl vd : getTypestateFields()) {
 			if(vd.typestate == null)
-				vd.typestate = new TypestateField(vd, getMethods());
+				vd.typestate = new TypestateField(getMethods());
 			env.add(vd.typestate);
 		}
 
@@ -303,6 +309,17 @@ aspect getGraph {
 	protected TypestateVar ParameterDeclaration.typestate = null;
 	protected TypestateVar MethodAccess.typestate = new TypestateAccess();			//TODO if is  typestate
 
+	//TODO next 7 lines another file - or find another way
+	eq Program.getCompilationUnit(int i).getBodyDeclAncestor() = null;
+	eq MethodDecl.getBlock().getBodyDeclAncestor() = this;
+	eq ConstructorDecl.getBlock().getBodyDeclAncestor() = this;
+	inh BodyDecl Expr.getBodyDeclAncestor();
+	inh BodyDecl Stmt.getBodyDeclAncestor();
+	inh BodyDecl VariableDecl.getBodyDeclAncestor();
+//	inh BodyDecl Block.getBodyDeclAncestor();
+
+
+
 	syn boolean Stmt.getGraph(Set<TypestateVar> env);
 
 	eq Block.getGraph(Set<TypestateVar> env) {
@@ -315,7 +332,7 @@ aspect getGraph {
 
 		for(VariableDecl v: getVariableDecls())
 			if(v.getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				v.typestate.checkError(v);
+				v.typestate.checkError(v, getBodyDeclAncestor());
 				env.remove(v.typestate);
 			}
 		return true;
@@ -564,7 +581,7 @@ aspect getGraph {
 		TypestateVar t = getResult().getTypestateVar();
 		if(t != null)
 			if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				t.checkError(getResult());
+				t.checkError(getResult(), getBodyDeclAncestor());
 				t.current = getMethodDeclAncestor().getTypestateMethod().getTType().createTypestate(); //TODO cloneGraphNode ??
 			}
 
@@ -578,14 +595,6 @@ aspect getGraph {
 			getVariableDecl(i).getGraph(env);
 		return true;
 	}
-
-	//TODO next 6 lines another file - or find another way
-	eq Program.getCompilationUnit(int i).getBodyDeclAncestor() = null;
-	eq MethodDecl.getBlock().getBodyDeclAncestor() = this;
-	eq ConstructorDecl.getBlock().getBodyDeclAncestor() = this;
-	inh BodyDecl Expr.getBodyDeclAncestor();
-	inh BodyDecl Stmt.getBodyDeclAncestor();
-	inh BodyDecl VariableDecl.getBodyDeclAncestor();
 
 	//TODO implement me
 	syn lazy boolean VariableDecl.getGraph(Set <TypestateVar> env) {
@@ -604,7 +613,7 @@ aspect getGraph {
 				typestate.addTypestate(getInit(), getBodyDeclAncestor());
 			}
 			else if((t = getInit().getTypestateVar()) != null) {
-				t.checkError(getInit());
+				t.checkError(getInit(), getBodyDeclAncestor());
 				t.current = typestate.current;
 				//Typestate should be reset
 				typestate.resetCurrent();
@@ -637,7 +646,7 @@ aspect getGraph {
 				d.addTypestate(getSource(), getBodyDeclAncestor());
 			}
 			else if((s = getSource().getTypestateVar()) != null) {
-				s.checkError(getSource());
+				s.checkError(getSource(), getBodyDeclAncestor());
 				s.current = d.current;
 			//	s.setFieldVar(d);
 				//TODO problem here... when assigning a field we might lose the continuation in another method -
@@ -737,6 +746,11 @@ aspect getGraph {
 		ConstructorDecl md = getTarget();
 
 		if(md != null) {
+			GraphNode[] parameters = new GraphNode[md.getNumParameter()];
+			for(int i = md.getNumParameter() - 1; i >=0; i--)
+				if(md.getParameter(i).typestate != null)
+					parameters[i] = md.getParameterTypestate(i).plugParameterGraph();	//TODO plug only the parameter graph (not the field graph)
+
 			md.plugGraph();
 			for(VariableDecl vd: getTypestateFields())
 				vd.typestate.current = vd.typestate.getConnectionGraph(md).cloneGraph(vd.typestate.current);
@@ -746,12 +760,12 @@ aspect getGraph {
 				TypestateVar source;
 				if(dest != null) {
 					if(getArg(i) instanceof ClassInstanceExpr) {
-						dest.current = new InitNode().addNext(md.getParameterTypestate(i));
+						dest.current = new InitNode().addNext(parameters[i]);//md.getParameterTypestate(i));
 						dest.addTypestate(getArg(i), getBodyDeclAncestor());
 					}
 					else if((source = getArg(i).getTypestateVar()) != null) {
-						source.checkError(getArg(i));
-						source.current = md.getParameterTypestate(i);
+						source.checkError(getArg(i), getBodyDeclAncestor());
+						source.current = parameters[i];//md.getParameterTypestate(i);
 					}
 				}				
 
@@ -778,20 +792,36 @@ aspect getGraph {
 		MethodDecl md = getTarget();
 
 		if(md != null) {
+			GraphNode[] parameters = new GraphNode[md.getNumParameter()];
+
 			if(isThisAccess()) {
-				if(isRecursiveCall())
+				if(isRecursiveCall()) {
+					for(int i = md.getNumParameter() - 1; i >=0; i--)
+						if(md.getParameter(i).typestate != null)
+							parameters[i] = md.getParameterTypestate(i);
+
 					for(VariableDecl vd : getTypestateFields())
 						vd.typestate.current = vd.typestate.getConnectionGraph(md);
+				}
 				else {
+					for(int i = md.getNumParameter() - 1; i >=0; i--)
+						if(md.getParameter(i).typestate != null)
+							parameters[i] = md.getParameterTypestate(i).plugParameterGraph();	//TODO plug only the parameter graph (not the field graph)
+
 					md.plugGraph();
-					for(VariableDecl vd: getTypestateFields())
+					for(VariableDecl vd: getTypestateFields()) {
 						vd.typestate.current = vd.typestate.getConnectionGraph(md).cloneGraph(vd.typestate.current);
+					}
 				}
 			}
 			else if(getQualifiedType().isTypestateClassDeclType()) {
 				TypestateVar t = getQualifiedTypestateVar();
 				if (t != null)
 					t.current = new MethodNode(getID(), getParameterTypes()).addNext(t.current);
+
+				for(int i = md.getNumParameter() - 1; i >=0; i--)
+					if(md.getParameter(i).typestate != null)
+						parameters[i] = md.getParameterTypestate(i).plugParameterGraph();	//TODO plug only the parameter graph (not the field graph)
 			}
 
 			for(int i = md.getNumParameter() - 1; i >= 0; i--) {
@@ -804,14 +834,17 @@ aspect getGraph {
 				TypestateVar source;
 				if(dest != null) {
 					if(getArg(i) instanceof ClassInstanceExpr) {
-						dest.current = new InitNode().addNext(md.getParameterTypestate(i));
+						dest.current = new InitNode().addNext(parameters[i]);//md.getParameterTypestate(i));
 				//		dest.current = new InitNode().addNext(n);
 						dest.addTypestate(getArg(i), getBodyDeclAncestor());
 					}
 					else if((source = getArg(i).getTypestateVar()) != null) {
-						source.checkError(getArg(i));
+//						System.out.println("++++++++++++++++++++");
+//						source.current.printPaths();
+//						System.out.println("++++++++++++++++++++");
+						source.checkError(getArg(i), getBodyDeclAncestor());
 				//		source.current = n;
-						source.current = md.getParameterTypestate(i);
+						source.current = parameters[i];//md.getParameterTypestate(i);
 					}
 				}				
 

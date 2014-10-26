@@ -10,7 +10,9 @@ aspect JavaSemanticCheck {
 				getID() + "."
 			);
 		//TODO maybe put the next check as a warning
-/*		else
+		//TODO The next is a problem. Parameters and return types expect methods to
+		//TODO be in a different file.
+		else
 			for(TypestateMethod m : getTypestateDecl().getMethods()) {
 				if(m.lookupMethod(this) == null)
 					addSemanticError(
@@ -23,7 +25,7 @@ aspect JavaSemanticCheck {
 						"."
 					);
 			}
-*/	}
+	}
 
 	protected void VariableDecl.semanticCheck() {
 		//TODO A typestate field should not be self-reference ?????

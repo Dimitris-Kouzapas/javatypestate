@@ -55,6 +55,16 @@ aspect typeEnv {
 				addErrorGraph(e);
 		}
 
+		protected void checkError(ASTNode e, BodyDecl bd) {
+			int c = current.onlyEndNodes();
+			//has more than EndNodes/LoopNodes
+			if(c == -1) 
+				addErrorGraph(e);
+			//has only LoopNodes/PlugNodes
+			else if(c == 0)
+				addTypestate((Expr) e, bd);
+		}
+
 		protected void connectGraph(BodyDecl bd) {
 		}
 
@@ -112,17 +122,17 @@ aspect typeEnv {
 
 	class TypestateField extends TypestateVar {
 		private Map<BodyDecl, GraphNode> connectGraph;
-		private VariableDecl vd;
+//		private VariableDecl vd;
 
-		TypestateField(VariableDecl vd, Set<BodyDecl> bodyDecls) {
+		TypestateField(/*VariableDecl vd,*/ Set<BodyDecl> bodyDecls) {
 			super();
 
 			connectGraph = new HashMap<BodyDecl, GraphNode>();
 			for(BodyDecl bd: bodyDecls)
 				connectGraph.put(bd, new LoopNode());
 
-			this.vd = vd;
-			current = new PlugNode(vd);
+//			this.vd = vd;
+			current = new PlugNode(this);
 		}
 
 		//TODO I think it is not needed
@@ -136,7 +146,7 @@ aspect typeEnv {
 */
 		protected void connectGraph(BodyDecl bd) {
 			connectGraph.get(bd).addNext(current);
-			current = new PlugNode(vd);
+			current = new PlugNode(this);
 		}
 
 		protected GraphNode getConnectionGraph(BodyDecl bd) {

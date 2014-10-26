@@ -284,6 +284,26 @@ aspect graphNode {
 			return r;
 		}
 
+		//TODO redundant - almost same with plugGraph method
+		protected GraphNode plugParameterGraph() {
+			return plugParameterGraph(new HashMap<GraphNode, GraphNode>());
+		}
+
+		//Polymorphic on PlugNode
+		//TODO redundant - almost same with plugGraph method
+		protected GraphNode plugParameterGraph(Map<GraphNode, GraphNode> visited) {
+			if(visited.get(this) != null)
+				return visited.get(this);
+
+			GraphNode r = cloneNode();
+			visited.put(this, r);
+
+			for(GraphNode n: next)
+				r.addNext(n.plugParameterGraph(visited));
+
+			return r;
+		}
+
 		/***********************************************************/
 		/*                For Debug                                */
 		/***********************************************************/
@@ -508,11 +528,11 @@ aspect graphNode {
 	}
 
 	public class PlugNode extends LoopNode {
-		VariableDecl vd;
+		private TypestateVar t;		//TODO This is not a good programming practice. Should not use typestate in this module
 
-		public PlugNode(VariableDecl vd) {
+		public PlugNode(TypestateVar t) {
 			super();
-			this.vd = vd;
+			this.t = t;
 		}
 
 		public String toString() {
@@ -527,7 +547,11 @@ aspect graphNode {
 		}
 
 		protected GraphNode plugGraph(Map<GraphNode, GraphNode> visited) {
-			return vd.typestate.current.cloneGraph(null);
+			return t.current.cloneGraph(null);
+		}
+
+		protected GraphNode plugParameterGraph(Map<GraphNode, GraphNode> visited) {
+			return t.current;
 		}
 	}
 }
