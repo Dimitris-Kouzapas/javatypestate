@@ -528,11 +528,11 @@ aspect graphNode {
 	}
 
 	public class PlugNode extends LoopNode {
-		private TypestateVar t;		//TODO This is not a good programming practice. Should not use typestate in this module
+		private TypestateVar typestate;		//TODO This is not a good programming practice. Should not use typestate in this module
 
-		public PlugNode(TypestateVar t) {
+		public PlugNode(TypestateVar typestate) {
 			super();
-			this.t = t;
+			this.typestate = typestate;
 		}
 
 		public String toString() {
@@ -547,11 +547,11 @@ aspect graphNode {
 		}
 
 		protected GraphNode plugGraph(Map<GraphNode, GraphNode> visited) {
-			return t.current.cloneGraph(null);
+			return typestate.current.cloneGraph(null);
 		}
 
 		protected GraphNode plugParameterGraph(Map<GraphNode, GraphNode> visited) {
-			return t.current;
+			return typestate.current;
 		}
 	}
 }

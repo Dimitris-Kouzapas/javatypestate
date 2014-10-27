@@ -22,7 +22,7 @@ aspect typestateCheck {
 			}
 		}
 	}
-
+/*
 	protected void MethodAccess.typestateCheck() {
 		MethodDecl md= lookupMethod(getQualifiedType());		//TODO get a lookupMethod()
 		if(md != null && md.isTypestateMethod()) {
@@ -33,5 +33,5 @@ aspect typestateCheck {
 			}
 		}
 	}
-
+*/
 }
