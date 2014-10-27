@@ -14,6 +14,9 @@ aspect typeEnv {
 		private ArrayList<GraphNode> errorGraph;
 		private ArrayList<ASTNode> errorExpr;
 
+//		private ArrayList<GraphNode> pluggedGraph;
+//		private ArrayList<ASTNode> pluggedExpr;
+
 		TypestateVar() {
 			current = new EndNode();
 
@@ -24,6 +27,9 @@ aspect typeEnv {
 
 			errorGraph = new ArrayList<GraphNode>();
 			errorExpr = new ArrayList<ASTNode>();
+
+//			pluggedGraph = new ArrayList<GraphNode>();
+//			pluggedExpr = new ArrayList<ASTNode>();
 		}
 
 		protected void resetCurrent() {
@@ -38,6 +44,8 @@ aspect typeEnv {
 
 		protected void addTypestate(Expr e, BodyDecl bd) {
 			if(current.isPlugged()) {
+//				pluggedGraph.add(current);
+//				pluggedExpr.add(e);
 				bd.pluggedGraph.add(current);
 				bd.pluggedExpr.add(e);
 				bd.pluggedTypestate.add(this);
@@ -58,12 +66,35 @@ aspect typeEnv {
 		protected void checkError(ASTNode e, BodyDecl bd) {
 			int c = current.onlyEndNodes();
 			//has more than EndNodes/LoopNodes
-			if(c == -1) 
+			if(c == -1)
 				addErrorGraph(e);
 			//has only LoopNodes/PlugNodes
 			else if(c == 0)
 				addTypestate((Expr) e, bd);
 		}
+
+/*		private void plugGraph(boolean clone) {
+			for(int i = 0; i < pluggedGraph.size(); i++) {
+				//TypestateVar t = pluggedTypestate.get(i);
+				GraphNode tmp = current;
+				current = (clone ? pluggedGraph.get(i).plugGraph() : pluggedGraph.get(i).plugParameterGraph());		//TODO Change the plugParameterGraph() name 
+				//TODO I dont like the implementation here
+				if(current instanceof InitNode)
+					addTypestate(((Expr) pluggedExpr.get(i)), null);
+				else
+					checkError(((Expr) pluggedExpr.get(i)));
+				current = tmp;
+			}
+		}
+
+		protected void plugGraph() {
+			plugGraph(true);
+		}
+
+		protected void plugMethodGraph() {
+			plugGraph(false);
+		}
+*/
 
 		protected void connectGraph(BodyDecl bd) {
 		}
@@ -109,7 +140,7 @@ aspect typeEnv {
 		}
 	}
 
-	class TypestateAccess extends TypestateVar {
+/*	class TypestateAccess extends TypestateVar {
 		TypestateAccess() {
 			super();
 		}
@@ -119,31 +150,20 @@ aspect typeEnv {
 			super.addTypestate(e, bd);
 		}	
 	}
-
+*/
 	class TypestateField extends TypestateVar {
 		private Map<BodyDecl, GraphNode> connectGraph;
-//		private VariableDecl vd;
 
-		TypestateField(/*VariableDecl vd,*/ Set<BodyDecl> bodyDecls) {
+		TypestateField(Set<BodyDecl> bodyDecls) {
 			super();
 
 			connectGraph = new HashMap<BodyDecl, GraphNode>();
 			for(BodyDecl bd: bodyDecls)
 				connectGraph.put(bd, new LoopNode());
 
-//			this.vd = vd;
 			current = new PlugNode(this);
 		}
 
-		//TODO I think it is not needed
-/*		protected void checkError(ASTNode e, BodyDecl bd) {
-			super.checkError(e);
-			if(current.onlyEndNodes() == 0) {
-//				System.out.println("blah")
-				addTypestate((Expr) e, bd);		//TODO add them somewhere for future check for only end/loopnode
-			}
-		}
-*/
 		protected void connectGraph(BodyDecl bd) {
 			connectGraph.get(bd).addNext(current);
 			current = new PlugNode(this);

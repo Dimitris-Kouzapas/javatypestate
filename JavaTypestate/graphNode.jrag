@@ -536,7 +536,7 @@ aspect graphNode {
 		}
 
 		public String toString() {
-			return "PlugNode";
+			return "PlugNode;";
 		}
 
 		protected boolean isPlugged(Set<GraphNode> visited) {
@@ -549,7 +549,7 @@ aspect graphNode {
 		protected GraphNode plugGraph(Map<GraphNode, GraphNode> visited) {
 			return typestate.current.cloneGraph(null);
 		}
-
+		//TODO this is redundant
 		protected GraphNode plugParameterGraph(Map<GraphNode, GraphNode> visited) {
 			return typestate.current;
 		}
