@@ -842,6 +842,7 @@ aspect getGraph {
 						if(md.getParameter(i).typestate != null)
 							parameters[i] = md.getParameterTypestate(i);
 
+					md.plugMethodGraph();
 					for(VariableDecl vd : getTypestateFields())
 						vd.typestate.current = vd.typestate.getConnectionGraph(md);
 				}
