@@ -171,13 +171,18 @@ aspect getGraph {
 			if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
 				s.add(vd);
 		return s;
-	} 
+	}
 
 
 	syn lazy boolean ClassDecl.getGraph() {
-		for(MethodDecl md: getMethodDecls())
-			if(md.isGraph() == false)
-				md.getGraph();
+		//TODO I don't like the next block. Find another way.
+		if(isTypestateClassDeclType() && ((TypestateClassDecl)this).existsTypestateDecl())
+			for(TypestateMethod m : getTypestateDecl().getMethods()) {
+				MethodDecl md;
+				if((md = m.lookupMethod(this)) != null)
+					if(md.isGraph() == false)
+						md.getGraph();
+			}
 
 		for(ConstructorDecl cd : getConstructorDecls())
 			if(cd.isGraph() == false)
@@ -187,7 +192,7 @@ aspect getGraph {
 			TypestateClassDecl cd = (TypestateClassDecl) this;
 			if(cd.existsTypestateDecl()) {
 				GraphNode r = cd.getTypestateDecl().createTypestate().normalise();
-				cd.getFieldGraph(r, new HashSet<GraphNode>());
+				cd.getFieldGraph(r, new HashMap<GraphNode, Map<VariableDecl, GraphNode>>());
 				for(ConstructorDecl c: getConstructorDecls())
 					c.plugGraph();
 //					c.env.plugGraph();
@@ -195,15 +200,24 @@ aspect getGraph {
 					vd.typestate.checkError(vd);
 			}
 		}
+
+		for(MethodDecl md: getMethodDecls())
+			if(md.isGraph() == false)
+				md.getGraph();
+
 		return true;
 	}
 
 
-	syn boolean ClassDecl.getFieldGraph(GraphNode r, Set<GraphNode> visited) {
-		if(visited.contains(r))
+	syn boolean ClassDecl.getFieldGraph(GraphNode r, Map<GraphNode, Map<VariableDecl, GraphNode>> visited) {
+		if(visited.get(r) != null) {
+			for(VariableDecl vd: getTypestateFields())
+				vd.typestate.current = visited.get(r).get(vd);
 			return true;
+		}
 
-		visited.add(r);
+		Map<VariableDecl, GraphNode> s = new HashMap<VariableDecl, GraphNode>();
+		visited.put(r, s);
 
 		if(r.next.isEmpty()) {
 			for(VariableDecl vd: getTypestateFields()) {
@@ -212,25 +226,28 @@ aspect getGraph {
 			return true;
 		}
 
-		Map<VariableDecl, GraphNode> s = new HashMap<VariableDecl, GraphNode>();
-
 		for(VariableDecl vd: getTypestateFields())
 			s.put(vd, new LoopNode());
 
 		for(GraphNode n: r.next) {
 			getFieldGraph(n, visited);
-			for(VariableDecl vd: getTypestateFields())
+			for(VariableDecl vd: getTypestateFields()) {
+//				System.out.println("\n\n\n\n" + n);
 				s.get(vd).addNext(vd.typestate.current);
+//				s.get(vd).printPaths();
+//				System.out.println("\n\n\n\n");				
+			}
 		}
+
+		for(VariableDecl vd: getTypestateFields())
+			vd.typestate.current = s.get(vd);
+
 
 		MethodDecl md = null;
 		if(r.getId() != null && r.getParameters() != null)
 			md = lookupMethod(r.getId(), r.getParameters());
 
 		if(md != null) {
-			for(VariableDecl vd: getTypestateFields())
-				vd.typestate.current = s.get(vd);
-
 			md.plugGraph();
 //			md.env.plugGraph();
 			for(VariableDecl vd: getTypestateFields())
@@ -373,6 +390,7 @@ aspect getGraph {
 
 	syn boolean Stmt.getGraph(Set<TypestateVar> env);
 
+	//TODO bug. Does not add variables declared in switch statements.
 	eq Block.getGraph(Set<TypestateVar> env) {
 		for(VariableDecl v: getVariableDecls())
 			if(v.getTypeAccess().lookupType().isTypestateClassDeclType())
@@ -651,7 +669,7 @@ aspect getGraph {
 	//TODO implement me
 	syn lazy boolean VariableDecl.getGraph(Set<TypestateVar> env) {
 		boolean isTypestate = getTypeAccess().lookupType().isTypestateClassDeclType();
-	
+
 		if(isTypestate)
 			env.remove(typestate);
 
