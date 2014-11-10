@@ -1,0 +1,25 @@
+package demos.buyer_seller_scribble;
+
+typestate Buyer1Protocol {
+	session
+		State0 = {
+			void sendbookStringtoSeller(String): State1
+		}
+	where
+		State1 = {
+			int receivebookIntfromSeller(): State2
+		}
+
+		State2 = {
+			void sendquoteInttoBuyer2(int): State3
+		}
+
+		State3 = {
+			ChoiceOption receiveLabel():
+			<AGREE: State30, QUIT:end>
+		}
+
+		State30 = {
+			void sendtransferInttoSeller(int): end
+		}
+}

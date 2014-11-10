@@ -61,7 +61,7 @@ public class Buyer1 typestate Buyer1Protocol {
         try {
             label = this.socketBuyer2In.readLine();
         } catch (IOException e) {
-            System.out.println("Input/Outpur error, unable to get lavel from buyer2");
+            System.out.println("Input/Outpur error, unable to get label from buyer2");
             System.exit(-1);
         }
 
