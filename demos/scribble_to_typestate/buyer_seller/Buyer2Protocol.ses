@@ -1,4 +1,4 @@
-package demos.buyer_seller_scribble;
+package demos.scribble_to_typestate.buyer_seller;
 
 typestate Buyer2Protocol {
 	session
@@ -7,7 +7,7 @@ typestate Buyer2Protocol {
 		}
 	where
 		State1 = {
-			ChoiceOption sendLabel(String):
+			ChoiceOption sendLabeltoBuyer1Seller(String):
 			<
 				AGREE: State10,
 				QUIT:end
