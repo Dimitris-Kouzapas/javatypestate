@@ -1,0 +1,18 @@
+module buyersSeller.bookstore;
+
+type <java> "java.lang.String" from "rt.jar" as String;
+type <java> "java.lang.Integer" from "rt.jar" as int;
+
+
+global protocol Bookstore(role Buyer1, role Buyer2, role Seller) {
+	book(String) from Buyer1 to Seller;
+	book(int) from Seller to Buyer1;
+	quote(int) from Buyer1 to Buyer2;
+	choice at Buyer2 {
+		agree(String) from Buyer2 to Buyer1, Seller;
+		transfer(int) from Buyer1 to Seller;
+		transfer(int) from Buyer2 to Seller;
+	} or {
+		quit(String) from Buyer2 to Buyer1, Seller;
+	}
+}

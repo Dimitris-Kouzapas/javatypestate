@@ -1,0 +1,16 @@
+module buyersSeller.bookstore_Buyer1;
+
+type <java> "java.lang.String" from "rt.jar" as String;
+type <java> "java.lang.Integer" from "rt.jar" as int;
+
+local protocol Bookstore at Buyer1(role Buyer1,role Buyer2,role Seller) {
+	book(String) to Seller;
+	book(int) from Seller;
+	quote(int) to Buyer2;
+	choice at Buyer2 {
+		agree(String) from Buyer2;
+		transfer(int) to Seller;
+	} or {
+		quit(String) from Buyer2;
+	}
+}
