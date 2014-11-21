@@ -1,0 +1,29 @@
+package demos.scribble_to_typestate.negotiation;
+
+typestate CProtocol {
+	session
+		State0 = {
+			void sendproposeStringToP(String): State1Rec
+		}
+
+	where
+		State1Rec = {
+			ChoiceOption receiveLabelFromP():
+			<ACCEPT: State11, REJECT: end, PROPOSE: State13>
+		}
+
+		State11 = {
+			void sendconfirmStringToP(String): end
+		}
+
+		State13 = {
+			ChoiceOption sendLabelToP(String):
+			<ACCEPT:State131, REJECT:end, PROPOSE:State1Rec>
+			// since the statement after Propose is continue,
+			//we backtrack and reach the first state containing Rec and that is the continuation state.
+		}
+
+		State131 = {
+			String receiveconfirmStringFromP(): end
+		}
+}
