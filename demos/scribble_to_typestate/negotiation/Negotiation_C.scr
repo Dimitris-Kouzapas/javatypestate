@@ -1,0 +1,26 @@
+module negotiation.Negotiation_C;
+
+type <java> "java.lang.String" from "rt.jar" as String;
+
+local protocol Negotiate at C(role C,role P) {
+	propose(String) to P;
+	rec X {
+		choice at P {
+			accept(String) from P;
+			confirm(String) to P;
+		} or {
+			reject(String) from P;
+		} or {
+			propose(String) from P;
+			choice at C {
+				accept(String) to P;
+				confirm(String) from P;
+			} or {
+				reject(String) to P;
+			} or {
+				propose(String) to P;
+				continue X;
+			}
+		}
+	}
+}
