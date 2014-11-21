@@ -8,10 +8,7 @@ typestate Buyer2Protocol {
 	where
 		State1 = {
 			ChoiceOption sendLabeltoBuyer1Seller(String):
-			<
-				AGREE: State10,
-				QUIT:end
-			>
+			<AGREE: State10, QUIT:end>
 		}
 
 		State10 = {

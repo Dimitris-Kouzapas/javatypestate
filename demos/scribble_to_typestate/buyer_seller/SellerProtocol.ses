@@ -13,10 +13,7 @@ typestate SellerProtocol {
 
 		State2 = {
 			ChoiceOption receiveLabelfromBuyer2():
-			<
-				AGREE:State20,
-				QUIT:end
-			>
+			<AGREE:State20, QUIT:end>
 		}
 
 		State20 = {
