@@ -37,7 +37,7 @@ no multiple inheritance or reclassification in Java, which is why we
 propose interfaces rather than classes.)
 
 First we use a so-called \emph{annotation type} to define a new kind
-of Java annotation called \ttt{Target}:
+of Java annotation called \ttt{Become}:
 
 \begin{lstlisting}
 import java.lang.annotation.*;
@@ -48,13 +48,13 @@ public @interface Become {
 }
 \end{lstlisting}
 
-\noindent \ttt{Target} allows us to attached annotations of the form
+\noindent \ttt{Become} allows us to attach annotations of the form
 \ttt{@Become(State.class)} to a method, specifying \ttt{State} as the
 name of the interface representing the typestate of the object after
 the method invocation. We can use these annotations to decorate
 interface methods, in a backwards-compatible way, with Plaid-style
 transition specifications \cite{garcia14}, as shown in the following
-example. We also allow \ttt{@Target} definitions to be attached to
+example. We also allow \ttt{@Become} definitions to be attached to
 fields of an enumeration; this is explained below.
 
 \begin{lstlisting}
