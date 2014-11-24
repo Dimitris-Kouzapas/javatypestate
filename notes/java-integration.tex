@@ -41,10 +41,12 @@ inheritance).
 
 We currently take a third approach, namely of introducing a separate
 typestate definition. This may have merits, but it clearly has a
-significant cost, the duplication of method and type signatures. How
-it interacts with overloading is unclear (what if I define two methods
-called \ttt{buy}?) The advantages/disadvantages of the approach need
-to be weighed in the light of what we're trying to achieve.
+significant cost, namely the duplication of method and type
+signatures. How it interacts with overloading is unclear (what if I
+define two methods called \ttt{buy}?), as it what happens if there is
+a mismatch between the typestate definition and the class definition (say .
+The advantages/disadvantages of the approach need to be weighed in the
+light of what we're trying to achieve.
 
 \paragraph{Relationship between states and classes/interfaces.}
 
@@ -130,23 +132,3 @@ also have to define
    Become then ();
 }
 \end{lstlisting}
-
-\paragraph{Enumerations.}
-
-We could think about dropping the ability to match on a returned
-enumeration in order to decide what state to go to. Instead, we could
-just enter a state providing a method for each possible return value
-and have the receiver answer by calling back on us. The method can
-then step to the required target state. This needn't be much more
-syntax than giving the enumeration mapping, and is in line with our
-asynchronous programming model.
-
-This would simplify the language and syntax and allow us to
-concentrate on improving the Java integration.
-
-\paragraph{Multiparty distribution example.}
-
-\begin{itemize}
-\item Fact that our use of the underlying channels is untyped, in
-  contrast to \cite{gay10}.
-\end{itemize}
