@@ -1,16 +1,16 @@
 \section{Typestate for Java via interfaces and annotations}
 
-The first typestate language such as Plural \cite{bierhoff11} used
+The first typestate experiments such as Plural \cite{bierhoff11} used
 pre- and post-condition annotations on methods to specify state
-transitions. More recent languages such as Plaid \cite{garcia14} unify
+transitions. More recent efforts such as Plaid \cite{garcia14} unify
 states with classes; in these ``typestate-oriented'' languages, state
 change is object reclassification. Our current approach is different
-from both of these: we introduce a separate typestate definition. This
-may have merits, but it also has a significant cost in requiring
-method and type signatures to be duplicated in similar (but not
-identical) notations. Both the user, and the language design itself,
-are forced to consider the interaction between typestate declarations
-and similar Java definitions. For example:
+again, utilising a separate typestate definition. This may have
+merits, but it also has a significant cost in requiring method and
+type signatures to be duplicated, using similar (but not identical)
+notations. Both the user, and the language design itself, are forced
+to consider the interaction between typestate declarations and the
+corresponding Java definitions. For example:
 
 \begin{itemize}
 \item Overloading. What if I define two methods called \ttt{buy}?
@@ -31,10 +31,10 @@ is what a typestate also does, a natural question is: can a typestate
 be captured as an interface where each method is annotated with a
 specification of the resulting state? In such an approach, tracking
 the state of an object statically is like implicitly casting it
-between the various state interfaces; the underlying implementation
-class has to implement all the methods and all the interfaces. (There
-is no multiple inheritance or reclassification in Java, which is why
-we propose interfaces rather than classes.)
+between the various state interfaces. The underlying implementation
+class must implement all the methods of all the interfaces. (There is
+no multiple inheritance or reclassification in Java, which is why we
+propose interfaces rather than classes.)
 
 First we use a so-called \emph{annotation type} to define a new kind
 of Java annotation called \ttt{Target}:
@@ -42,7 +42,7 @@ of Java annotation called \ttt{Target}:
 \begin{lstlisting}
 import java.lang.annotation.*;
 
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.FIELD })
 public @interface Become {
    Class<? extends Object> value ();
 }
@@ -51,43 +51,45 @@ public @interface Become {
 \noindent \ttt{Target} allows us to attached annotations of the form
 \ttt{@Become(State.class)} to a method, specifying \ttt{State} as the
 name of the interface representing the typestate of the object after
-the method invocation. We can use these annotations to decorate the
+the method invocation. We can use these annotations to decorate
 interface methods, in a backwards-compatible way, with Plaid-style
 transition specifications \cite{garcia14}, as shown in the following
-example. The \ttt{@ResultCase} construct is explained below.
+example. We also allow \ttt{@Target} definitions to be attached to
+fields of an enumeration; this is explained below.
 
 \begin{lstlisting}
 public interface Buyer {
    interface Init {
-      @Become(Shop.class)
-      void init (Channel u);
+      @Become(Shop.class) void init (Channel u);
    }
 
    interface Shop {
-       @Become(Shop.class)
-       Price price (Product p);
+      @Become(Shop.class) Price price (Product p);
 
-       @ResultCase(is = Result.OK, then = @Become(Pay.class))
-       @ResultCase(is = Result.ERROR, then = @Become(Shop.class))
-       void buy (Product p);
+      enum Result {
+         @Become(Pay.class) OK,
+         @Become(Shop.class) ERROR
+      }
 
-       @Become(End.class)
-       void stop ();
+      @SwitchOn Result buy (Product p);
+      @Become(End.class) void stop ();
    }
 
    interface Pay {
-       @Become(Shop.class)
-       void pay (Payment p);
+      @Become(Shop.class) void pay (Payment p);
    }
 }
 \end{lstlisting}
 
 \noindent The top-level \ttt{Buyer} interface is acting as a
-namespace, rather than a state interface. A \ttt{@ResultCase} is used
-to map a returned enumeration value to a state. (Duplicate annotations
-like this are legal in Java 8.) However, because annotation types
-can't make use of generics, the user would have to manually define an
-appropriate \ttt{@ResultCase} class of the following form:
+namespace here, rather than a state interface.
+
+The \ttt{@SwitchOn} annotation on \ttt{buy} indicates that this method
+transitions to a state determined by its result type, which (as it is
+here) must be an enumeration where every field is annotated with a
+target state. However, because annotation types can't make use of
+generics, the user would have to manually define an appropriate
+\ttt{@ResultCase} class of the following form:
 \begin{lstlisting}
 @interface ResultCase {
    Result is ();
