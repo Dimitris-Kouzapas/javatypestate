@@ -1,54 +1,22 @@
-\section{``Our typestate language''}
+\section{Typestate definitions and interfaces.}
 
-Referring to the language formalised in Gay \etal \cite{gay10} and
-implemented by Dimitris and Ornela.
-
-In what follows, I use ``\TypestateJava'' to mean ``any Java-like
-language with typestate''. I remain neutral about whether such
-languages are a good idea; it's simply useful to have a name for the
-concept.
-
-\paragraph{Overall goals.}
-
-There are a variety of possible research goals here. Here are some
-possibilities, which I mention but do not propose; nor is the list
-intended to be exhaustive or mutually exclusive.
-
-\begin{itemize}
-\item explore typestate as an OO paradigm without taking a Java-like
-  language as a foundation;
-\item implement \TypestateJava as a proof-of-concept, without worrying
-  too much about compatibility;
-\item design a 100\% backward-compatible \TypestateJava to provide a
-  migration path and get some actual adoption;
-\item demonstrate that \TypestateJava is convenient to use and
-  provides a useful level of additional type-safety;
-\item show how \TypestateJava can be used to build type-safe
-  distributed or concurrent systems.
-\end{itemize}
-
-\noindent If we intend to have more examples that target the existing
-language, we should also have a roadmap for developing the existing
-language in the direction of the identified goals. For example, early
-typestate language such as Plural \cite{bierhoff11} used pre- and
-post-condition annotations on methods to specify state transitions.
-More recent languages such as Plaid \cite{garcia14} unify states with
-classes; in these ``typestate-oriented'' languages, state change is
-object reclassification (avoiding the issue with multiple
+Early typestate language such as Plural \cite{bierhoff11} used pre-
+and post-condition annotations on methods to specify state
+transitions. More recent languages such as Plaid \cite{garcia14} unify
+states with classes; in these ``typestate-oriented'' languages, state
+change is object reclassification (avoiding the issue with multiple
 inheritance).
-
-\paragraph{Typestate definitions.}
 
 We currently take a third approach, namely of introducing a separate
 typestate definition. This may have merits, but it clearly has a
 significant cost, namely the duplication of method and type
 signatures. How it interacts with overloading is unclear (what if I
-define two methods called \ttt{buy}?), as it what happens if there is
-a mismatch between the typestate definition and the class definition (say .
-The advantages/disadvantages of the approach need to be weighed in the
-light of what we're trying to achieve.
+define two methods called \ttt{buy}?), as is what happens if there is
+a mismatch between the typestate definition and the class definition
+(say . The advantages/disadvantages of the approach need to be weighed
+in the light of what we're trying to achieve.
 
-\paragraph{Relationship between states and classes/interfaces.}
+\subsection{Relationship to interfaces}
 
 (A Java class cannot have two unrelated superclasses, so let's
 restrict the discussion to interfaces.) An interface specifies the
