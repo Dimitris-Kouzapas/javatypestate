@@ -1,5 +1,0 @@
-package demos.buyer_seller_scribble;
-
-enum ChoiceOption {
-	AGREE, QUIT;
-}

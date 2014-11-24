@@ -1,4 +1,4 @@
-package demos.buyer_seller_scribble;
+package demos.scribble_to_typestate.buyer_seller;
 
 typestate SellerProtocol {
 	session
@@ -12,11 +12,8 @@ typestate SellerProtocol {
 		}
 
 		State2 = {
-			ChoiceOption receiveLabel():
-			<
-				AGREE:State20,
-				QUIT:end
-			>
+			ChoiceOption receiveLabelfromBuyer2():
+			<AGREE:State20, QUIT:end>
 		}
 
 		State20 = {

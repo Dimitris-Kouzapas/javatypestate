@@ -1,0 +1,34 @@
+//$ java -cp bin';'lib/antlr-3.5.2-complete.jar';'parser scribble.main.Tool test/src/betty/nego1/Negotiation1.scr -project betty.nego.Negotiation1.Negotiate C
+//$ java -cp bin';'lib/antlr-3.5.2-complete.jar';'parser scribble.main.Tool test/src/betty/nego1/Negotiation1.scr -dot betty.nego.Negotiation1.Negotiate C | dot -Tpng > test.png
+// Link to the initial example: https://confluence.oceanobservatories.org/display/syseng/CIAD+COI+OV+Negotiate+Protocol 
+// Link to explanation: https://confluence.oceanobservatories.org/display/CIDev/Scribble+for+Negotiation+Protocol
+
+module negotiation.Negotiation;
+
+//type <java> "betty.nego.SAP" from "betty/nego/SAP.java" as SAP;
+type <java> "java.lang.String" from "rt.jar" as String;
+
+// C = Consumer, P = Producer
+global protocol Negotiate(role C, role P) {
+	propose(String) from C to P;
+	rec X {
+		choice at P {
+			accept(String) from P to C;
+			confirm(String) from C to P;
+		} or {
+			reject(String) from P to C;
+		} or {
+			propose(String) from P to C;
+			choice at C {
+				accept(String) from C to P;
+				confirm(String) from P to C;
+			} or {
+				reject(String) from C to P;
+			} or {
+				propose(String) from C to P;
+				continue X;
+			}
+		}
+	}
+}
+
