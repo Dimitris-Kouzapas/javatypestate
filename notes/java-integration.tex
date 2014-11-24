@@ -1,0 +1,152 @@
+\section{``Our typestate language''}
+
+Referring to the language formalised in Gay \etal \cite{gay10} and
+implemented by Dimitris and Ornela.
+
+In what follows, I use ``\TypestateJava'' to mean ``any Java-like
+language with typestate''. I remain neutral about whether such
+languages are a good idea; it's simply useful to have a name for the
+concept.
+
+\paragraph{Overall goals.}
+
+There are a variety of possible research goals here. Here are some
+possibilities, which I mention but do not propose; nor is the list
+intended to be exhaustive or mutually exclusive.
+
+\begin{itemize}
+\item explore typestate as an OO paradigm without taking a Java-like
+  language as a foundation;
+\item implement \TypestateJava as a proof-of-concept, without worrying
+  too much about compatibility;
+\item design a 100\% backward-compatible \TypestateJava to provide a
+  migration path and get some actual adoption;
+\item demonstrate that \TypestateJava is convenient to use and
+  provides a useful level of additional type-safety;
+\item show how \TypestateJava can be used to build type-safe
+  distributed or concurrent systems.
+\end{itemize}
+
+\noindent If we intend to have more examples that target the existing
+language, we should also have a roadmap for developing the existing
+language in the direction of the identified goals. For example, early
+typestate language such as Plural \cite{bierhoff11} used pre- and
+post-condition annotations on methods to specify state transitions.
+More recent languages such as Plaid \cite{garcia14} unify states with
+classes; in these ``typestate-oriented'' languages, state change is
+object reclassification (avoiding the issue with multiple
+inheritance).
+
+\paragraph{Typestate definitions.}
+
+We currently take a third approach, namely of introducing a separate
+typestate definition. This may have merits, but it clearly has a
+significant cost, the duplication of method and type signatures. How
+it interacts with overloading is unclear (what if I define two methods
+called \ttt{buy}?) The advantages/disadvantages of the approach need
+to be weighed in the light of what we're trying to achieve.
+
+\paragraph{Relationship between states and classes/interfaces.}
+
+(A Java class cannot have two unrelated superclasses, so let's
+restrict the discussion to interfaces.) An interface specifies the
+methods available on an object. A typestate also does this, so a
+natural question is: is a typestate an interface, annotated with
+information about target states? Tracking the state of an object
+statically is like implicitly casting it to a new interface; the
+underlying object has to implement all the methods and all the
+interfaces.
+
+First we use a so-called \emph{annotation type} to define a new kind
+of Java annotation called \ttt{Target}:
+
+\begin{lstlisting}
+import java.lang.annotation.*;
+
+@Target(ElementType.METHOD)
+public @interface Become {
+   Class<? extends Object> value ();
+}
+\end{lstlisting}
+
+\noindent This would allow us to write \ttt{@Become(State.class)} as
+an annotation on a method, where \ttt{State} is the name of a state
+interface. We can use these to decorate the interface methods with the
+target state; think of this as a backwards-compatible way of extending
+the syntax of Java to allow Plaid-style transition declarations
+\cite{garcia14}.
+
+\begin{lstlisting}
+public interface Buyer {
+   interface Init {
+      @Become(Shop.class)
+      void init (Channel u);
+   }
+
+   interface Shop {
+       @Become(Shop.class)
+       Price price (Product p);
+
+       @ResultCase(is = Result.OK, then = @Become(Pay.class))
+       @ResultCase(is = Result.ERROR, then = @Become(Shop.class))
+       void buy (Product p);
+
+       @Become(End.class)
+       void stop ();
+   }
+
+   interface Pay {
+       @Become(Shop.class)
+       void pay (Payment p);
+   }
+}
+\end{lstlisting}
+
+\noindent The implementation is essentially as it was before, except
+that the class \ttt{BuyerImpl} must implement each of the state
+interfaces. The job of the typestate extensions to the compiler is to
+allow the user to call methods on the state interfaces without having
+to explicitly cast.
+
+\begin{lstlisting}
+class BuyerImpl implements Buyer.Init, Buyer.Shop, Buyer.Pay {
+   public void init (Channel u) { ... }
+   public void pay(Payment p) { ... }
+   public Price price (Product p) { ... }
+   public void buy (Product p) { ... }
+   public void stop() { ... }
+}
+\end{lstlisting}
+
+\noindent \ttt{Channel} would also be modelled as a class with its own
+typestate interfaces.
+
+\noindent The duplicate annotations like this are legal in Java 8.
+Because annotation types can't make use of generics, the user would
+also have to define
+\begin{lstlisting}
+@interface ResultCase {
+   Result is ();
+   Become then ();
+}
+\end{lstlisting}
+
+\paragraph{Enumerations.}
+
+We could think about dropping the ability to match on a returned
+enumeration in order to decide what state to go to. Instead, we could
+just enter a state providing a method for each possible return value
+and have the receiver answer by calling back on us. The method can
+then step to the required target state. This needn't be much more
+syntax than giving the enumeration mapping, and is in line with our
+asynchronous programming model.
+
+This would simplify the language and syntax and allow us to
+concentrate on improving the Java integration.
+
+\paragraph{Multiparty distribution example.}
+
+\begin{itemize}
+\item Fact that our use of the underlying channels is untyped, in
+  contrast to \cite{gay10}.
+\end{itemize}

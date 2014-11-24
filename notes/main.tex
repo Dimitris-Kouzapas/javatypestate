@@ -1,0 +1,35 @@
+\documentclass{article}
+
+\input{def/fonts}
+
+\usepackage{amsmath}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{hyperref}
+\usepackage{mathpartir}
+\usepackage{tikz}
+\usepackage{xspace}
+\usepackage{calc} % for \widthof
+\usepackage{pifont} % \for \ding
+\usepackage{listings}
+
+\usetikzlibrary{automata}
+\usetikzlibrary{positioning}
+
+\input{../../def/macros}
+\input{def/layout}
+\input{def/macros}
+\input{notes/def/macros}
+\input{notes/def/listings}
+\lstset{language=code}
+
+\begin{document}
+
+\input{notes/sequential-composition}
+\input{notes/scribble-to-typestate-java}
+\input{notes/internal-choice}
+\input{notes/execution-monitoring}
+
+{\footnotesize \bibliographystyle{abbrv}
+\bibliography{../../bib}}
+
+\end{document}
