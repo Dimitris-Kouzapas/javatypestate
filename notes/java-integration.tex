@@ -110,12 +110,12 @@ class BuyerImpl implements Buyer.Init, Buyer.Shop, Buyer.Pay {
 
 \subsection{Using the annotations for type-checking}
 
-Finally, we consider how such an annotation-based language extension
-could be implemented. Java Specification Request (JSR) 269
-\cite{jsr269} adds a pluggable annotation processing API to Java to
-allow tools to process annotations; \ttt{javac} provides access to
-these facilities via command-line options. These can be used to extend
-\ttt{javac} with an additional phase where typestate checking takes
+Here is how such an annotation-based language extension could be
+implemented. Java Specification Request (JSR) 269 \cite{jsr269} adds a
+pluggable annotation processing API to Java to allow tools to process
+annotations; \ttt{javac} provides access to these facilities via
+command-line options. These could be used to extend \ttt{javac} with
+an additional pre-processing phase during which typestate checking takes
 place. The open source \emph{Checker} framework \cite{papi08,dietl11}
 is a comprehensive example of the use of annotations to extend Java's
 type system in this way.
