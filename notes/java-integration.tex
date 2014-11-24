@@ -1,4 +1,4 @@
-\section{Typestate definitions and interfaces.}
+\section{Typestate definitions}
 
 Early typestate language such as Plural \cite{bierhoff11} used pre-
 and post-condition annotations on methods to specify state
@@ -7,24 +7,32 @@ states with classes; in these ``typestate-oriented'' languages, state
 change is object reclassification.
 
 We currently take a third approach, namely of introducing a separate
-typestate definition. This may have merits, but it clearly has a
+typestate definition. This may have merits, but it also has a
 significant cost, namely the duplication of method and type
-signatures. How it interacts with overloading is unclear (what if I
-define two methods called \ttt{buy}?), as is what happens if there is
-a mismatch between the typestate definition and the class definition
-(say . The advantages/disadvantages of the approach need to be weighed
-in the light of what we're trying to achieve.
+signatures. Both the user, and our implementation, is forced to
+consider the interaction between typestate declarations and other Java
+language features. For example:
 
-\subsection{Relationship to interfaces}
+\begin{itemize}
+\item Overloading. What if I define two methods called \ttt{buy}?
+\item Mismatches between typestate definitions and Java definitions.
+\item Extending typestate with new features, e.g.~inheritance or
+  exceptions.
+\item Integration with IDE features like refactoring.
+\end{itemize}
 
-(A Java class cannot have two unrelated superclasses, so let's
-restrict the discussion to interfaces.) An interface specifies the
-methods available on an object. A typestate also does this, so a
-natural question is: is a typestate an interface, annotated with
-information about target states? Tracking the state of an object
-statically is like implicitly casting it to a new interface; the
-underlying object has to implement all the methods and all the
-interfaces.
+\noindent An alternative approach based on annotations is outlined
+below.
+
+\subsection{Representing typestates using interfaces and annotations}
+
+An interface specifies the methods available on an object. A typestate
+also does this, so a natural question is: is a typestate an interface,
+annotated with additional information specifying the target state of
+each method? Tracking the state of an object statically is like
+implicitly casting it to a new interface, and so the underlying object
+has to implement all the methods and all the interfaces. (In Java a
+class is either \ttt{Object} or has exactly one immediate superclass.)
 
 First we use a so-called \emph{annotation type} to define a new kind
 of Java annotation called \ttt{Target}:
@@ -41,9 +49,10 @@ public @interface Become {
 \noindent This would allow us to write \ttt{@Become(State.class)} as
 an annotation on a method, where \ttt{State} is the name of a state
 interface. We can use these to decorate the interface methods with the
-target state; think of this as a backwards-compatible way of extending
-the syntax of Java to allow Plaid-style transition declarations
-\cite{garcia14}.
+target state; essentially this is a backwards-compatible way of
+extending the syntax of Java to allow Plaid-style transition
+declarations \cite{garcia14}. The following example illustrates; the
+\ttt{@ResultCase} construct is explained below.
 
 \begin{lstlisting}
 public interface Buyer {
@@ -75,7 +84,12 @@ public interface Buyer {
 that the class \ttt{BuyerImpl} must implement each of the state
 interfaces. The job of the typestate extensions to the compiler is to
 allow the user to call methods on the state interfaces without having
-to explicitly cast.
+to explicitly cast. Java Specification Request (JSR) 269 \cite{jsr269}
+adds a pluggable annotation processing API to Java to allow the
+authoring of tools that process annotations; these facilities can be
+accessed via command-line options to \ttt{javac}. The open source
+Checker framework \cite{papi08,dietl11} is a comprehensive example of
+the use of annotations to extend Java's type system.
 
 \begin{lstlisting}
 class BuyerImpl implements Buyer.Init, Buyer.Shop, Buyer.Pay {
@@ -86,9 +100,6 @@ class BuyerImpl implements Buyer.Init, Buyer.Shop, Buyer.Pay {
    public void stop() { ... }
 }
 \end{lstlisting}
-
-\noindent \ttt{Channel} would also be modelled as a class with its own
-typestate interfaces.
 
 \noindent The duplicate annotations like this are legal in Java 8.
 Because annotation types can't make use of generics, the user would
