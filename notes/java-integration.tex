@@ -85,20 +85,14 @@ public interface Buyer {
 namespace here, rather than a state interface.
 
 The \ttt{@SwitchOn} annotation on \ttt{buy} indicates that this method
-transitions to a state determined by its result type, which (as it is
-here) must be an enumeration where every field is annotated with a
-target state. However, because annotation types can't make use of
-generics, the user would have to manually define an appropriate
-\ttt{@ResultCase} class of the following form:
+transitions to a state determined by its result type, which (as here)
+must be an enumeration where every element is annotated with a target
+state. \ttt{@SwitchOn} is simply a tag:
 \begin{lstlisting}
-@interface ResultCase {
-   Result is ();
-   Become then ();
+@Target(ElementType.METHOD)
+public @interface SwitchOn {
 }
 \end{lstlisting}
-
-\noindent However there are probably other encoding schemes which
-avoid this particular shortcoming.
 
 The implementation class \ttt{BuyerImpl} is essentially as it was
 before, except that it must now implement each of the state
@@ -109,7 +103,7 @@ class BuyerImpl implements Buyer.Init, Buyer.Shop, Buyer.Pay {
    public void init (Channel u) { ... }
    public void pay(Payment p) { ... }
    public Price price (Product p) { ... }
-   public void buy (Product p) { ... }
+   public Result buy (Product p) { ... }
    public void stop() { ... }
 }
 \end{lstlisting}
