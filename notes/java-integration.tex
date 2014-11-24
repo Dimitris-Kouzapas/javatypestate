@@ -4,14 +4,12 @@ Early typestate language such as Plural \cite{bierhoff11} used pre-
 and post-condition annotations on methods to specify state
 transitions. More recent languages such as Plaid \cite{garcia14} unify
 states with classes; in these ``typestate-oriented'' languages, state
-change is object reclassification.
-
-We currently take a third approach, namely of introducing a separate
-typestate definition. This may have merits, but it also has a
-significant cost, namely the duplication of method and type
-signatures. Both the user, and our implementation, is forced to
+change is object reclassification. Our approach is different again: we
+introducing a separate typestate definition. This may have merits, but
+it also has a significant cost in requiring method and type signatures
+to be duplicated. Both the user, and the implementation, are forced to
 consider the interaction between typestate declarations and other Java
-language features. For example:
+definitions. For example:
 
 \begin{itemize}
 \item Overloading. What if I define two methods called \ttt{buy}?
@@ -26,13 +24,15 @@ below.
 
 \subsection{Representing typestates using interfaces and annotations}
 
-An interface specifies the methods available on an object. A typestate
-also does this, so a natural question is: is a typestate an interface,
-annotated with additional information specifying the target state of
-each method? Tracking the state of an object statically is like
-implicitly casting it to a new interface, and so the underlying object
-has to implement all the methods and all the interfaces. (In Java a
-class is either \ttt{Object} or has exactly one immediate superclass.)
+An interface specifies the methods available on an object. Since this
+is what a typestate also does, a natural question is: can a typestate
+be captured as an interface where each method is annotated with a
+specification of the resulting state? In this approach, tracking the
+state of an object statically is like implicitly casting it between
+the various state interfaces; the underlying implementation class has
+to implement all the methods and all the interfaces. (There is no
+multiple inheritance in Java, which is why we propose interfaces
+rather than classes.)
 
 First we use a so-called \emph{annotation type} to define a new kind
 of Java annotation called \ttt{Target}:
@@ -46,13 +46,13 @@ public @interface Become {
 }
 \end{lstlisting}
 
-\noindent This would allow us to write \ttt{@Become(State.class)} as
-an annotation on a method, where \ttt{State} is the name of a state
-interface. We can use these to decorate the interface methods with the
-target state; essentially this is a backwards-compatible way of
-extending the syntax of Java to allow Plaid-style transition
-declarations \cite{garcia14}. The following example illustrates; the
-\ttt{@ResultCase} construct is explained below.
+\noindent \ttt{Target} allows us to attached annotations of the form
+\ttt{@Become(State.class)} to a method, specifying \ttt{State} as the
+name of the interface representing the typestate of the object after
+the method invocation. We can use these annotations to decorate the
+interface methods, in a backwards-compatible way, with Plaid-style
+transition specifications \cite{garcia14}. The following example
+illustrates; the \ttt{@ResultCase} construct is explained below.
 
 \begin{lstlisting}
 public interface Buyer {
@@ -80,16 +80,19 @@ public interface Buyer {
 }
 \end{lstlisting}
 
-\noindent The implementation is essentially as it was before, except
-that the class \ttt{BuyerImpl} must implement each of the state
-interfaces. The job of the typestate extensions to the compiler is to
-allow the user to call methods on the state interfaces without having
-to explicitly cast. Java Specification Request (JSR) 269 \cite{jsr269}
-adds a pluggable annotation processing API to Java to allow the
-authoring of tools that process annotations; these facilities can be
-accessed via command-line options to \ttt{javac}. The open source
-Checker framework \cite{papi08,dietl11} is a comprehensive example of
-the use of annotations to extend Java's type system.
+\noindent (The enclosing \ttt{Buyer} interface is acting as a
+namespace, rather than a state interface.)
+
+The implementation is essentially as it was before, except that the
+class \ttt{BuyerImpl} must implement each of the state interfaces. The
+job of the typestate extensions to the compiler is to allow the user
+to call methods on the state interfaces without having to explicitly
+cast. Java Specification Request (JSR) 269 \cite{jsr269} adds a
+pluggable annotation processing API to Java to allow the authoring of
+tools that process annotations; these facilities can be accessed via
+command-line options to \ttt{javac}. The open source Checker framework
+\cite{papi08,dietl11} is a comprehensive example of the use of
+annotations to extend Java's type system.
 
 \begin{lstlisting}
 class BuyerImpl implements Buyer.Init, Buyer.Shop, Buyer.Pay {
