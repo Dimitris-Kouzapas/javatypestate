@@ -3,8 +3,9 @@
 The first typestate experiments such as Plural \cite{bierhoff11} used
 pre- and post-condition annotations on methods to specify state
 transitions. More recent ``typestate-oriented'' efforts such as Plaid
-\cite{garcia14} unify states with classes. In such a language state
-change amounts to object reclassification.
+\cite{garcia14} unify states with classes. In these languages state
+change amounts to object reclassification, which is not supported in
+Java.
 
 Our current approach is similar to the first approach but utilises a
 separate typestate definition. Merits aside, a distinct notion of
@@ -29,7 +30,7 @@ the rules Java already uses to answer such questions. An additional
 advantage is that IDE features like refactoring that work with
 specific language features will have some chance of working with our
 proposed extensions. One way to extend Java in a backwards-compatible
-way is to use \emph{annotations}; such an approach is outlined below.
+way is to use \emph{annotations}. Such an approach is outlined below.
 
 \subsection{Typestate via annotations}
 
@@ -37,10 +38,10 @@ An interface specifies the methods available on an object. Since this
 is what a typestate also does, our strategy will be to represent a
 typestate as an interface where each method is \emph{annotated} with a
 specification of the state that it transitions the object to. An
-annotation is a backwards-compatible way of decorating Java syntax
-nodes with typed metadata which can be used by preprocessors or other
-tools. The following annotation type \ttt{Become} is used to specify
-state transitions:
+annotation is a backwards-compatible way of decorating a Java syntax
+node with typed metadata which can be used by a preprocessor or other
+tool. We define the following annotation type \ttt{Become} in order to
+specify state transitions:
 
 \begin{lstlisting}
 import java.lang.annotation.*;
@@ -51,14 +52,11 @@ public @interface Become {
 }
 \end{lstlisting}
 
-\noindent \ttt{Become} allows us to attach annotations of the form
-\ttt{@Become(State.class)} to a method, where \ttt{State} is the name
-of the interface representing the typestate of the object after an
-invocation of the method. We can use these annotations to decorate
-interface methods, in a backwards-compatible way, with Plaid-style
-transition specifications \cite{garcia14}, as shown in the following
-example. We also allow \ttt{@Become} definitions to be attached to
-fields of an enumeration; this is explained below.
+\noindent Like a Plaid-style post-state specification \cite{garcia14},
+\ttt{Become} allows us to attach annotations of the form
+\ttt{@Become(State.class)} to an interface method, where \ttt{State}
+is the name of the interface representing the state of the object
+after an invocation of the method. The following example illustrates.
 
 \begin{lstlisting}
 public interface Buyer {
@@ -87,10 +85,12 @@ public interface Buyer {
 \noindent The top-level \ttt{Buyer} interface is acting as a
 namespace here, rather than a state interface.
 
-The \ttt{@SwitchOn} annotation on \ttt{buy} indicates that this method
-transitions to a state determined by its result type, which (as here)
-must be an enumeration where every element is annotated with a target
-state. \ttt{@SwitchOn} is simply a tag:
+As the example shows, we also allow \ttt{@Become} annotations to be
+attached to fields of an enumeration. Here, the \ttt{@SwitchOn}
+annotation on \ttt{buy} indicates that the method transitions to a
+state determined by its result type, which must be an enumeration
+where every element is annotated with a target state. \ttt{@SwitchOn}
+is simply a tag:
 \begin{lstlisting}
 @Target(ElementType.METHOD)
 public @interface SwitchOn {
@@ -111,23 +111,23 @@ class BuyerImpl implements Buyer.Init, Buyer.Shop, Buyer.Pay {
 }
 \end{lstlisting}
 
-Client code would appear to use the concrete implementation class
-directly, but our type system would track the state of an object,
-inferring a more specific interface type for an expression whose
-standard Java type is the implementation class. The implementation
-class must implement all the methods of all the interfaces, since
-there is no multiple inheritance or reclassification in Java. It
-should be possible to provide full backwards compatibility, so that
-well-typedness in our system implies well-typedness in Java.
+\noindent Client code would appear to use the concrete implementation
+class directly, but our type system would track the state more
+precisely, inferring a more specific interface type for an expression
+which would otherwise have that implementation class as its type. (The
+implementation class must implement all the methods of all the
+interfaces, since we cannot make use of multiple inheritance or
+reclassification.) It should be feasible to provide full backwards
+compatibility, so that well-typedness in our system implies
+well-typedness in Java.
 
 \subsection{Using the annotations for type-checking}
 
-Here is how such an annotation-based language extension could be
-implemented. Java Specification Request (JSR) 269 \cite{jsr269} adds a
-pluggable annotation processing API to Java to allow tools to process
-annotations; \ttt{javac} provides access to these facilities via
-command-line options. These could be used to extend \ttt{javac} with
-an additional pre-processing phase during which typestate checking
-would take place. The open source \emph{Checker} framework
-\cite{papi08,dietl11} is a comprehensive example of the use of
-annotations to define Java type system extensions.
+Java Specification Request (JSR) 269 \cite{jsr269} provides a
+pluggable annotation processing API intended for the implementation of
+annotation-based language extensions. These facilities can be accessed
+via command-line options to \ttt{javac}. It should be possible to
+extend \ttt{javac} with an additional pre-processing phase during
+which typestate checking would take place. The open source
+\emph{Checker} framework \cite{papi08,dietl11} is a comprehensive
+example of this approach to extending the Java type system.
