@@ -2,36 +2,34 @@
 
 The first typestate experiments such as Plural \cite{bierhoff11} used
 pre- and post-condition annotations on methods to specify state
-transitions. More recent efforts such as Plaid \cite{garcia14} unify
-states with classes; in these ``typestate-oriented'' languages, state
-change is achieved via object reclassification.
+transitions. More recent ``typestate-oriented'' efforts such as Plaid
+\cite{garcia14} unify states with classes. In such a language state
+change amounts to object reclassification.
 
 Our current approach is similar to the first approach but utilises a
 separate typestate definition. Merits aside, a distinct notion of
 typestate definition introduces unneeded complexity into the
-programming model and the language design: both the user, and our
+programming model and language design: both the user, and our
 compiler, are forced to consider the interaction between typestate
 definitions and the Java definitions they relate to. For example, we
-must resolve language definition and tooling issues like the
-following:
+must resolve language definition issues like the following:
 
 \begin{itemize}
-\item Can I overload typestate methods (e.g. two methods
-  called \ttt{buy})?
+\item Can I overload typestate methods (e.g. have two methods called
+  \ttt{buy})?
 \item When is a Java definition is deemed to ``match'' a typestate
   definition?
 \item How to extend typestate with features like inheritance or exceptions?
 \item Can I use a typestate definition as an interface or vice versa?
 \end{itemize}
 
-\noindent An alternative strategy would be to utilise and extend
-Java's existing notions of interface and method signature. That way we
-can leverage the rules Java already uses to answer such questions. An
-additional advantage is that IDE features like refactoring that work
-with specific language features will have some chance of working with
-our proposed extensions. One way to extend Java in a
-backwards-compatible way is to use \emph{annotations}; such an
-approach is outlined below.
+\noindent A more practical strategy would be to utilise and extend
+Java's existing notions of interface and method signature, leveraging
+the rules Java already uses to answer such questions. An additional
+advantage is that IDE features like refactoring that work with
+specific language features will have some chance of working with our
+proposed extensions. One way to extend Java in a backwards-compatible
+way is to use \emph{annotations}; such an approach is outlined below.
 
 \subsection{Typestate via annotations}
 
@@ -40,21 +38,9 @@ is what a typestate also does, our strategy will be to represent a
 typestate as an interface where each method is \emph{annotated} with a
 specification of the state that it transitions the object to. An
 annotation is a backwards-compatible way of decorating Java syntax
-nodes with additional metadata which can be used by preprocessors or
-other tools.
-
-Tracking the state of tan object would amount to inferring a more
-specific interface type for an expression whose standard Java type is
-a concrete implementation class. The implementation class must
-implement all the methods of all the interfaces, to ensure that there
-are no runtime errors associated with changes in static type. (There
-is no multiple inheritance or reclassification in Java.) It should be
-possible to provide full backwards compatibility, so that
-well-typedness in our system implies well-typedness in Java.
-
-Annotations are typed metadata and their types are given by so-called
-\emph{annotation types}. The following annotation type \ttt{Become} is
-used to specify state transitions:
+nodes with typed metadata which can be used by preprocessors or other
+tools. The following annotation type \ttt{Become} is used to specify
+state transitions:
 
 \begin{lstlisting}
 import java.lang.annotation.*;
@@ -124,6 +110,15 @@ class BuyerImpl implements Buyer.Init, Buyer.Shop, Buyer.Pay {
    public void stop() { ... }
 }
 \end{lstlisting}
+
+Client code would appear to use the concrete implementation class
+directly, but our type system would track the state of an object,
+inferring a more specific interface type for an expression whose
+standard Java type is the implementation class. The implementation
+class must implement all the methods of all the interfaces, since
+there is no multiple inheritance or reclassification in Java. It
+should be possible to provide full backwards compatibility, so that
+well-typedness in our system implies well-typedness in Java.
 
 \subsection{Using the annotations for type-checking}
 
