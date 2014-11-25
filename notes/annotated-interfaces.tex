@@ -53,12 +53,12 @@ public @interface Become {
 
 \noindent \ttt{Become} allows us to attach annotations of the form
 \ttt{@Become(State.class)} to a method, where \ttt{State} is the name
-of the interface representing the typestate of the object after the
-method invocation. We can use these annotations to decorate interface
-methods, in a backwards-compatible way, with Plaid-style transition
-specifications \cite{garcia14}, as shown in the following example. We
-also allow \ttt{@Become} definitions to be attached to fields of an
-enumeration; this is explained below.
+of the interface representing the typestate of the object after an
+invocation of the method. We can use these annotations to decorate
+interface methods, in a backwards-compatible way, with Plaid-style
+transition specifications \cite{garcia14}, as shown in the following
+example. We also allow \ttt{@Become} definitions to be attached to
+fields of an enumeration; this is explained below.
 
 \begin{lstlisting}
 public interface Buyer {
