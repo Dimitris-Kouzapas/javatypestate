@@ -4,13 +4,14 @@ package demos.jedis_wrapper;
 
 // Should be able to declare an abstract class here.
 public class JedisWrapper typestate Commands {
-    void watch(String[] keys) {
-    }
-  
-/*
-    String get(String) {
+    String get(String k) {
+       throw new RuntimeException();
     }
     
+/*
+    void watch(String[] ks) {
+    }
+  
     List<String> lrange() {
     }
     
