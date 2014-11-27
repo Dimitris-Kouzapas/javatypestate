@@ -2,16 +2,21 @@ package demos.jedis;
 
 typestate Commands {
 	session
-		InitSession =	{
-							int receiveQuoteFromBuyer1(): QuoteReceived
+		Init =	{
+           void watch(String... keys): Watching
 		}
 	where
-		QuoteReceived = {
-			AgreementLabel sendToSellerBuyer1(String):
-				<AGREE:TalktoSeller, QUIT:end>
+		Watching = {
+			get (String): Watching
+			lrange (): Watching
+			watch(String... keys): Watching
+			multi(): Queued
 		}
 
-		TalktoSeller = 	{
-			void transferMoneyToSeller(int): end
+		Queued = {
+		    void set(String k, String v): Queued
+		    void lpop (String): Queued
+			void discard(): end
+			void exec(): <OK:end, FAIL:Queued>
 		}
 }
