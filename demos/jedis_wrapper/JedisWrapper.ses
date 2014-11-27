@@ -1,7 +1,35 @@
-package demos.redis;
+package demos.jedis_wrapper;
 
-// import redis.clients.jedis.Commands;
+// import redis.clients.jedis.JedisCommands;
 
+// Should be able to declare an abstract class here.
 public class JedisWrapper typestate Commands {
+    void watch(String[] keys) {
+    }
+  
+/*
+    String get(String) {
+    }
+    
+    List<String> lrange() {
+    }
+    
+    void watch(String[]) {
+    }
+    
+    void multi() {
+    }
 
+    void set(String k, String v) {
+    }
+	
+	void lpop (String) {
+	}
+	
+	void discard() {
+	}
+	
+	Result exec() {
+    }
+*/
 }

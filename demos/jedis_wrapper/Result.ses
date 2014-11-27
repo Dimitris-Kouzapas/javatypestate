@@ -1,0 +1,7 @@
+package demos.jedis_wrapper;
+
+package demos.buyer_seller_socket;
+
+enum Result {
+	OK, FAIL;
+}

@@ -1,22 +1,22 @@
-package demos.redis;
+package demos.jedis_wrapper;
 
 typestate Commands {
 	session
 		Init =	{
-           void watch(String... keys): Watching
+           void watch(String[]): Watching
 		}
 	where
 		Watching = {
-			get (String): Watching
-			lrange (): Watching
-			watch(String... keys): Watching
-			multi(): Queued
+			String get(String): Watching
+			List<String> lrange(): Watching
+			void watch(String[]): Watching
+			void multi(): Queued
 		}
 
 		Queued = {
-		    void set(String k, String v): Queued
+		    void set(String, String): Queued
 		    void lpop (String): Queued
 			void discard(): end
-			void exec(): <OK:end, FAIL:Queued>
+			Result exec(): <OK:end, FAIL:Queued>
 		}
 }
