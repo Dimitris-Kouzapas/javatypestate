@@ -1,0 +1,11 @@
+package demos.jedis_wrapper;
+
+typestate SellerProtocol {
+	session
+		InitSession =		{
+								String receiveTitleFromBuyer1(): TitleReceived
+							}
+	where
+		TitleReceived =		{
+							}
+}

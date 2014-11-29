@@ -1,0 +1,10 @@
+package demos.jedis_wrapper;
+
+public class Seller typestate SellerProtocol {
+   public Seller () {
+   }
+
+   String receiveTitleFromBuyer1() {
+      return "hello";
+   }
+}
