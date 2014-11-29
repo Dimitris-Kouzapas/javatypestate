@@ -2,7 +2,8 @@ package demos.jedis_wrapper;
 
 typestate Commands {
 	session
-		Init =	{
+	    // What is the name of the state for here?
+		InitSession = {
            void watch(String[]): Watching
 		}
 	where

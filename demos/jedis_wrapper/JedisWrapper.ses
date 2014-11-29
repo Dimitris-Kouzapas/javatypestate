@@ -1,11 +1,14 @@
 package demos.jedis_wrapper;
 
 import java.util.List;
-
 // import redis.clients.jedis.JedisCommands;
 
-// Should be able to declare an abstract class here. Also we don't support generics.
+// Should be able to declare an abstract class here. 
+// Also we seem to be based on J2SE 1.4 (from 2002), so for example we don't support generics.
 public class JedisWrapper typestate Commands {
+    public JedisWrapper () {
+    }
+
     void watch(String[] keys) {
     }
 

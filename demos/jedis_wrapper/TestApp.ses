@@ -1,0 +1,8 @@
+package demos.jedis_wrapper;
+
+public class TestApp {
+	public static void main (String[] args) {
+	   JedisWrapper jedis = new JedisWrapper();
+//	   jedis.watch(new String[]{ "name", "address" });
+	}
+}
