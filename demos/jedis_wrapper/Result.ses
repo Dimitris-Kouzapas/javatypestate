@@ -4,5 +4,4 @@ package demos.buyer_seller_socket;
 
 enum Result {
 	OK, FAIL;
-}
-	
+} 

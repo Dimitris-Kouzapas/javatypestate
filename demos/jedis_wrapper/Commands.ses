@@ -6,17 +6,18 @@ typestate Commands {
            void watch(String[]): Watching
 		}
 	where
+	    // Use commas rather than semicolons to separate members
 		Watching = {
-			String get(String): Watching
-			List<String> lrange(): Watching
-			void watch(String[]): Watching
+			String get(String): Watching,
+			List lrange(): Watching,
+			void watch(String[]): Watching,
 			void multi(): Queued
 		}
 
 		Queued = {
-		    void set(String, String): Queued
-		    void lpop (String): Queued
-			void discard(): end
-			Result exec(): <OK:end, FAIL:Queued>
+//		    void set(String, String): Queued
+//		    void lpop (String): Queued
+//			void discard(): end
+//			Result exec(): <OK:end, FAIL:Queued>
 		}
 }
