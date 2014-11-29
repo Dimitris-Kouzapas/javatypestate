@@ -1,6 +1,8 @@
 package demos.jedis_wrapper;
 import java.util.List;
 public class JedisWrapper  {
+	public JedisWrapper(){
+	}
 	void watch(String[] keys) {
 	}
 	String get(String keys) {

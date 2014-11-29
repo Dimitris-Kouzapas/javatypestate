@@ -3,6 +3,14 @@ package demos.jedis_wrapper;
 public class TestApp {
 	public static void main (String[] args) {
 	   JedisWrapper jedis = new JedisWrapper();
-//	   jedis.watch(new String[]{ "name", "address" });
+	   jedis.watch(new String[]{ "name", "address" });
+	   jedis.multi();
+	   switch (jedis.exec().getEnum()) {
+	   case Result.OK:
+	      break;
+	   case Result.FAIL:
+	      jedis.discard();
+	      break;
+	   }
 	}
 }
