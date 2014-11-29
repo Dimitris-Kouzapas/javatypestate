@@ -19,4 +19,7 @@ public class JedisWrapper typestate Commands {
 	
 	void multi () {
 	}
+
+    void set(String key, String value) {
+    }
 }
