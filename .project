@@ -14,4 +14,24 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<filteredResources>
+		<filter>
+			<id>1417271070407</id>
+			<name></name>
+			<type>21</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.java</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1417271070409</id>
+			<name></name>
+			<type>21</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.ses</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 </projectDescription>

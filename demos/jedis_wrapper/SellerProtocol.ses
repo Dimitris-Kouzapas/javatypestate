@@ -7,5 +7,14 @@ typestate SellerProtocol {
 							}
 	where
 		TitleReceived =		{
+								void sendPriceToBuyer1(String): PriceSent
 							}
+
+		PriceSent =			{
+								AgreementLabel receiveLabelFromBuyer2(): <AGREE: TalktoBothBuyers, QUIT: end>
+							}
+
+		TalktoBothBuyers =	{
+								String receiveMoneyFromBothBuyers(): end
+							}	
 }
