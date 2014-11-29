@@ -1,0 +1,36 @@
+package demos.jedis_wrapper;
+
+public class Test2 {
+	public static void main (String[] args) {
+	   new Test2().run();
+	}
+	
+	void run () {
+	   JedisWrapper jedis = new JedisWrapper();
+	   jedis.watch(new String[]{ "name" });
+	   jedis.watch(new String[]{ "address" });
+	   doTransaction(jedis);
+	}
+
+    // These methods seem to have a useful type inferred. We don't seem to allow
+    // inheritance, which simplifies things.
+    void prepareWatches (JedisWrapper jedis) {
+	   jedis.watch(new String[]{ "name" });
+	   jedis.watch(new String[]{ "address" });
+    }
+
+	void doTransaction (JedisWrapper jedis) {
+	   jedis.multi();
+	   switch (jedis.exec().getEnum()) {
+	   case Result.OK:
+	      break;
+	   case Result.FAIL:
+	      discardTransaction(jedis);
+	      break;
+	   }
+	}
+
+    void discardTransaction (JedisWrapper jedis) {
+    	jedis.discard();
+    }
+}
