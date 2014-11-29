@@ -1,0 +1,27 @@
+package demos.jedis_wrapper;
+
+public class Test1 {
+	public static void main (String[] args) {
+	   JedisWrapper jedis = new JedisWrapper();
+	   jedis.watch(new String[]{ "name", "address" });
+	   jedis.multi();
+	   jedis.set("name", "Alan");
+	   jedis.set("address", "Milton Keynes");
+	   // Nested multi is not allowed
+	   // jedis.multi();   
+	   jedis.lpop("fred");
+	   // Adding watches after multi is not allowed
+       // jedis.watch(new String[]{ "address" });
+	   switch (jedis.exec().getEnum()) {
+	   case Result.OK:
+	      // Can't exec again:
+	      // jedis.exec();
+	      break;
+	   case Result.FAIL:
+	      // On fail I can do extra stuff (presumably pointlessly):
+     	  jedis.set("name", "Turing");
+	      jedis.discard();
+	      break;
+	   }
+	}
+}

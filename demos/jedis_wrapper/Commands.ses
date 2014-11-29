@@ -1,6 +1,7 @@
 package demos.jedis_wrapper;
 
 typestate Commands {
+    // What's the role of the "session" keyword here?
 	session
 	    // What is the name of the state for here?
 		InitSession = {
