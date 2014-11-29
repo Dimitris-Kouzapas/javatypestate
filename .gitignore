@@ -4,6 +4,4 @@ Java14Frontend/
 JavaTypestate/AST/
 JavaTypestate/scanner/JavaScanner*
 JavaTypestate/parser/JavaParser*
-buyer_seller/*.java
-buyer_seller/Main
 *.class
