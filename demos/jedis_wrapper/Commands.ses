@@ -15,9 +15,9 @@ typestate Commands {
 		}
 
 		Queued = {
-		    void set(String, String): Queued
-//		    void lpop (String): Queued
-//			void discard(): end
-//			Result exec(): <OK:end, FAIL:Queued>
+		    void set(String, String): Queued,
+		    String lpop (String): Queued,
+			void discard(): end,
+			Result exec(): <OK:end, FAIL:Queued>
 		}
 }
