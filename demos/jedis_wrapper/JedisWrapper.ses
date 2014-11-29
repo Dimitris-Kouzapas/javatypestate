@@ -13,7 +13,7 @@ public class JedisWrapper typestate Commands {
        throw new RuntimeException();
     }
 
-	List/*<String>*/ lrange() {
+	List<String> lrange() {
        throw new RuntimeException();
 	}
 	
