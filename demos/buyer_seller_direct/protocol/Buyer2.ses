@@ -1,6 +1,6 @@
-package demos.buyer_seller_socket;
+package demos.buyer_seller_direct.protocol;
 
-typestate Buyer2Protocol {
+typestate Buyer2 {
 	session
 		InitSession =	{
 							int receiveQuoteFromBuyer1(): QuoteReceived

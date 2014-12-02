@@ -1,0 +1,21 @@
+package demos.buyer_seller_direct.protocol;
+
+typestate Seller {
+	session
+		Init = {
+			void title(String): AwaitingBuyer2
+		}
+	where
+		AwaitingBuyer2 = {
+			void agree(int): AwaitingPayment1,
+			void quit(): end
+		}
+
+		AwaitingPayment1 = {
+			void payment(int): AwaitingPayment2
+		}	
+		
+		AwaitingPayment2 = {
+		    void payment(int): end
+		}
+}
