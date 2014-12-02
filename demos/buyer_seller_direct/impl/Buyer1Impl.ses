@@ -1,8 +1,13 @@
 package demos.buyer_seller_direct.impl;
 
 public class Buyer1Impl typestate Buyer1 {
-    public Buyer1() {
-       seller.title("Brave New World");
+    private Seller seller;
+    private Buyer2 buyer2;
+    
+    public Buyer1(Seller seller, Buyer2 buyer2) {
+    	this.seller = seller;
+    	this.buyer = buyer;
+    	seller.title("Brave New World");
     }
 
     public price(int amount) {
