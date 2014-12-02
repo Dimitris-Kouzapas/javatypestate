@@ -1,6 +1,9 @@
-package demos.buyer_seller_direct.impl;
+package demos.buyer_seller_direct;
 
 public class Buyer2Impl typestate Buyer2 {
+    private SellerImpl seller;
+    private Buyer1Impl buyer1;
+
     public Buyer2Impl () {
     }
 

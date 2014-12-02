@@ -1,4 +1,4 @@
-package demos.buyer_seller_direct.protocol;
+package demos.buyer_seller_direct;
 
 typestate Seller {
 	session
@@ -7,7 +7,7 @@ typestate Seller {
 		}
 	where
 		AwaitingAgreement = {
-			void agree(int): AwaitingPayment1,
+			void agree(): AwaitingPayment1,
 			void quit(): end
 		}
 
