@@ -12,10 +12,10 @@ typestate Seller {
 		}
 
 		AwaitingPayment1 = {
-			void payment(int): AwaitingPayment2
+			void payment1(int): AwaitingPayment2
 		}	
 		
 		AwaitingPayment2 = {
-		    void payment(int): end
+		    void payment2(int): end
 		}
 }
