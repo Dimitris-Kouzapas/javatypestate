@@ -1,7 +1,6 @@
 package demos.buyer_seller_direct.impl;
 
 public class Buyer2Impl typestate Buyer2 {
-
     public Buyer2() {
     }
 

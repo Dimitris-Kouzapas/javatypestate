@@ -4,16 +4,16 @@ public class SellerImpl typestate Seller {
     public SellerImpl() {
     }
 
-    public void title(String) {
+    public void title(String str) {
         buyer1.price(15);
     }
 
     public void agree() {
     }
 
-    public void payment1(int) {
+    public void payment1(int amount) {
     }
 
-    public void payment2(int) {
+    public void payment2(int amount) {
     }
 }

@@ -3,10 +3,10 @@ package demos.buyer_seller_direct.protocol;
 typestate Seller {
 	session
 		Init = {
-			void title(String): AwaitingBuyer2
+			void title(String): AwaitingAgreement
 		}
 	where
-		AwaitingBuyer2 = {
+		AwaitingAgreement = {
 			void agree(int): AwaitingPayment1,
 			void quit(): end
 		}
