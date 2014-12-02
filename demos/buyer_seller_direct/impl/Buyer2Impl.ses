@@ -1,0 +1,14 @@
+package demos.buyer_seller_direct.impl;
+
+public class Buyer2Impl typestate Buyer2 {
+
+    public Buyer2() {
+    }
+
+    public void quote(int) {
+        // let's choose to agree.
+        buyer1.agree();
+        buyer2.agree();
+        buyer2.payment2(int);
+    }
+}

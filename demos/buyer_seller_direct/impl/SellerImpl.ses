@@ -1,0 +1,19 @@
+package demos.buyer_seller_direct.impl;
+
+public class SellerImpl typestate Seller {
+    public SellerImpl() {
+    }
+
+    public void title(String) {
+        buyer1.price(15);
+    }
+
+    public void agree() {
+    }
+
+    public void payment1(int) {
+    }
+
+    public void payment2(int) {
+    }
+}
