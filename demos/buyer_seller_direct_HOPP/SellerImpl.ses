@@ -1,4 +1,4 @@
-package demos.buyer_seller_direct;
+package demos.buyer_seller_direct_HOPP;
 
 public class SellerImpl typestate Seller {
     private PrintWriter socketBuyer1 = null;
