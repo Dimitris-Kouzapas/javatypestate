@@ -1,21 +1,25 @@
 package demos.buyer_seller_direct_HOPP;
+import java.io.*;
 
-typestate Seller {
-	session
-		Init = {
-			void title(String): AwaitingAgreement
-		}
-	where
-		AwaitingAgreement = {
-			void agree(): AwaitingPayment1,
-			void quit(): end
-		}
+public class SellerImpl typestate Seller {
+   	private Buyer1Proxy buyer1 = new Buyer1Proxy();
+   	
+    SellerImpl () {
+    }
 
-		AwaitingPayment1 = {
-			void payment1(int): AwaitingPayment2
-		}	
-		
-		AwaitingPayment2 = {
-		    void payment2(int): end
-		}
+    public void title (String str) {
+		buyer1.price(15);
+    }
+
+    public void agree () {
+    }
+
+    public void payment1 (int amount) {
+    }
+
+    public void payment2 (int amount) {
+    }
+    
+    public void quit () {
+    }
 }

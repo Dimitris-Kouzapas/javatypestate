@@ -1,8 +1,18 @@
 package demos.buyer_seller_direct_HOPP;
 
-typestate Buyer2 {
-	session
-		Init = {
-			void quote(int): end
-		}
+public class Buyer2Impl typestate Buyer2 {
+    private SellerProxy seller;
+    private Buyer1Proxy buyer1;
+
+    public Buyer2Impl () {
+    	seller = new SellerProxy();
+    	buyer1 = new Buyer1Proxy();
+    }
+
+    public void quote (int amount) {
+        // let's choose to agree.
+        seller.agree();
+        buyer1.agree();
+        seller.payment2(amount);
+    }
 }

@@ -1,0 +1,21 @@
+package demos.buyer_seller_direct_HOPP;
+
+typestate Seller {
+	session
+		Init = {
+			void title(String): AwaitingAgreement
+		}
+	where
+		AwaitingAgreement = {
+			void agree(): AwaitingPayment1,
+			void quit(): end
+		}
+
+		AwaitingPayment1 = {
+			void payment1(int): AwaitingPayment2
+		}	
+		
+		AwaitingPayment2 = {
+		    void payment2(int): end
+		}
+}
