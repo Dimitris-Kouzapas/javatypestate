@@ -2,10 +2,10 @@ package demos.buyer_seller_direct_HOPP;
 import java.io.*;
 
 public class SellerImpl typestate Seller {
-    private PrintWriter socketBuyer1 = null;
+    private Buyer1Proxy buyer1 = null;
 
     public void title (String str) {
-		socketBuyer1.println(15);
+		buyer1.price(15);
     }
 
     public void agree () {
