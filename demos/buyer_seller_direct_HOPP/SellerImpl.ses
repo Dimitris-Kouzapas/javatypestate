@@ -7,7 +7,7 @@ public class SellerImpl typestate Seller {
     }
 
     public void title (String str) {
-		this.socketBuyer1Out.println(15);
+		socketBuyer1.println(15);
     }
 
     public void agree () {
