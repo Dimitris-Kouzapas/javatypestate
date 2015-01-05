@@ -1,0 +1,18 @@
+package demos.buyer_seller_direct_HOPP;
+import java.io.*;
+
+public class Buyer1Proxy typestate Buyer1 {
+    private PrintWriter socket = null;
+
+    public void price (int amount) {
+        socket.println("price", amount);      
+    }
+
+    public void agree () {
+    	socket.println("agree");
+    }
+
+    public void quit () {
+    	socket.println("quit");
+    }
+}
