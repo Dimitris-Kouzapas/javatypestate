@@ -1,5 +1,4 @@
 package demos.buyer_seller_direct_HOPP;
-import java.io.*;
 
 public class Buyer2Impl typestate Buyer2 {
     private SellerProxy seller;
@@ -7,6 +6,7 @@ public class Buyer2Impl typestate Buyer2 {
 
     public Buyer2Impl () {
     	seller = new SellerProxy();
+    	buyer1 = new Buyer1Proxy();
     }
 
     public void quote (int amount) {

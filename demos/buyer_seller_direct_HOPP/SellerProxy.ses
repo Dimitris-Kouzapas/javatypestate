@@ -5,18 +5,22 @@ public class SellerImpl typestate Seller {
     private PrintWriter socket = null;
 
     public void title (String str) {
-		socket.println(15);
+		socket.println("title", str);
     }
 
     public void agree () {
+    	socket.println("agree");
     }
 
     public void payment1 (int amount) {
+    	socket.println("payment1", amount);
     }
 
     public void payment2 (int amount) {
+    	socket.println("payment2", amount);
     }
     
     public void quit () {
+    	socket.println("quit");
     }
 }
