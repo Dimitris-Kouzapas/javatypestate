@@ -1,0 +1,40 @@
+package demos.jedis_wrapper;
+
+// This is roughly what we would end up with our current Scribble-to-typestate translation.
+typestate Commands2 {
+	session
+		InitSession = {
+           void sendWatch(String[]): Watching
+		}
+	where
+	    // Use commas rather than semicolons to separate members
+		Watching = {
+			void setGet(String): Watching0,
+			void sendLrange(): Watching1,
+			void sendWatch(String[]): Watching,
+			void sendMulti(): Queued
+		}
+
+	 	Watching0 = {
+			String receiveGetFromRedis(): Watching
+	 	}
+		
+		Watching1 = {
+			List receiveLrangeFromRedis(): Watching
+		}
+
+		Queued = {
+		    void sendSet(String, String): Queued,
+		    void sendLpop (String): Queued0,
+			void sendDiscard(): end,
+			void sendExec(): Queued1
+		}
+		
+		Queued0 = {
+		    String receiveLpopFromRedis (): Queued
+		}
+		
+		Queued1 = {
+			Result receiveExec(): <OK:end, FAIL:Queued>
+		}
+}
