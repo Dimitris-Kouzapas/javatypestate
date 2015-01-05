@@ -1,10 +1,11 @@
 package demos.buyer_seller_direct_HOPP;
 import java.io.*;
 
-public class Buyer2Proxy typestate Buyer2 {
+public class Buyer2Proxy /*typestate Buyer2*/ {
     private PrintWriter socket;
 
     public void quote (int amount) {
-    	socket.println("quote", amount);
+    	socket.println("quote");
+    	socket.println(amount);
     }
 }

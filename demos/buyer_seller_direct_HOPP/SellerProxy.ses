@@ -1,11 +1,11 @@
 package demos.buyer_seller_direct_HOPP;
 import java.io.*;
 
-public class SellerImpl typestate Seller {
+public class SellerProxy /*typestate Seller*/ {
     private PrintWriter socket = null;
 
     public void title (String str) {
-		socket.println("title", str);
+//		socket.println("title", str);
     }
 
     public void agree () {
@@ -13,11 +13,11 @@ public class SellerImpl typestate Seller {
     }
 
     public void payment1 (int amount) {
-    	socket.println("payment1", amount);
+//    	socket.println("payment1", amount);
     }
 
     public void payment2 (int amount) {
-    	socket.println("payment2", amount);
+//    	socket.println("payment2", amount);
     }
     
     public void quit () {

@@ -2,7 +2,10 @@ package demos.buyer_seller_direct_HOPP;
 import java.io.*;
 
 public class SellerImpl typestate Seller {
-    private Buyer1Proxy buyer1 = null;
+   	private Buyer1Proxy buyer1 = new Buyer1Proxy();
+   	
+    SellerImpl () {
+    }
 
     public void title (String str) {
 		buyer1.price(15);

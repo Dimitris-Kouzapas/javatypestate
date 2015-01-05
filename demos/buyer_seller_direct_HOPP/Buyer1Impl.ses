@@ -2,8 +2,8 @@ package demos.buyer_seller_direct_HOPP;
 import java.io.*;
 
 public class Buyer1Impl typestate Buyer1 {
-    private SellerProxy seller = null;
-    private Buyer2Proxy buyer2 = null;
+    private SellerProxy seller = new SellerProxy();
+    private Buyer2Proxy buyer2 = new Buyer2Proxy();
 
     private int balance;
 
@@ -14,11 +14,10 @@ public class Buyer1Impl typestate Buyer1 {
     public void price (int amount) {
         balance = (int)(0.4 * amount);
     	buyer2.quote(amount - balance);
-        buyer2.quote(quote);      
     }
 
     public void agree () {
-        seller.payment1(balance);
+		seller.payment1(balance);
     }
 
     public void quit () {
