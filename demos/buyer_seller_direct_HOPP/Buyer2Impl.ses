@@ -12,6 +12,6 @@ public class Buyer2Impl typestate Buyer2 {
         // let's choose to agree.
         socketSeller.println("agree");
         socketBuyer1.println("agree");
-        socketSeller.println("payment2",amount);
+        socketSeller.println("payment2", amount);
     }
 }
