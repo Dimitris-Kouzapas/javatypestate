@@ -1,0 +1,24 @@
+package demos.buyer_seller_direct;
+
+public class SellerImpl typestate Seller {
+    private PrintWriter socketBuyer1 = null;
+
+    public SellerImpl () {
+    }
+
+    public void title (String str) {
+		this.socketBuyer1Out.println(15);
+    }
+
+    public void agree () {
+    }
+
+    public void payment1 (int amount) {
+    }
+
+    public void payment2 (int amount) {
+    }
+    
+    public void quit () {
+    }
+}

@@ -1,0 +1,13 @@
+package demos.buyer_seller_direct;
+
+typestate Buyer1 {
+	session
+		Init = {
+			void price(int): AwaitingAgreement
+		}
+	where
+		AwaitingAgreement = {
+		 	void agree (): end,
+			void quit (): end
+		}
+}

@@ -1,13 +1,13 @@
 package demos.buyer_seller_direct;
+import java.io.*;
 
 public class Buyer1Impl typestate Buyer1 {
-    private SellerImpl seller;
-    private Buyer2Impl buyer2;
+    private PrintWriter socketSeller = null;
 
     private int balance;
 
     public Buyer1Impl () {
-    	seller.title("Brave New World");
+    	socketSeller.println("Brave New World");
     }
 
     public void price (int amount) {
