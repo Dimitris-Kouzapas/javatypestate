@@ -1,6 +1,6 @@
 package demos.buyer_seller_direct_HOPP;
 
-typestate Buyer1 {
+typestate Buyer1Protocol {
 	session
 		Init = {
 			void price(int): AwaitingAgreement
