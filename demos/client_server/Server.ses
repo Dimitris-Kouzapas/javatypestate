@@ -2,6 +2,11 @@ package demos.client_server;
 import java.io.*;
 
 public class Server typestate ServerProtocol {
-	void request(int k) {
+	int receiveRequest() {
+		// wait for a request from the client
+		return 0;
+	}
+
+	void sendResponse(String v) {
 	}
 }

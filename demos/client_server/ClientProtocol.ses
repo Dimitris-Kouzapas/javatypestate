@@ -4,7 +4,7 @@ package demos.client_server;
 typestate ClientProtocol {
 	session
 		Init = {
-			void sendRequest(int k): AwaitingResponse,
+			void sendRequest(int): AwaitingResponse
 		}
 	where
 		AwaitingResponse = {

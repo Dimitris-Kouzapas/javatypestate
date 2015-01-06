@@ -3,14 +3,15 @@ package demos.client_server;
 typestate ServerProtocol {
 	session
 		Init = {
-			// This isn't the usual OO programming model. To implement the request, 
-			// I have to start with a method _call_. Normally I would implement a service
-			// by allowing someone to call a method on me. 
+			// This isn't the usual OO programming model, where services are methods that
+			// I expose to clients. To implement the request, here have to start with a 
+			// method _call_. 
 			int receiveRequest(): State0
 		}
 	where
-		// These states are purely for internal sequencing of outputs. But because they 
-		// appear as methods on the implementing class appears, they look like services.
+		// These states are purely for internal sequencing of outputs. Each corresponds to
+		// a mandatory action that happens in response to a request. But because they 
+		// appear as methods on the implementing class, they look like services.
 		State0 = {
 			void sendResponse(String): end
 		}
