@@ -1,0 +1,8 @@
+package demos.HOPP;
+
+typestate ClientProtocol {
+	session
+		Init = {
+			void response(String): end
+		}
+}
