@@ -1,10 +1,10 @@
 module demos.HOPP;
 
 type <java> "java.lang.Integer" from "rt.jar" as int;
-type <java> "java.lang.String" from "rt.jar" as string;
+type <java> "java.lang.String" from "rt.jar" as String;
 
 global protocol Global(role C, role S)
 {
 	request(int) from C to S;
-	response(string) from S to C;
+	response(String) from S to C;
 }

@@ -1,4 +1,4 @@
-package demos.HOPP;
+package demos.client_server_HOPP;
 
 typestate ClientProtocol {
 	session
