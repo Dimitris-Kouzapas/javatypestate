@@ -3,6 +3,8 @@ package demos.client_server_HOPP;
 typestate ServerProtocol {
 	session
 		Init = {
+			// The method is _given_ an int, rather than _returning_ an int. That
+			// means we can implement the service as a regular method. 
 			void request(int): end
 		}
 }

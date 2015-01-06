@@ -1,0 +1,7 @@
+package demos.client_server_HOPP;
+import java.io.*;
+
+public class Server typestate ServerProtocol {
+	void request(int k): {
+	}
+}

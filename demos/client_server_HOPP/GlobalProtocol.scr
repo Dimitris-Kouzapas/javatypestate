@@ -1,7 +1,10 @@
-module demos.HOPP;
+module demos.client_server_HOPP;
 
 type <java> "java.lang.Integer" from "rt.jar" as int;
 type <java> "java.lang.String" from "rt.jar" as String;
+
+// Pick the simplest possible protocol, a request-response pair, 
+// to illustrate the point.
 
 global protocol Global(role C, role S)
 {
