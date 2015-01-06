@@ -1,0 +1,17 @@
+package demos.client_server;
+
+typestate ServerProtocol {
+	session
+		Init = {
+			// This isn't the usual OO programming model. To implement the request, 
+			// I have to start with a method _call_. Normally I would implement a service
+			// by allowing someone to call a method on me. 
+			int receiveRequest(): State0
+		}
+	where
+		// These states are purely for internal sequencing of outputs. But because they 
+		// appear as methods on the implementing class appears, they look like services.
+		State0 = {
+			void sendResponse(String): end
+		}
+}

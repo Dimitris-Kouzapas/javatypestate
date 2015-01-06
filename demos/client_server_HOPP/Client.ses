@@ -2,6 +2,6 @@ package demos.client_server_HOPP;
 import java.io.*;
 
 public class Client typestate ClientProtocol {
-	void response(String v): {
+	void response(String v) {
 	}
 }

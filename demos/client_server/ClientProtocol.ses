@@ -1,0 +1,13 @@
+package demos.client_server;
+
+// This is roughly what we currently generate from the local projection.
+typestate ClientProtocol {
+	session
+		Init = {
+			void sendRequest(int k): AwaitingResponse,
+		}
+	where
+		AwaitingResponse = {
+			String receiveResponse(): end
+		}
+}

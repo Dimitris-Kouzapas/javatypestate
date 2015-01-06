@@ -1,0 +1,12 @@
+package demos.client_server;
+import java.io.*;
+
+public class Client typestate ClientProtocol {
+	void sendRequest(int k) {
+	}
+	
+	String receiveResponse() {
+		// wait for a response from the server
+		return null;
+	}
+}

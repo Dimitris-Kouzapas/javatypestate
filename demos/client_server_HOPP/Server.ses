@@ -1,7 +1,9 @@
 package demos.client_server_HOPP;
 import java.io.*;
 
+// Now we can implement the server in a standard OO way, except that we 
+// don't have a way to type it.
 public class Server typestate ServerProtocol {
-	void request(int k): {
+	void request(int k) {
 	}
 }
