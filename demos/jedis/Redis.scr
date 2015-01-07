@@ -1,14 +1,15 @@
 module demos.jedis.Redis;
 
 type <java> "java.lang.Boolean" from "rt.jar" as bool;
+type <java> "java.lang.List" from "rt.jar" as List;
 type <java> "java.lang.String" from "rt.jar" as String;
 
 global protocol Redis (role Client as C, role Server as S) {
-   WATCH() from C to S;
+   WATCH(List) from C to S;
    rec Watching {
       choice at C {
-         GET(String) from C to S;
-         GET(String) from S to C;
+         GET_request(String) from C to S;
+         GET_response(String) from S to C;
          continue Watching;
       } or {
          MULTI() from C to S;
@@ -17,8 +18,8 @@ global protocol Redis (role Client as C, role Server as S) {
                PUT(String,String) from C to S;
                continue Queuing;
             } or {
-               EXEC() from C to S;
-               EXEC(bool) from S to C;
+               EXEC_request() from C to S;
+               EXEC_response(bool) from S to C;
             }
          }
       }

@@ -6,7 +6,6 @@ typestate Commands {
            void watch(String[]): Watching
 		}
 	where
-	    // Use commas rather than semicolons to separate members
 		Watching = {
 			String get(String): Watching,
 			List lrange(): Watching,
