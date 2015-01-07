@@ -14,17 +14,23 @@ typestate Redis_Server_Async {
 		}
 		
 		Watching = {
-			void receiveGET_request(String): Watching,
-			void sendWATCH(String[]): Watching,
-			void sendMULTI(): Queued
+			void receiveGET_request(String): Watching_GET,
+			void receiveWATCH(String[]): Watching,
+			void receiveMULTI(): Queued
 		}
 
-		Waiting_Watching_GET = {
+		Watching_GET = {
 			String receiveGET_response(String): Watching 
 		}
 		
-		Waiting_Queued_EXEC = {
-			Result receiveEXEC_request(): <OK: end, FAIL: Queued>
+		Queued = {
+		    void receiveSET(String, String): Queued,
+			void receiveDISCARD(): end,
+			void receiveEXEC_request(): Queued_EXEC
+		}
+		
+		Queued_EXEC = {
+			Result sendEXEC_response(Result): <OK: end, FAIL: Queued>
 		}
 }
 
