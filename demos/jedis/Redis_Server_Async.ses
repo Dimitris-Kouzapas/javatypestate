@@ -30,7 +30,7 @@ typestate Redis_Server_Async {
 		}
 		
 		Waiting_Queued_EXEC = {
-			void OK(): end, 
-			void FAIL(): Queued
+			void EXEC_response_OK(): end, 
+			void EXEC_response_FAIL(): Queued
 		}
 }

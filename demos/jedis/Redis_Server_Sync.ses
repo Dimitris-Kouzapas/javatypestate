@@ -19,6 +19,8 @@ typestate Redis_Server_Sync {
 		Queued = {
 		    void SET(String, String): Queued,
 			void DISCARD(): end,
+			// TODO: make this asynchronous after all, and turn the label dispatch into two methods,
+			// as per the Scribble protocol?
 			Result EXEC(): <OK:end, FAIL:Queued>
 		}
 }

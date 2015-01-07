@@ -1,8 +1,8 @@
 package demos.jedis;
 
 // Server choices available in Queued state.
-enum Watching_OperationLabel {
-	GET,
+enum WatchingLabel {
+	GET_request,
 	WATCH,
 	MULTI
 }

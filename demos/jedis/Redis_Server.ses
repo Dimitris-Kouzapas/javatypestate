@@ -17,29 +17,33 @@ package demos.jedis;
 // 2. The argument has to be passed to a single operation, and is therefore forced to be the same for 
 // all components of the choice.
 			
-// 3. There is a "natural" interpretation of a typestate as a Scribble protocol, but that mapping is _not_ the inverse of our translation to typestate.
-// 
+// 3. There is a "natural" (canonical) interpretation of a typestate as a Scribble protocol which
+// maps available methods to external choices, but that mapping doesn't have our translation to 
+// typestate as its inverse. That suggests our translation is not "natural" (canonical). 
+
+// (In the current translation spec, we pass the labels as strings rather than enums, but this is a 
+// minor detail.)
 
 typestate Redis_Server {
 	session
 		InitSession = {
-           void sendWATCH(String[]): Watching
+           void WATCH(String[]): Watching
 		}
 	where
 		Watching = {
-			Watching_OperationLabel sendOperation_Watching(Watching_OperationLabel, String): <
-				GET: Waiting_Watching_GET,
+			WatchingLabel chooseLabel_Watching(WatchingLabel, String): <
+				GET_request: Waiting_Watching_GET,
 				WATCH: Watching,
 				MULTI: Queued
 			>
 		}
 
 	 	Waiting_Watching_GET = {
-			String receiveGET(): Watching
+			void GET_response(String): Watching
 	 	}
 		
 		Queued = {
-			Queued_OperationLabel sendOperation_Queued(String): <
+			QueuedLabel chooseLabel_Queued(QueuedLabel, String): <
 		    	SET: Queued,
 				DISCARD: end,
 				EXEC: Waiting_Queued_EXEC
@@ -47,6 +51,7 @@ typestate Redis_Server {
 		}
 		
 		Waiting_Queued_EXEC = {
-			Result receiveEXEC(): <OK:end, FAIL:Queued>
+			void EXEC_response_OK(): end,
+			void EXEC_response_FAIL: Queued
 		}
 }
