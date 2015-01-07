@@ -1,9 +1,13 @@
 package demos.client_server_HOPP;
 import java.io.*;
 
-// Now we can implement the server in a standard OO way, except that we 
-// don't have a way to type it.
-public class Server typestate ServerProtocol {
+public class Server /*typestate ServerProtocol*/ {
+	private ClientStub client = new ClientStub();
+
+	// Unfortunately there's no way to type this in our system, because the typestate of the
+	// client field has to be consumed in the _constructor_ of Server.
+	 	
 	void request(int k) {
+		client.response("hello");
 	}
 }
