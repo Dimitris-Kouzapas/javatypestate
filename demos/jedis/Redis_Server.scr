@@ -18,14 +18,14 @@ local protocol Redis at Server(role Client as C,role Server as S) {
 			MULTI() from C;
 			rec Queuing {
 				choice at C {
-					PUT(String,String) from C;
+					SET(String,String) from C;
 					continue Queuing;
 				} or {
 					EXEC_request() from C;
 					choice at S {
-						EXEC_OK() to C;
+						EXEC_response_OK() to C;
 					} or {
-						EXEC_FAIL() to C;
+						EXEC_response_FAIL() to C;
 					}
 				}
 			}

@@ -22,7 +22,11 @@ global protocol Redis (role Client as C, role Server as S) {
                continue Queuing;
             } or {
                EXEC_request() from C to S;
-               EXEC_response(bool) from S to C;
+               choice at S {
+                   EXEC_response_OK() from S to C;
+               } or {
+               	   EXEC_response_FAIL() from S to C;
+           	   }
             }
          }
       }
