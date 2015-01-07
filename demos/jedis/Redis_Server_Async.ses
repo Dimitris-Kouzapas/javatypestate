@@ -2,21 +2,29 @@ package demos.jedis;
 
 // So here's an asynchronous version which maps more directly to a Scribble protocol.   
 
-typestate Redis_Server_Sync {
+typestate Redis_Server_Async {
 	session
 		InitSession = {
            void WATCH(String[]): Watching
 		}
 	where
 		Watching = {
-			void GET(String): Waiting_Watching,
+			void GET(String): Waiting_Watching_GET,
 			void WATCH(String[]): Watching,
 			void MULTI(): Queued
+		}
+		
+		Waiting_Watching_GET = {
+			String GET(): 
 		}
 
 		Queued = {
 		    void SET(String, String): Queued,
 			void DISCARD(): end,
-			Result EXEC(): <OK:end, FAIL:Queued>
+			void EXEC(): Waiting_Queued_EXEC
+		}
+		
+		Waiting_Queued_EXEC = {
+			Result ReceiveEXEC(): <OK:end, FAIL:Queued>
 		}
 }
