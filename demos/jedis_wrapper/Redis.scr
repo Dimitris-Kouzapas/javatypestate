@@ -1,0 +1,21 @@
+local protocol RedisClient at Client (role Client as C, Server as S) {
+   WATCH to S;
+   rec Watching {
+      choice at C {
+         GET(k) to S;
+         GET(v) from S;
+         continue Watching;
+      } or {
+         MULTI to S;
+         rec Queuing {
+            choice at C {
+               PUT(k,v) to S;
+               continue Queuing
+            } or {
+               EXEC to S;
+               EXEC(ok) from S;
+            }
+         }
+      }
+   }
+}
