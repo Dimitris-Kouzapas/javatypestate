@@ -12,6 +12,9 @@ global protocol Redis (role Client as C, role Server as S) {
          GET_response(String) from S to C;
          continue Watching;
       } or {
+      	 WATCH(List) from C to S;
+      	 continue Watching;
+      } or {
          MULTI() from C to S;
          rec Queuing {
             choice at C {
