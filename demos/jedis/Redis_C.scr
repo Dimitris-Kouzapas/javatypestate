@@ -1,0 +1,26 @@
+module demos.jedis.Redis_C;
+
+type <java> "java.lang.Boolean" from "rt.jar" as bool;
+type <java> "java.lang.String" from "rt.jar" as String;
+
+local protocol Redis at C(role C,role S) {
+	WATCH() to S;
+	rec Watching {
+		choice at C {
+			GET(String) to S;
+			GET(String) from S;
+			continue Watching;
+		} or {
+			MULTI() to S;
+			rec Queuing {
+				choice at C {
+					PUT(String,String) to S;
+					continue Queuing;
+				} or {
+					EXEC() to S;
+					EXEC(bool) from S;
+				}
+			}
+		}
+	}
+}
