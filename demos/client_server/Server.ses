@@ -1,6 +1,9 @@
 package demos.client_server;
 import java.io.*;
 
+// Dually, on the server we see the "receive" half of the first communication
+// and the "send" half of the second communication.
+
 public class Server typestate ServerProtocol {
 	int receiveRequest() {
 		// wait for a request from the client
