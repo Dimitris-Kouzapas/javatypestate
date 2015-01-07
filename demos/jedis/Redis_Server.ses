@@ -1,8 +1,26 @@
 package demos.jedis;
 
 // This is roughly what we would end up with our current Scribble-to-typestate translation.
-// We can't assume the synchronous "optimisation" here because it's incompatible with
-// our approach to external choice.
+// We can't assume the synchronous "optimisation" here because of the way we translate 
+// external choice.
+
+// Currently we represent choice as the explicit sending of a label. Really the label should be 
+// construed as the name of a method. There are three significant problems with the status quo.		
+		
+// 1. We have to return as a result the same choice label we were passed as an argument, so that the 
+// client can dispatch on it to continue with the rest of the protocol. But this is weird because the
+// client already knows what choice it made. Nor does it make sense to insist that the client specify
+// a continuation for choices it didn't make. If making a choice is calling a method, this problem
+// does away because every method specifies a state transition already, and if one calls a single
+// method then one only has to supply a single continuation.     
+
+// 2. The argument has to be passed to a single operation, and is therefore forced to be the same for 
+// all components of the choice.
+			
+// 3. This doesn't align with the way we manually generated the Redis typestate definition from the
+// original protocol. More specifically, there is a "natural" interpretation of a typestate as a 
+// Scribble protocol, but that mapping is _not_ the inverse of our translation to typestate.
+// 
 
 typestate Redis_Server {
 	session
@@ -11,9 +29,7 @@ typestate Redis_Server {
 		}
 	where
 		Watching = {
-			// The string is the _argument type_, which is forced to be the same for all components of the
-			// choice. That doesn't work for Redis, but let's ignore that for now. 
-			Watching_OperationLabel sendOperation_Watching(String): <
+			Watching_OperationLabel sendOperation_Watching(Watching_OperationLabel, String): <
 				GET: Waiting_Watching_GET,
 				WATCH: Watching,
 				MULTI: Queued
