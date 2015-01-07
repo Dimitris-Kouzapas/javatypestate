@@ -1,6 +1,6 @@
 package demos.jedis;
 
-// This is roughly what we would end up with our current Scribble-to-typestate translation.
+// This is roughly what we would end up with, with our current Scribble-to-typestate translation.
 // We can't assume the synchronous "optimisation" here because of the way we translate 
 // external choice.
 
