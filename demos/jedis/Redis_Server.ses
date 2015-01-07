@@ -1,6 +1,6 @@
 package demos.jedis;
 
-// This is roughly what we would end up with, with our current Scribble-to-typestate translation.
+// This is roughly what we would end up with our current Scribble-to-typestate translation.
 // We can't assume the synchronous "optimisation" here because of the way we translate 
 // external choice.
 
@@ -32,14 +32,14 @@ typestate Redis_Server {
 	where
 		Watching = {
 			WatchingLabel chooseLabel_Watching(WatchingLabel, String): <
-				GET_request: Waiting_Watching_GET,
+				GET: Waiting_Watching_GET,
 				WATCH: Watching,
 				MULTI: Queued
 			>
 		}
 
 	 	Waiting_Watching_GET = {
-			void GET_response(String): Watching
+			void GET(String): Watching
 	 	}
 		
 		Queued = {
@@ -51,7 +51,6 @@ typestate Redis_Server {
 		}
 		
 		Waiting_Queued_EXEC = {
-			void EXEC_response_OK(): end,
-			void EXEC_response_FAIL: Queued
+			Result receiveEXEC(): <OK:end, FAIL:Queued>
 		}
 }

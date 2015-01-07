@@ -4,6 +4,9 @@ package demos.jedis;
 // into synchronous methods with return values. The Scribble documentation recommends a naming 
 // convention that would make it relatively easy to adapt the translation to do this.
 
+// In the synchronous view we don't have to worry about client states for this simple protocol, 
+// because we never call methods on the client.
+
 typestate Redis_Server_Sync {
 	session
 		Init = {
@@ -19,8 +22,6 @@ typestate Redis_Server_Sync {
 		Queued = {
 		    void SET(String, String): Queued,
 			void DISCARD(): end,
-			// TODO: make this asynchronous after all, and turn the label dispatch into two methods,
-			// as per the Scribble protocol?
 			Result EXEC(): <OK:end, FAIL:Queued>
 		}
 }

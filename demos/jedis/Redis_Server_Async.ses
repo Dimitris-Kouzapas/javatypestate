@@ -1,36 +1,37 @@
 package demos.jedis;
 
-// So here's the asynchronous expansion of the other typestate definition. This maps 
-// more directly to a Scribble protocol.
-
-// Notice how any data passed back in the response is supplied as an ARGUMENT, not a
-// return value, and any choices made are done so via method selection, not the passing
-// of a label as an argument.  
+// To explain the problem with choice, we need an asynchronous version (because our translation 
+// appropriates the return value to track the choice). Moreover once we switch to the async 
+// version we *have* to embrace the uncomfortable encoding of internal behaviour as "services": 
+// consider EXEC, where the "request" part needs to specify the eventual state, but that depends 
+// on a choice made internally. So now we need send/receive halves for every request and response.
 
 typestate Redis_Server_Async {
-	session
-		InitSession = {
-           void WATCH(String[]): Watching
-		}
-	where
-		Watching = {
-			void GET_request(String): Waiting_Watching_GET,
-			void WATCH(String[]): Watching,
-			void MULTI(): Queued
-		}
-		
 		Waiting_Watching_GET = {
 			void GET_response(String): Watching 
-		}
-
-		Queued = {
-		    void SET(String, String): Queued,
-			void DISCARD(): end,
-			void EXEC(): Waiting_Queued_EXEC
 		}
 		
 		Waiting_Queued_EXEC = {
 			void EXEC_response_OK(): end, 
 			void EXEC_response_FAIL(): Queued
+		}
+}
+
+typestate Redis_Client_Async {
+	session
+		InitSession = {
+           void sendWATCH(String[]): Watching
+		}
+	where
+		Watching = {
+			void sendGET_request(String): Watching,
+			void sendWATCH(String[]): Watching,
+			void sendMULTI(): Queued
+		}
+		
+		Queued = {
+		    void SET(String, String): Queued,
+			void DISCARD(): end,
+			void EXEC(): Queued
 		}
 }
