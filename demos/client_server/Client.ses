@@ -14,7 +14,15 @@ public class Client typestate ClientProtocol {
 	}
 	
 	String receiveResponse() {
-		// wait for v on serverIn
+		String v = "hello"; // wait for v on serverIn
 		return v;
+	}
+	
+	// We drive the interaction from the "outside". The object itself just represents the channel
+	// and has no behaviour as such.
+	public static void main (String[] args) {
+		Client client = new Client();
+		client.sendRequest(5);
+		String v = client.receiveResponse();
 	}
 }

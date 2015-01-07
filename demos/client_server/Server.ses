@@ -6,11 +6,20 @@ public class Server typestate ServerProtocol {
     private PrintWriter clientOut;
     
 	int receiveRequest() {
-		// wait for k on clientIn 
+		int k = 5; // wait for k on clientIn 
 		return k;
 	}
 
 	void sendResponse(String v) {
 		// send v on clientOut
+	}
+
+	// In particular what this means is that services are implemented "inline" in the external driver 
+	// code, rather than in the object. 	
+	public static void main (String[] args) {
+		Server server = new Server();
+		// here is where I implement "request" from the original protocol
+		int k = server.receiveRequest();
+		server.sendResponse("hello");
 	}
 }
