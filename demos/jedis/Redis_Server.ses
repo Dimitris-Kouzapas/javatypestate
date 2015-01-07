@@ -11,28 +11,25 @@ typestate Redis_Server {
 		}
 	where
 		Watching = {
-			Watching_OperationLabel sendOperation(
-			void sendGET(String): Waiting_Watching_GET,
-			void sendWATCH(String[]): Watching,
-			void sendMULTI(): Queued
+			// The string is the _argument type_, which is forced to be the same for all components of the
+			// choice. That doesn't work for Redis, but let's ignore that for now. 
+			Watching_OperationLabel sendOperation_Watching(String): <
+				GET: Waiting_Watching_GET,
+				WATCH: Watching,
+				MULTI: Queued
+			>
 		}
 
 	 	Waiting_Watching_GET = {
 			String receiveGET(): Watching
 	 	}
 		
-		Waiting_Watching_LRANGE = {
-			List receiveLRANGE(): Watching
-		}
-
 		Queued = {
-		    void sendSET(String, String): Queued,
-			void sendDISCARD(): end,
-			void sendEXEC(): Waiting_Queued_EXEC
-		}
-		
-		Waiting_Queued_LPOP = {
-		    String receiveLPOP (): Queued
+			Queued_OperationLabel sendOperation_Queued(String): <
+		    	SET: Queued,
+				DISCARD: end,
+				EXEC: Waiting_Queued_EXEC
+			>
 		}
 		
 		Waiting_Queued_EXEC = {
