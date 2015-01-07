@@ -1,11 +1,20 @@
 package demos.client_server;
 
+// Dually, on the server we see the "receive" half of the first communication
+// and the "send" half of the second communication.
+
+// Where the programming model diverges from the usual OO one is when it comes to 
+// _implementing_ services. Normally a "service" is a method offered to a client
+// object; to implement the service, I implement the method.
+
+// Arguably this is essence of OO: objects have private state and public APIs,
+// and they interact only via their public APIs. Most languages allow some kind
+// of kooky "action at a distance", but such tricks should be encapsulated behind
+// APIs.
+
 typestate ServerProtocol {
 	session
 		Init = {
-			// This isn't the usual OO programming model, where services are methods that
-			// I expose to clients. To implement the request, here have to start with a 
-			// method _call_. 
 			int receiveRequest(): State0
 		}
 	where

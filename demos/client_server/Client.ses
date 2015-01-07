@@ -1,9 +1,6 @@
 package demos.client_server;
 import java.io.*;
 
-// The basic structure of what we generate is that for every C -> S interaction,
-// there is a send/receive pair. Here we see the "send" half of one communication
-// and the "receive" half of the other communication.
 public class Client typestate ClientProtocol {
 	void sendRequest(int k) {
 	}

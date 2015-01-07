@@ -1,6 +1,10 @@
 package demos.client_server;
 
-// This is roughly what we currently generate from the local projection.
+// We use the local projections to generate the client and server typestates.
+// The basic structure is that for every C -> S interaction, there is a send/receive
+// pair. Here we see the "send" half of one communication and the "receive" half of
+// the other communication.
+
 typestate ClientProtocol {
 	session
 		Init = {
