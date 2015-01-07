@@ -1,40 +1,42 @@
 package demos.jedis;
 
 // This is roughly what we would end up with our current Scribble-to-typestate translation.
+// We can't assume the synchronous "optimisation" here because it's incompatible with
+// our approach to external choice.
+
 typestate Commands2 {
 	session
 		InitSession = {
            void sendWATCH(String[]): Watching
 		}
 	where
-	    // Use commas rather than semicolons to separate members
 		Watching = {
-			void sendGET(String): Watching0,
-			void sendLRANGE(): Watching1,
+			void sendGET(String): Waiting_Watching_GET,
+			void sendLRANGE(): Waiting_Watching_LRANGE,
 			void sendWATCH(String[]): Watching,
 			void sendMULTI(): Queued
 		}
 
-	 	Watching0 = {
+	 	Waiting_Watching_GET = {
 			String receiveGET(): Watching
 	 	}
 		
-		Watching1 = {
+		Waiting_Watching_LRANGE = {
 			List receiveLRANGE(): Watching
 		}
 
 		Queued = {
 		    void sendSET(String, String): Queued,
-		    void sendLPOP (String): Queued0,
+		    void sendLPOP (String): Waiting_Queued_LOP,
 			void sendDISCARD(): end,
-			void sendEXEC(): Queued1
+			void sendEXEC(): Waiting_Queued_EXEC
 		}
 		
-		Queued0 = {
+		Waiting_Queued_LPOP = {
 		    String receiveLPOP (): Queued
 		}
 		
-		Queued1 = {
+		Waiting_Queued_EXEC = {
 			Result receiveEXEC(): <OK:end, FAIL:Queued>
 		}
 }

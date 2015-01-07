@@ -1,6 +1,10 @@
 package demos.jedis;
 
-typestate Commands {
+// A version of the server protocol where asychronous request/response pairs are coalesced
+// into synchronous methods with return values. The Scribble documentation recommends a naming 
+// convention that would make it relatively easy to adapt the translation to do this.   
+
+typestate Redis_Server_Sync {
 	session
 		InitSession = {
            void watch(String[]): Watching
