@@ -22,7 +22,11 @@ local protocol Redis at Server(role Client as C,role Server as S) {
 					continue Queuing;
 				} or {
 					EXEC_request() from C;
-					EXEC_response(bool) to C;
+					choice at S {
+						EXEC_OK() to C;
+					} or {
+						EXEC_FAIL() to C;
+					}
 				}
 			}
 		}

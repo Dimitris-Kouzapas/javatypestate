@@ -17,9 +17,7 @@ package demos.jedis;
 // 2. The argument has to be passed to a single operation, and is therefore forced to be the same for 
 // all components of the choice.
 			
-// 3. This doesn't align with the way we manually generated the Redis typestate definition from the
-// original protocol. More specifically, there is a "natural" interpretation of a typestate as a 
-// Scribble protocol, but that mapping is _not_ the inverse of our translation to typestate.
+// 3. There is a "natural" interpretation of a typestate as a Scribble protocol, but that mapping is _not_ the inverse of our translation to typestate.
 // 
 
 typestate Redis_Server {

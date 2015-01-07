@@ -2,25 +2,23 @@ package demos.jedis;
 
 // A version of the server protocol where asychronous request/response pairs are coalesced
 // into synchronous methods with return values. The Scribble documentation recommends a naming 
-// convention that would make it relatively easy to adapt the translation to do this.   
+// convention that would make it relatively easy to adapt the translation to do this.
 
 typestate Redis_Server_Sync {
 	session
-		InitSession = {
-           void watch(String[]): Watching
+		Init = {
+           void WATCH(String[]): Watching
 		}
 	where
 		Watching = {
-			String get(String): Watching,
-			List lrange(): Watching,
-			void watch(String[]): Watching,
-			void multi(): Queued
+			String GET(String): Watching,
+			void WATCH(String[]): Watching,
+			void MULTI(): Queued
 		}
 
 		Queued = {
-		    void set(String, String): Queued,
-		    String lpop (String): Queued,
-			void discard(): end,
-			Result exec(): <OK:end, FAIL:Queued>
+		    void SET(String, String): Queued,
+			void DISCARD(): end,
+			Result EXEC(): <OK:end, FAIL:Queued>
 		}
 }

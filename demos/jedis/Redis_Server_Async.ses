@@ -1,6 +1,11 @@
 package demos.jedis;
 
-// So here's an asynchronous version which maps more directly to a Scribble protocol.   
+// So here's the asynchronous expansion of the other typestate definition. This maps 
+// more directly to a Scribble protocol.
+
+// Notice how any data passed back in the response is supplied as an ARGUMENT, not a
+// return value, and any choices made are done so via method selection, not the passing
+// of a label as an argument.  
 
 typestate Redis_Server_Async {
 	session
@@ -9,13 +14,13 @@ typestate Redis_Server_Async {
 		}
 	where
 		Watching = {
-			void GET(String): Waiting_Watching_GET,
+			void GET_request(String): Waiting_Watching_GET,
 			void WATCH(String[]): Watching,
 			void MULTI(): Queued
 		}
 		
 		Waiting_Watching_GET = {
-			String GET(): 
+			void GET_response(String): Watching 
 		}
 
 		Queued = {
@@ -25,6 +30,7 @@ typestate Redis_Server_Async {
 		}
 		
 		Waiting_Queued_EXEC = {
-			Result ReceiveEXEC(): <OK:end, FAIL:Queued>
+			void OK(): end, 
+			void FAIL(): Queued
 		}
 }
