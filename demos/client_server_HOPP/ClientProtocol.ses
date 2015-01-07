@@ -1,7 +1,17 @@
 package demos.client_server_HOPP;
 
-// We generate this by considering only "from" messages in the local projection.
-// No need to include "receive" in the generate method name as that is implied.
+// My proposal is to consider the typestate as a specification only of the _services_
+// provided by a process, not of its internal actions. This means considering only 
+// "from" messages in the local projection. No longer need to include "receive" in the
+// generated method name as that is implied.
+
+// Like Scribble, this remains agnostic about whether any particular implementation
+// is "distributed".
+
+// Question: do we lose information from the global type by only including the "from"
+// messages in the local types? In the binary case no, but in the multiparty case, 
+// perhaps yes.
+
 typestate ClientProtocol {
 	session
 		Init = {

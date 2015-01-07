@@ -1,10 +1,15 @@
 package demos.client_server_HOPP;
 
+// Services requests take their arguments as arguments, rather than returning them as 
+// return values. One implements the service by implementing the method; that 
+// implementation makes use of the services of other participants via their public
+// APIs. 
+
 typestate ServerProtocol {
 	session
 		Init = {
-			// The method is _given_ an int, rather than _returning_ an int. That
-			// means we can implement the service as a regular method. 
+			// Cf. the old signature: 
+			// int receiveRequest(): State0
 			void request(int): end
 		}
 }

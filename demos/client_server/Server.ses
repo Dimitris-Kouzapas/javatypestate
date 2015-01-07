@@ -2,11 +2,15 @@ package demos.client_server;
 import java.io.*;
 
 public class Server typestate ServerProtocol {
+    private BufferedReader clientIn;
+    private PrintWriter clientOut;
+    
 	int receiveRequest() {
-		// wait for a request from the client
-		return 0;
+		// wait for k on clientIn 
+		return k;
 	}
 
 	void sendResponse(String v) {
+		// send v on clientOut
 	}
 }

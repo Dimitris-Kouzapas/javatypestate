@@ -2,11 +2,19 @@ package demos.client_server;
 import java.io.*;
 
 public class Client typestate ClientProtocol {
+    private BufferedReader serverIn;
+    private PrintWriter serverOut;
+    
+    public Client () {
+    	// initialise socket
+    }
+
 	void sendRequest(int k) {
+		// send k on server out
 	}
 	
 	String receiveResponse() {
-		// wait for a response from the server
-		return null;
+		// wait for v on serverIn
+		return v;
 	}
 }
