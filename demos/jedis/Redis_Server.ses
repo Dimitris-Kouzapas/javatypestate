@@ -4,15 +4,15 @@ package demos.jedis;
 // We can't assume the synchronous "optimisation" here because it's incompatible with
 // our approach to external choice.
 
-typestate Commands2 {
+typestate Redis_Server {
 	session
 		InitSession = {
            void sendWATCH(String[]): Watching
 		}
 	where
 		Watching = {
+			Watching_OperationLabel sendOperation(
 			void sendGET(String): Waiting_Watching_GET,
-			void sendLRANGE(): Waiting_Watching_LRANGE,
 			void sendWATCH(String[]): Watching,
 			void sendMULTI(): Queued
 		}
@@ -27,7 +27,6 @@ typestate Commands2 {
 
 		Queued = {
 		    void sendSET(String, String): Queued,
-		    void sendLPOP (String): Waiting_Queued_LOP,
 			void sendDISCARD(): end,
 			void sendEXEC(): Waiting_Queued_EXEC
 		}

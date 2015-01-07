@@ -1,0 +1,8 @@
+package demos.jedis;
+
+// Server choices available in Queued state.
+enum Queued_OperationLabel {
+	SET,
+	DISCARD,
+	EXEC
+}

@@ -18,7 +18,7 @@ global protocol Redis (role Client as C, role Server as S) {
          MULTI() from C to S;
          rec Queuing {
             choice at C {
-               PUT(String,String) from C to S;
+               SET(String,String) from C to S;
                continue Queuing;
             } or {
                EXEC_request() from C to S;
