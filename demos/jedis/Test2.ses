@@ -1,4 +1,4 @@
-package demos.jedis_wrapper;
+package demos.jedis;
 
 public class Test2 {
 	public static void main (String[] args) {
