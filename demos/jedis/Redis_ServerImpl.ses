@@ -1,0 +1,26 @@
+package demos.jedis;
+
+class Redis_ServerImpl typestate Redis_Server {
+           String[] receiveWATCH(): Watching
+		}
+	where
+		Watching = {
+			WatchingLabel receiveLabel_Watching(String): <
+				GET_request: Waiting_Watching_GET,
+				WATCH: Watching,
+				MULTI: Queued
+			>
+		}
+
+	 	Waiting_Watching_GET = {
+			void sendGET_response(String): Watching
+	 	}
+		
+		QueuedLabel receiveLabel_Queued(String) {
+			return null;
+		}
+		
+		ResultLabel sendEXEC_response(ResultLabel label) {
+			return null;
+		}
+}

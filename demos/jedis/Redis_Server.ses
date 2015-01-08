@@ -49,6 +49,9 @@ typestate Redis_Server {
 		
 		Waiting_Queued_EXEC = {
 			// Here's an example of the need to take a label as argument and then return it.
-			Result sendEXEC_response(Result): <OK:end, FAIL:Queued>
+			ResultLabel sendEXEC_response(ResultLabel): <
+				OK:end, 
+				FAIL:Queued
+			>
 		}
 }

@@ -1,4 +1,36 @@
 package demos.jedis;
 
 typestate Redis_Client {
+	session
+		Init = {
+           void sendWATCH(String[]): Watching
+		}
+	where
+		Watching = {
+			WatchingLabel sendLabel_Watching(WatchingLabel, String): <
+				GET_request: Waiting_Watching_GET,
+				WATCH: Watching,
+				MULTI: Queued
+			>
+		}
+
+	 	Waiting_Watching_GET = {
+			String receiveGET_response(): Watching
+	 	}
+		
+		Queued = {
+			QueuedLabel sendLabel_Queued(QueuedLabel, String): <
+		    	SET: Queued,
+				DISCARD: end,
+				EXEC: Waiting_Queued_EXEC
+			>
+		}
+		
+		Waiting_Queued_EXEC = {
+			// Here's an example of the need to take a label as argument and then return it.
+			Result receiveEXEC_response(): <
+				OK:end, 
+				FAIL:Queued
+			>
+		}
 }
