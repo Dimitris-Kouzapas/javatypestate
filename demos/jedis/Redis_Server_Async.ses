@@ -4,8 +4,7 @@ package demos.jedis;
 // appropriates the return value to track the choice). Moreover once we switch to the async 
 // version we *have* to embrace the uncomfortable encoding of internal behaviour as "services": 
 // consider EXEC, where the "request" part needs to specify the eventual state, but that depends 
-// on a choice made internally. So now we need send/receive halves for every request and response,
-// internal sequencing, etc. as per the current translation.
+// on a choice made internally.
 
 typestate Redis_Server_Async {
 	session
@@ -14,17 +13,17 @@ typestate Redis_Server_Async {
 		}
 		
 		Watching = {
-			void receiveGET_request(String): Watching_GET,
-			void receiveWATCH(String[]): Watching,
+			String receiveGET_request(): Watching_GET,
+			String[] receiveWATCH(): Watching,
 			void receiveMULTI(): Queued
 		}
 
 		Watching_GET = {
-			String receiveGET_response(String): Watching 
+			void sendGET_response(String): Watching 
 		}
 		
 		Queued = {
-		    void receiveSET(String, String): Queued,
+		    String[] receiveSET(): Queued,
 			void receiveDISCARD(): end,
 			void receiveEXEC_request(): Queued_EXEC
 		}
@@ -46,9 +45,17 @@ typestate Redis_Client_Async {
 			void sendMULTI(): Queued
 		}
 		
+		Watching_GET = {
+			String receiveGET_response(): Watching 
+		}
+		
 		Queued = {
-		    void sendSET(String, String): Queued,
+		    void sendSET(String[]): Queued,
 			void sendDISCARD(): end,
 			void sendEXEC_request(): Queued
+		}
+		
+		Queued_EXEC = {
+			Result receiveEXEC_response(): <OK: end, FAIL: Queued>
 		}
 }
