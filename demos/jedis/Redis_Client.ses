@@ -7,7 +7,7 @@ typestate Redis_Client {
 		}
 	where
 		Watching = {
-			WatchingLabel sendLabel_Watching(WatchingLabel, String): <
+			WatchingLabel sendLabel_Watching(WatchingLabel): <
 				GET_request: Waiting_Watching_GET,
 				WATCH: Watching,
 				MULTI: Queued
@@ -19,7 +19,7 @@ typestate Redis_Client {
 	 	}
 		
 		Queued = {
-			QueuedLabel sendLabel_Queued(QueuedLabel, String): <
+			QueuedLabel sendLabel_Queued(QueuedLabel): <
 		    	SET: Queued,
 				DISCARD: end,
 				EXEC: Waiting_Queued_EXEC
@@ -27,7 +27,6 @@ typestate Redis_Client {
 		}
 		
 		Waiting_Queued_EXEC = {
-			// Here's an example of the need to take a label as argument and then return it.
 			Result receiveEXEC_response(): <
 				OK:end, 
 				FAIL:Queued

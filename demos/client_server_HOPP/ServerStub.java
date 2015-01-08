@@ -1,7 +1,7 @@
 package demos.client_server_HOPP;
 import java.io.*;
 
-public class ServerStub /*typestate ServerProtocol*/ {
+public class ServerStub implements ServerProtocol {
     private PrintWriter serverOut;
     
     public ServerStub () {

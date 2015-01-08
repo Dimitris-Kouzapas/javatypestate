@@ -10,9 +10,13 @@ package demos.jedis;
 // this problem goes away: every method specifies a state transition already, and if one only calls a 
 // single method then one only has to supply a single continuation.     
 
-// 2. Since the argument to the chosen branch of the choice currently has to be passed to a single 
-// typestate operation, it is forced to be the same for each branch. This is like insisting that all
-// methods of an object have the same argument type.
+// 2. We can't at the moment pass arguments along with the label. This is because the sending of the
+// label is matched by a receiving of the label on the other side, and receiving occurs by return value.
+// Since a Java method can only return a single value, there is no way to pass a payload as well. This
+// could be solved within the present approach by splitting every choice into a label send and an
+// (optional) payload send. There would then be a question of whether to additionally send a label
+// when there is no explicit choice in the original Scribble (i.e. treat every send as preceded by
+// an implicit singleton choice). This issue goes away with the choice-as-set-of-methods interpretation.  
 			
 // 3. There is a "natural" (canonical?) interpretation of a typestate as a Scribble protocol which
 // maps available methods to external choice. That mapping doesn't have our translation to typestate
@@ -28,7 +32,7 @@ typestate Redis_Server {
 		}
 	where
 		Watching = {
-			WatchingLabel receiveLabel_Watching(String): <
+			WatchingLabel receiveLabel_Watching(): <
 				GET_request: Waiting_Watching_GET,
 				WATCH: Watching,
 				MULTI: Queued
@@ -40,7 +44,7 @@ typestate Redis_Server {
 	 	}
 		
 		Queued = {
-			QueuedLabel receiveLabel_Queued(String): <
+			QueuedLabel receiveLabel_Queued(): <
 		    	SET: Queued,
 				DISCARD: end,
 				EXEC: Waiting_Queued_EXEC
@@ -49,7 +53,7 @@ typestate Redis_Server {
 		
 		Waiting_Queued_EXEC = {
 			// Here's an example of the need to take a label as argument and then return it.
-			ResultLabel sendEXEC_response(ResultLabel): <
+			ResultLabel sendEXEC_response(int): <
 				OK:end, 
 				FAIL:Queued
 			>

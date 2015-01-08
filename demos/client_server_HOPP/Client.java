@@ -3,7 +3,7 @@ import java.io.*;
 
 // Here's how we would use this approach to implement a distributed version of the system.
 
-public class Client typestate ClientProtocol {
+public class Client implements ClientProtocol {
 	private ServerStub server = new ServerStub();
 	
 	public Client () {

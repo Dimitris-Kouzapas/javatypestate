@@ -7,30 +7,60 @@ class Redis_ServerImpl typestate Redis_Server {
     	return null;
     }
 
-	WatchingLabel receiveLabel_Watching(String arg) {
+	WatchingLabel receiveLabel_Watching() {
 		return null;
 	}
 
 	void sendGET_response(String v) {
 	}
 		
-	QueuedLabel receiveLabel_Queued(String arg) {
+	QueuedLabel receiveLabel_Queued() {
 		return null;
 	}
 		
-	ResultLabel sendEXEC_response(ResultLabel label) {
+	ResultLabel sendEXEC_response(int label) {
 		return null;
 	}
 
-	// The implementation of all services essentially goes inline into a single straight-line bit
-	// of code that "waits" for receives and dispatches on labels in order to execute the relevant
-	// bit of code.
+	// The implementation of all services essentially inline into some straight-line code that "waits"
+	// for receives of labels and dispatches on them in order to execute the relevant bit of code.
 	
-	// We can factor the straight-line code into methods which "manage" part of the session, perhaps
-	// this was the idea behind Gay et al 2010.
+	// We can factor the straight-line code into methods which "manage" the implementation of each
+	// service (perhaps this was the "modularity" idea in Gay et al 2010).
 	
 	public static void main (String[] args) {
 		Redis_ServerImpl redis = new Redis_ServerImpl();
 		String[] ks = redis.receiveWATCH();
+		// add supplied watches
+		WATCHING: while (true) {
+			// Assume problem with argument passing is fixed somehow.
+			switch (redis.receiveLabel_Watching().getEnum()) {
+				case WatchingLabel.GET_request:
+					redis.sendGET_response("5");
+					continue WATCHING;
+				case WatchingLabel.WATCH:
+					// add more watches
+					continue WATCHING;
+				case WatchingLabel.MULTI:
+					QUEUED: while (true) {
+						switch (redis.receiveLabel_Queued().getEnum()) {
+							case QueuedLabel.SET:
+								// do the set
+								continue QUEUED;
+							case QueuedLabel.DISCARD:
+								break QUEUED;
+							case QueuedLabel.EXEC:
+								// let's decide to succeed
+								switch (redis.sendEXEC_response(ResultLabel.OK).getEnum()) {
+									case ResultLabel.OK:
+										break QUEUED;
+									case ResultLabel.FAIL:
+										continue QUEUED;
+								}
+						}
+					}
+					break WATCHING;
+			}
+		}
 	}
 }
