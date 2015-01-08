@@ -1,17 +1,17 @@
 package demos.jedis;
 
-// To explain the problem with choice, we need an asynchronous version (because our translation 
-// appropriates the return value to track the choice). Moreover once we switch to the async 
-// version we *have* to embrace the uncomfortable encoding of internal behaviour as "services": 
-// consider EXEC, where the "request" part needs to specify the eventual state, but that depends 
-// on a choice made internally.
+// To explain the issue with translating external choice, we need an asynchronous version (because
+// our translation appropriates the return value to track the choice). Moreover once we switch to 
+// the async version we *have* to embrace the uncomfortable encoding of internal behaviour as 
+// "services": consider EXEC, where the "request" part needs to specify the eventual state, but 
+// that depends on a choice made internally.
 
 typestate Redis_Server_Async {
 	session
 		Init = {
 			String[] receiveWATCH(): Watching 
 		}
-		
+	where	
 		Watching = {
 			String receiveGET_request(): Watching_GET,
 			String[] receiveWATCH(): Watching,
@@ -30,32 +30,5 @@ typestate Redis_Server_Async {
 		
 		Queued_EXEC = {
 			Result sendEXEC_response(Result): <OK: end, FAIL: Queued>
-		}
-}
-
-typestate Redis_Client_Async {
-	session
-		Init = {
-           void sendWATCH(String[]): Watching
-		}
-	where
-		Watching = {
-			void sendGET_request(String): Watching,
-			void sendWATCH(String[]): Watching,
-			void sendMULTI(): Queued
-		}
-		
-		Watching_GET = {
-			String receiveGET_response(): Watching 
-		}
-		
-		Queued = {
-		    void sendSET(String[]): Queued,
-			void sendDISCARD(): end,
-			void sendEXEC_request(): Queued
-		}
-		
-		Queued_EXEC = {
-			Result receiveEXEC_response(): <OK: end, FAIL: Queued>
 		}
 }
