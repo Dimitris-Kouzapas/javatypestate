@@ -1,7 +1,7 @@
 package demos.jedis;
 
 // This is roughly what we would end up with our current Scribble-to-typestate translation.
-// We represent choice as the explicit sending of a label. There are three significant problems.		
+// We represent choice as the explicit sending of a label. There are three problems.		
 		
 // 1. At the sender, we have to return as a result the same choice label we were passed as an argument, 
 // so that the sender can dispatch on it to continue with the rest of the protocol. But this is weird
@@ -23,7 +23,7 @@ package demos.jedis;
 
 typestate Redis_Server {
 	session
-		InitSession = {
+		Init = {
            String[] receiveWATCH(): Watching
 		}
 	where
