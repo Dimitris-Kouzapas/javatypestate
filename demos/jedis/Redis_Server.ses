@@ -1,25 +1,22 @@
 package demos.jedis;
 
 // This is roughly what we would end up with our current Scribble-to-typestate translation.
-// We can't assume the synchronous "optimisation" here because of the way we translate 
-// external choice.
-
-// Currently we represent choice as the explicit sending of a label. Really the label should be 
-// construed as the name of a method. There are three significant problems with the status quo.		
+// We represent choice as the explicit sending of a label. There are three significant problems.		
 		
 // 1. We have to return as a result the same choice label we were passed as an argument, so that the 
 // client can dispatch on it to continue with the rest of the protocol. But this is weird because the
 // client already knows what choice it made. Nor does it make sense to insist that the client specify
 // a continuation for choices it didn't make. If making a choice is calling a method, this problem
-// does away because every method specifies a state transition already, and if one calls a single
-// method then one only has to supply a single continuation.     
+// goes away: every method specifies a state transition already, and if one only calls a single method
+// then one only has to supply a single continuation.     
 
-// 2. The argument has to be passed to a single operation, and is therefore forced to be the same for 
-// all components of the choice.
+// 2. Since the argument to the chosen branch of the choice currently has to be passed to a single 
+// typestate operation, it is forced to be the same for each branch. This is like insisting that all
+// methods of an object have the same argument type.
 			
-// 3. There is a "natural" (canonical) interpretation of a typestate as a Scribble protocol which
-// maps available methods to external choices, but that mapping doesn't have our translation to 
-// typestate as its inverse. That suggests our translation is not "natural" (canonical). 
+// 3. There is a "natural" (canonical?) interpretation of a typestate as a Scribble protocol which
+// maps available methods to external choice. That mapping doesn't have our translation to typestate
+// as its inverse, suggesting that our translation is not the "obvious" one. 
 
 // (In the current translation spec, we pass the labels as strings rather than enums, but this is a 
 // minor detail.)
