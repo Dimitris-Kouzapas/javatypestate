@@ -29,6 +29,9 @@ typestate Redis_Server_Async {
 		}
 		
 		Queued_EXEC = {
-			Result sendEXEC_response(Result): <OK: end, FAIL: Queued>
+			ResultLabel sendEXEC_response(ResultLabel): <
+				OK: end, 
+				FAIL: Queued
+			>
 		}
 }
