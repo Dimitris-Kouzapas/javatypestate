@@ -1,26 +1,36 @@
 package demos.jedis;
 
-class Redis_ServerImpl typestate Redis_Server {
-           String[] receiveWATCH(): Watching
-		}
-	where
-		Watching = {
-			WatchingLabel receiveLabel_Watching(String): <
-				GET_request: Waiting_Watching_GET,
-				WATCH: Watching,
-				MULTI: Queued
-			>
-		}
+// Dummy implementation, which we can use to illustrate the problem with implementing services.
 
-	 	Waiting_Watching_GET = {
-			void sendGET_response(String): Watching
-	 	}
+class Redis_ServerImpl typestate Redis_Server {
+    String[] receiveWATCH() {
+    	return null;
+    }
+
+	WatchingLabel receiveLabel_Watching(String arg) {
+		return null;
+	}
+
+	void sendGET_response(String v) {
+	}
 		
-		QueuedLabel receiveLabel_Queued(String) {
-			return null;
-		}
+	QueuedLabel receiveLabel_Queued(String arg) {
+		return null;
+	}
 		
-		ResultLabel sendEXEC_response(ResultLabel label) {
-			return null;
-		}
+	ResultLabel sendEXEC_response(ResultLabel label) {
+		return null;
+	}
+
+	// The implementation of all services essentially goes inline into a single straight-line bit
+	// of code that "waits" for receives and dispatches on labels in order to execute the relevant
+	// bit of code.
+	
+	// We can factor the straight-line code into methods which "manage" part of the session, perhaps
+	// this was the idea behind Gay et al 2010.
+	
+	public static void main (String[] args) {
+		Redis_ServerImpl redis = new Redis_ServerImpl();
+		String[] ks = redis.receiveWATCH();
+	}
 }
