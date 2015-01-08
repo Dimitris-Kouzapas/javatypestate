@@ -1,26 +1,15 @@
 package demos.jedis;
 
 // This is roughly what we would end up with our current Scribble-to-typestate translation.
-// We represent choice as the explicit sending of a label. There are three problems.		
+// We represent choice as the explicit sending of a label, optionally followed by the sending
+// of the payload. This is very heavy-handed compared to modelling choice simpy as the invocation
+// of a method, but unfortunately that translation to typestate is unable to represent internal
+// actions.		
 		
-// 1. At the sender, we have to return as a result the same choice label we were passed as an argument, 
-// so that the sender can dispatch on it to continue with the rest of the protocol. But this is weird
-// because the sender already knows what choice it made. Nor does it make sense to insist that the
-// client specify a continuation for choices it didn't make. If making a choice is calling a method, 
-// this problem goes away: every method specifies a state transition already, and if one only calls a 
-// single method then one only has to supply a single continuation.     
-
-// 2. We can't at the moment pass arguments along with the label. This is because the sending of the
-// label is matched by a receiving of the label on the other side, and receiving occurs by return value.
-// Since a Java method can only return a single value, there is no way to pass a payload as well. This
-// could be solved within the present approach by splitting every choice into a label send and an
-// (optional) payload send. There would then be a question of whether to additionally send a label
-// when there is no explicit choice in the original Scribble (i.e. treat every send as preceded by
-// an implicit singleton choice). This issue goes away with the choice-as-set-of-methods interpretation.  
-			
-// 3. There is a "natural" (canonical?) interpretation of a typestate as a Scribble protocol which
-// maps available methods to external choice. That mapping doesn't have our translation to typestate
-// as its inverse, suggesting that our translation is not the "obvious" one. 
+// An additional oddity as is that, at the sender, we have to return as a result the same choice label
+// we were passed as an argument, so that the sender can dispatch on it to continue with the rest of
+// the protocol. But this is weird because the sender already knows what choice it made. Nor does it
+// make sense to insist that the client specify a continuation for choices it didn't make.
 
 // (In the current translation spec, we pass the labels as strings rather than enums, but this is a 
 // minor detail.)
@@ -32,6 +21,7 @@ typestate Redis_Server {
 		}
 	where
 		Watching = {
+			// TODO: augment with argument-passing steps, which requires additional states.
 			WatchingLabel receiveLabel_Watching(): <
 				GET_request: Waiting_Watching_GET,
 				WATCH: Watching,
@@ -53,6 +43,8 @@ typestate Redis_Server {
 		
 		Waiting_Queued_EXEC = {
 			// Here's an example of the need to take a label as argument and then return it.
+			// Unfortunately our compiler won't less us pass ResultLabel as the type of the
+			// label (this problem will go away when we support enums properly).
 			ResultLabel sendEXEC_response(int): <
 				OK:end, 
 				FAIL:Queued

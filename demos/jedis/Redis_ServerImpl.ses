@@ -22,8 +22,8 @@ class Redis_ServerImpl typestate Redis_Server {
 		return null;
 	}
 
-	// The implementation of all services essentially inline into some straight-line code that "waits"
-	// for receives of labels and dispatches on them in order to execute the relevant bit of code.
+	// The implementation of all services must be provided essentially inline as straight-line code that
+	// waits labels to be received and dispatches on them in order to execute the relevant bit of code.
 	
 	// We can factor the straight-line code into methods which "manage" the implementation of each
 	// service (perhaps this was the "modularity" idea in Gay et al 2010).
