@@ -1,7 +1,0 @@
-package demos.buyer_seller_direct;
-
-public class Main {
-    public static void main(String[] args) {
-    	Buyer1Impl buyer = new Buyer1Impl(new SellerImpl(), new Buyer2Impl());
-    }
-}

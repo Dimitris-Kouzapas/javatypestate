@@ -1,7 +1,0 @@
-package demos.buyer_seller_direct_HOPP;
-
-public class Main {
-    public static void main(String[] args) {
-    	Buyer1 buyer = new Buyer1();
-    }
-}
