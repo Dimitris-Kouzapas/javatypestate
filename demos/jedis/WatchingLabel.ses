@@ -4,5 +4,5 @@ package demos.jedis;
 enum WatchingLabel {
 	GET_request,
 	WATCH,
-	MULTI
+	MULTI;
 }

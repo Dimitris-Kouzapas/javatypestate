@@ -1,0 +1,4 @@
+package demos.jedis;
+
+typestate Redis_Client {
+}

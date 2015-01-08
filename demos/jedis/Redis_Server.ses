@@ -3,12 +3,12 @@ package demos.jedis;
 // This is roughly what we would end up with our current Scribble-to-typestate translation.
 // We represent choice as the explicit sending of a label. There are three significant problems.		
 		
-// 1. We have to return as a result the same choice label we were passed as an argument, so that the 
-// client can dispatch on it to continue with the rest of the protocol. But this is weird because the
-// client already knows what choice it made. Nor does it make sense to insist that the client specify
-// a continuation for choices it didn't make. If making a choice is calling a method, this problem
-// goes away: every method specifies a state transition already, and if one only calls a single method
-// then one only has to supply a single continuation.     
+// 1. At the sender, we have to return as a result the same choice label we were passed as an argument, 
+// so that the sender can dispatch on it to continue with the rest of the protocol. But this is weird
+// because the sender already knows what choice it made. Nor does it make sense to insist that the
+// client specify a continuation for choices it didn't make. If making a choice is calling a method, 
+// this problem goes away: every method specifies a state transition already, and if one only calls a 
+// single method then one only has to supply a single continuation.     
 
 // 2. Since the argument to the chosen branch of the choice currently has to be passed to a single 
 // typestate operation, it is forced to be the same for each branch. This is like insisting that all
@@ -24,23 +24,23 @@ package demos.jedis;
 typestate Redis_Server {
 	session
 		InitSession = {
-           void WATCH(String[]): Watching
+           String[] receiveWATCH(): Watching
 		}
 	where
 		Watching = {
-			WatchingLabel chooseLabel_Watching(WatchingLabel, String): <
-				GET: Waiting_Watching_GET,
+			WatchingLabel receiveLabel_Watching(String): <
+				GET_request: Waiting_Watching_GET,
 				WATCH: Watching,
 				MULTI: Queued
 			>
 		}
 
 	 	Waiting_Watching_GET = {
-			void GET(String): Watching
+			void sendGET_response(String): Watching
 	 	}
 		
 		Queued = {
-			QueuedLabel chooseLabel_Queued(QueuedLabel, String): <
+			QueuedLabel receiveLabel_Queued(String): <
 		    	SET: Queued,
 				DISCARD: end,
 				EXEC: Waiting_Queued_EXEC
@@ -48,6 +48,7 @@ typestate Redis_Server {
 		}
 		
 		Waiting_Queued_EXEC = {
-			Result receiveEXEC(): <OK:end, FAIL:Queued>
+			// Here's an example of the need to take a label as argument and then return it.
+			Result sendEXEC_response(Result): <OK:end, FAIL:Queued>
 		}
 }
