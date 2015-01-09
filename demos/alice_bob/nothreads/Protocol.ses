@@ -1,4 +1,5 @@
-package protocol;
+package demos.alice_bob.nothreads;
+
 class Protocol typestate ProtocolSession {
 	private Alice a;
 	private Bob b;

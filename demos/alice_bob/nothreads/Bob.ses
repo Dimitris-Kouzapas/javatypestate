@@ -1,4 +1,4 @@
-package protocol;
+package demos.alice_bob.nothreads;
 
 class Bob typestate BobSession {
 	String channel;

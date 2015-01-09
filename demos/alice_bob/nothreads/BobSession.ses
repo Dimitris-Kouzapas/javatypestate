@@ -1,4 +1,5 @@
-package protocol;
+package demos.alice_bob.nothreads;
+
 typestate BobSession {
 	session
 		Init = {String receiveStringFromAlice() : {}}

@@ -1,4 +1,4 @@
-package demos.threads;
+package demos.alice_bob.threads;
 
 import demos.broker.*;
 
