@@ -7,14 +7,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Buyer2 typestate Buyer2Protocol {
+public class Buyer2Role typestate Buyer2Protocol {
     private BufferedReader socketBuyer1In = null;
     private PrintWriter socketBuyer1Out = null;
 
     private BufferedReader socketSellerIn = null;
     private PrintWriter socketSellerOut = null;
 
-    public Buyer2() {
+    public Buyer2Role() {
         // Bind the socket
         ServerSocket serverBuyer1 = null;
         try {
@@ -96,44 +96,4 @@ public class Buyer2 typestate Buyer2Protocol {
         System.out.println("Bye!");
     }
 
-    public static String safeRead(BufferedReader br) {
-        String line = "";
-
-        try {
-            line = br.readLine();
-        } catch (IOException e) {
-            System.out.println("Input/Outpur error, unable to read");
-            System.exit(-1);
-        }
-
-        return line;
-    }
-
-    public static void main(String [] args) {
-        Buyer2 buyer2 = new Buyer2();
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        // Waiting for the quote
-            System.out.println("Waiting to receive quote from Buyer1...");
-            int quote = buyer2.receiveQuoteFromBuyer1();
-            System.out.println("Received quote from Buyer1 £" + quote);
-
-            // Agreement decision for Buyer2
-            //buyer2.sendToSellerBuyer1("AGREE");
-            //buyer2.transferMoneyToSeller("30");
-            System.out.print("Buyer2 to Seller and Buyer1: AGREE [y/n]? ");
-            String reply = safeRead(br);
-            String agreement = reply.equals("y") ? "AGREE" : "QUIT";
-            
-            switch (buyer2.sendToSellerBuyer1(agreement).getEnum()) {
-            case AgreementLabel.AGREE:
-                //System.out.println("Buyer2 agrees to contribute");
-                System.out.print("Buyer2 to Seller: I am transfering you £");
-                int money = Integer.parseInt(safeRead(br));
-                buyer2.transferMoneyToSeller(money);
-                break;
-            case AgreementLabel.QUIT:
-                break;
-            }
-    }
 }
