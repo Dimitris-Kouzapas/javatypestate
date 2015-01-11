@@ -18,7 +18,8 @@ global protocol Redis (role Client as C, role Server as S) {
          MULTI() from C to S;
          rec Queuing {
             choice at C {
-               LPOP(String) from C to S; 
+               LPOP_request(String) from C to S; 
+               LPOP_response(String) from S to C; 
             } or {
                SET(String,String) from C to S;
                continue Queuing;
