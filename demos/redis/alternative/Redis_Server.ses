@@ -1,9 +1,9 @@
-package demos.jedis;
+package demos.redis.alternative;
 
 // This is roughly what we would end up with our current Scribble-to-typestate translation.
 // We represent choice as the explicit sending of a label, optionally followed by the sending
-// of the payload. This is very heavy-handed compared to modelling choice simpy as the invocation
-// of a method, but unfortunately that translation to typestate is unable to represent internal
+// of the payload. This is heavy-handed compared to modelling choice simpy as the invocation
+// of a method, but unfortunately the translation to typestate is unable to represent internal
 // actions.		
 		
 // An additional oddity as is that, at the sender, we have to return as a result the same choice label
@@ -21,27 +21,42 @@ typestate Redis_Server {
 		}
 	where
 		Watching = {
-			// TODO: augment with argument-passing steps, which requires additional states.
 			WatchingLabel receiveLabel_Watching(): <
-				GET_request: Waiting_Watching_GET,
-				WATCH: Watching,
+				GET_request: ReceiveArg_Watching_GET,
+				WATCH: ReceiveArg_Watching_WATCH,
 				MULTI: Queued
 			>
 		}
-
-	 	Waiting_Watching_GET = {
+		
+		ReceiveArg_Watching_GET = {
+			String receiveArg_GET(): Responding_Watching_GET
+		}
+		
+	 	Responding_Watching_GET = {
 			void sendGET_response(String): Watching
+	 	}
+	 	
+	 	ReceiveArg_Watching_WATCH = {
+	 		String[] receiveArg_WATCH(): Watching
 	 	}
 		
 		Queued = {
 			QueuedLabel receiveLabel_Queued(): <
-		    	SET: Queued,
+		    	SET: ReceiveArg0_Queued_SET,
 				DISCARD: end,
-				EXEC: Waiting_Queued_EXEC
+				EXEC: Responding_Queued_EXEC
 			>
 		}
 		
-		Waiting_Queued_EXEC = {
+		ReceiveArg0_Queued_SET = {
+			String receiveArg0_SET(): ReceiveArg1_Queued_SET 
+		}
+		
+		ReceiveArg1_Queued_SET = {
+			String receiveArg1_SET(): Queued 
+		}
+		
+		Responding_Queued_EXEC = {
 			// Here's an example of the need to take a label as argument and then return it.
 			// Unfortunately our compiler won't less us pass ResultLabel as the type of the
 			// label (this problem will go away when we support enums properly).

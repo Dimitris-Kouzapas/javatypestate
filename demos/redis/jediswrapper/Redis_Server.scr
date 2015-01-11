@@ -21,6 +21,8 @@ local protocol Redis at Server(role Client as C,role Server as S) {
 					SET(String,String) from C;
 					continue Queuing;
 				} or {
+					DISCARD() from C;
+				} or {
 					EXEC_request() from C;
 					choice at S {
 						EXEC_response_OK() to C;

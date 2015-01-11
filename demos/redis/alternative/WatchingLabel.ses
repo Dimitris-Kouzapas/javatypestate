@@ -1,4 +1,4 @@
-package demos.jedis;
+package demos.redis.alternative;
 
 // Server choices available in Queued state.
 enum WatchingLabel {

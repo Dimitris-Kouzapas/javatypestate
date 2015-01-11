@@ -1,6 +1,8 @@
-package demos.jedis;
+package demos.redis.alternative;
 
 // Dummy implementation, which we can use to illustrate the problem with implementing services.
+// Doesn't typecheck at the moment; need to put in the missing receive-arg calls, plus I 
+// couldn't get all the breaks/loops typechecking properly anyway.
 
 class Redis_ServerImpl typestate Redis_Server {
     String[] receiveWATCH() {
@@ -11,8 +13,24 @@ class Redis_ServerImpl typestate Redis_Server {
 		return null;
 	}
 
+	String receiveArg_GET () {
+		return null;
+	}
+
 	void sendGET_response(String v) {
 	}
+		
+	String[] receiveArg_WATCH() {
+		return null;
+	}
+		
+	String receiveArg0_SET() {
+		return null;
+	}		
+		
+	String receiveArg1_SET() {
+		return null;
+	}		
 		
 	QueuedLabel receiveLabel_Queued() {
 		return null;

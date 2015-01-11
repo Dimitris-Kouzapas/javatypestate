@@ -1,4 +1,4 @@
-module demos.jedis.Redis;
+module demos.redis.jediswrapper.Redis;
 
 type <java> "java.lang.Boolean" from "rt.jar" as bool;
 type <java> "java.lang.List" from "rt.jar" as List;
@@ -21,7 +21,7 @@ global protocol Redis (role Client as C, role Server as S) {
                SET(String,String) from C to S;
                continue Queuing;
             } or {
-               DISCARD from C to S;
+               DISCARD() from C to S;
             } or {
                EXEC_request() from C to S;
                choice at S {
