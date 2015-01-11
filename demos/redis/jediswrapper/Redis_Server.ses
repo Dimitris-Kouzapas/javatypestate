@@ -27,6 +27,7 @@ typestate Redis_Server {
 
 		Queued = {
 		    void SET(String, String): Queued,
+		    String LPOP(String): Queued,
 			void DISCARD(): end,
 			Result EXEC(): <OK:end, FAIL:Queued>
 		}
