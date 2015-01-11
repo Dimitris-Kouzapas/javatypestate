@@ -18,6 +18,8 @@ local protocol Redis at Client(role Client as C,role Server as S) {
 			MULTI() to S;
 			rec Queuing {
 				choice at C {
+					LPOP(String) to S;
+				} or {
 					SET(String,String) to S;
 					continue Queuing;
 				} or {
