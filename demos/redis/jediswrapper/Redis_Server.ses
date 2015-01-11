@@ -1,4 +1,4 @@
-package demos.jedis;
+package demos.redis.jediswrapper;
 
 // A version of the server protocol where asychronous request/response pairs are coalesced
 // into synchronous methods with return values. The Scribble documentation recommends a naming 
@@ -13,7 +13,7 @@ package demos.jedis;
 // actions, for example the internal choice between GET, WATCH and MULTI. To see this, try to
 // write down the (typestate) dual of this type. 
 
-typestate Redis_Server_Sync {
+typestate Redis_Server {
 	session
 		Init = {
            void WATCH(String[]): Watching

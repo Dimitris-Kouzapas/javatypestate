@@ -1,4 +1,4 @@
-package demos.jedis;
+package demos.redis.jediswrapper;
 
 import java.util.List;
 
@@ -9,32 +9,32 @@ import java.util.List;
 // 1) Can't compile against a third-party library (we only compile .ses to .java)
 // 2) Based on a J2SE 1.4 front end, so we don't support any post-2002 language features.
 
-public class JedisWrapper typestate Commands {
-    void watch(String[] keys) {
+public class JedisWrapper typestate Redis_Server {
+    void WATCH(String[] keys) {
     }
 
-    String get(String keys) {
+    String GET(String keys) {
        throw new RuntimeException();
     }
 
-	List/*<String>*/ lrange() {
+	List/*<String>*/ LRANGE() {
        throw new RuntimeException();
 	}
 	
-	void multi () {
+	void MULTI () {
 	}
 
-    void set(String key, String value) {
+    void SET(String key, String value) {
     }
 
-    String lpop (String key) {
+    String LPOP (String key) {
        throw new RuntimeException();
     }
     
-    void discard () {
+    void DISCARD () {
     }
     
-    Result exec () {
-       throw new RuntimeException();
+    Result EXEC () {
+       return null;
     } 
 }
