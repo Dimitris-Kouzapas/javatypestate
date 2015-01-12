@@ -16,13 +16,14 @@ local protocol Redis at Server(role Client as C,role Server as S) {
 			continue Watching;
 		} or {
 			MULTI() from C;
-			rec Queuing {
+			rec Queued {
 				choice at C {
 					LPOP_request(String) from C;
 					LPOP_response(String) to C;
+					continue Queued;
 				} or {
 					SET(String,String) from C;
-					continue Queuing;
+					continue Queued;
 				} or {
 					DISCARD() from C;
 				} or {
@@ -31,6 +32,7 @@ local protocol Redis at Server(role Client as C,role Server as S) {
 						EXEC_response_OK() to C;
 					} or {
 						EXEC_response_FAIL() to C;
+						continue Queued;
 					}
 				}
 			}

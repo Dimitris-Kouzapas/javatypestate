@@ -41,10 +41,11 @@ class Redis_ServerImpl typestate Redis_Server {
 	}
 
 	// The implementation of all services must be provided essentially inline as straight-line code that
-	// waits labels to be received and dispatches on them in order to execute the relevant bit of code.
+	// waits for labels to be received and dispatches on them in order to execute the relevant bit of 
+	// code. In this sense it is an unorthodox programming model for Java.
 	
-	// We can factor the straight-line code into methods which "manage" the implementation of each
-	// service (perhaps this was the "modularity" idea in Gay et al 2010).
+	// We coudl factor the straight-line code into methods which "manage" the implementation of each
+	// service (I think this is the "modularity" idea in Gay et al 2010).
 	
 	public static void main (String[] args) {
 		Redis_ServerImpl redis = new Redis_ServerImpl();

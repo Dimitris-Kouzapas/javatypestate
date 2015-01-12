@@ -16,13 +16,14 @@ global protocol Redis (role Client as C, role Server as S) {
       	 continue Watching;
       } or {
          MULTI() from C to S;
-         rec Queuing {
+         rec Queued {
             choice at C {
                LPOP_request(String) from C to S; 
                LPOP_response(String) from S to C; 
+               continue Queued;
             } or {
                SET(String,String) from C to S;
-               continue Queuing;
+               continue Queued;
             } or {
                DISCARD() from C to S;
             } or {
@@ -31,6 +32,7 @@ global protocol Redis (role Client as C, role Server as S) {
                    EXEC_response_OK() from S to C;
                } or {
                	   EXEC_response_FAIL() from S to C;
+               	   continue Queued;
            	   }
             }
          }
