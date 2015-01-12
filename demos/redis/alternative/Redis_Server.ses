@@ -2,17 +2,41 @@ package demos.redis.alternative;
 
 // This is roughly what we would end up with our current Scribble-to-typestate translation.
 // We represent choice as the explicit sending of a label, optionally followed by the sending
-// of the payload. This is heavy-handed compared to modelling choice simpy as the invocation
-// of a method, but unfortunately the translation to typestate is unable to represent internal
-// actions.		
-		
-// An additional oddity as is that, at the sender, we have to return as a result the same choice label
-// we were passed as an argument, so that the sender can dispatch on it to continue with the rest of
-// the protocol. But this is weird because the sender already knows what choice it made. Nor does it
-// make sense to insist that the client specify a continuation for choices it didn't make.
+// of the payload. 
 
-// (In the current translation spec, we pass the labels as strings rather than enums, but this is a 
-// minor detail.)
+// This is heavy-handed compared to modelling choice simply as the invocation of a method,
+// as we do in the hand-coded typestate definition (call it S). S can be used to check that 
+// a server impl is able to handle all the incoming messages it should be able to
+// handle, but NOT to check that it sends all the outgoing messages that it should. That 
+// can't be expressed (directly) in typestate.
+
+// However, S _can _ also be used to check that any _client_ only sends messages the server 
+// can accept. In summary: S describes a service, and we can check existence of provision of
+// service (on the server) and (dually) legality of consumption of service (on the client).
+
+// The alternative typestate given below (call it S') can be used to check BOTH that a server
+// impl is able to handle all the incoming messages that it should, AND that it sends all the
+// outgoing messages that it should. We express the latter in typestate by exposing the 
+// obligation to send sessages as additional _services_: in effect we exploit duality to
+// encode liveness as [safety + requirement to consume available services].
+
+// However, S' _cannot_ be used to check any properties of the client, basically because the
+// client never uses S' (it is never typechecked against the dual of S'). Rather, the local
+// Scribble protocol from which S' was derived has a dual (the client's local projection), and the
+// typestate encoding of that dual is used to typecheck the client. But the encodings themselves
+// are not dual at the level of the typestate language, although in some semantic sense they are 
+// dual.
+
+// Some relatively minor additional points about the translation:
+		
+// At the sender, we have to return as a result the same choice label we were passed as an 
+// argument, so that the sender can dispatch on it to continue with the rest of the protocol. 
+// But this is weird because the client already knows what choice it made. (Nor does it
+// make sense to insist that the client specify a continuation for choices it didn't make.)
+
+// In the specification of the translation, we currently pass the labels as strings rather than 
+// enums. (Our compiler doesn't handle enums properly yet; ints would probably be an improvement 
+// over strings in the meantime, since ints/enums are already semi-conflated.)
 
 typestate Redis_Server {
 	session
