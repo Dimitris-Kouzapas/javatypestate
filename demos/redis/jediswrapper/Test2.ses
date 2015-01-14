@@ -9,23 +9,22 @@ public class Test2 {
 	   JedisWrapper jedis = new JedisWrapper();
 	   jedis.WATCH(new String[]{ "name" });
 	   jedis.WATCH(new String[]{ "address" });
-	   doTransaction(jedis);
+	   doTransaction(jedis,5);
 	}
 
-    // These methods seem to have a useful type inferred. We don't seem to allow
+    // These methods seem to have a useful type inferred. We don't allow
     // inheritance, which simplifies things.
-    void prepareWatches (JedisWrapper jedis) {
-	   jedis.WATCH(new String[]{ "name" });
-	   jedis.WATCH(new String[]{ "address" });
-    }
-
-	void doTransaction (JedisWrapper jedis) {
+	void doTransaction (JedisWrapper jedis, int n) {
 	   jedis.MULTI();
 	   switch (jedis.EXEC().getEnum()) {
 	   case Result.OK:
 	      break;
 	   case Result.FAIL:
-	      discardTransaction(jedis);
+	   	  if (n == 0) {
+	      	discardTransaction(jedis);
+	      } else {
+	        doTransaction(jedis, n - 1);
+	      }
 	      break;
 	   }
 	}

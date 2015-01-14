@@ -4,15 +4,6 @@ package demos.redis.jediswrapper;
 // into synchronous methods with return values. The Scribble documentation recommends a naming 
 // convention that would make it relatively easy to adapt the translation to do this.
 
-// In the synchronous view we don't have to worry about client states for this simple protocol, 
-// because we never call methods on the client.
-
-// This is an example of the "direct" representation of session-type-as-typestate. For example
-// the server implements the WATCH service by simply implementing the WATCH method. But also
-// note that under the "direct" interpretation there is no way to express internal client
-// actions, for example the internal choice between GET, WATCH and MULTI. To see this, try to
-// write down the (typestate) dual of this type. 
-
 typestate Redis_Server {
 	session
 		Init = {

@@ -44,41 +44,44 @@ class Redis_ServerImpl typestate Redis_Server {
 	// waits for labels to be received and dispatches on them in order to execute the relevant bit of 
 	// code. In this sense it is an unorthodox programming model for Java.
 	
-	// We coudl factor the straight-line code into methods which "manage" the implementation of each
+	// We could factor the straight-line code into methods which "manage" the implementation of each
 	// service (I think this is the "modularity" idea in Gay et al 2010).
 	
 	public static void main (String[] args) {
 		Redis_ServerImpl redis = new Redis_ServerImpl();
 		String[] ks = redis.receiveWATCH();
-		// add supplied watches
+		// add watches for ks
 		WATCHING: while (true) {
-			// Assume problem with argument passing is fixed somehow.
 			switch (redis.receiveLabel_Watching().getEnum()) {
 				case WatchingLabel.GET_request:
+					String get_k = redis.receiveArg_GET();
 					redis.sendGET_response("5");
 					continue WATCHING;
 				case WatchingLabel.WATCH:
-					// add more watches
+					String[] ks2 = redis.receiveArg_WATCH();
+					// add watches for ks2
 					continue WATCHING;
 				case WatchingLabel.MULTI:
 					QUEUED: while (true) {
 						switch (redis.receiveLabel_Queued().getEnum()) {
 							case QueuedLabel.SET:
-								// do the set
+								String set_k = redis.receiveArg0_SET();
+								String v = redis.receiveArg1_SET();
+								// set set_k to v
 								continue QUEUED;
 							case QueuedLabel.DISCARD:
-								break QUEUED;
+								break WATCHING;
 							case QueuedLabel.EXEC:
 								// let's decide to succeed
 								switch (redis.sendEXEC_response(ResultLabel.OK).getEnum()) {
 									case ResultLabel.OK:
-										break QUEUED;
+										break WATCHING;
+									// This case is impossible, yet I have to provide for it:
 									case ResultLabel.FAIL:
 										continue QUEUED;
 								}
 						}
 					}
-					break WATCHING;
 			}
 		}
 	}
