@@ -1,4 +1,18 @@
 package demos.redis.jediswrapper;
 
-public class Test_Async typestate Redis_Client {
+public class Test_Async typestate Redis_Client_Async {
+	Initial init () {
+		return null;
+	}
+
+	Initial GET_response(String v) {
+		return null;
+	}
+	 
+	void EXEC_response_OK() {
+	}
+	
+	QueuedExit EXEC_response_FAIL() {
+		return null;
+	}	
 }
