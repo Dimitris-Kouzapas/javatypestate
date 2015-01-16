@@ -1,0 +1,19 @@
+typestate Redis_Client {
+	session
+		// Can't write down the initial state, because it depends on what the client decides to do (internally).
+		// One would have to jump through some encoding hoops, introducing an enum to represent the two possibilities.
+		Init = {
+			Initial init (): <GET_Response: Awaiting_GET_Response, EXEC_Response: Awaiting_EXEC_Response, OTHERWISE: end>;
+		}
+	where
+		Awaiting_GET_Response = {
+			Initial GET_response(String): 
+		}
+
+		// We can't dispatch to a state based the value passed as an argument. Again this reflects the fact that the 
+		// resulting state is part of the _implementation_ of a method, not its signature.
+		Awaiting_EXEC_Response = {
+			void EXEC_response_OK: end,
+			QueuedExit EXEC_response_FAIL: <EXEC_Response: Awaiting_EXEC_Response, OTHERWISE: end>
+		}
+}

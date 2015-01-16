@@ -1,0 +1,4 @@
+package demos.redis.jediswrapper;
+
+public class Test_Async typestate Redis_Client {
+}
