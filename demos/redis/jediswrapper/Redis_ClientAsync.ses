@@ -3,7 +3,7 @@
 
 package demos.redis.jediswrapper;
 
-typestate Redis_Client_Async {
+typestate Redis_ClientAsync {
 	session
 		Init = {
 			Initial init (): <

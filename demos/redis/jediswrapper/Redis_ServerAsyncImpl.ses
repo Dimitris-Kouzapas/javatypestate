@@ -2,7 +2,7 @@ package demos.redis.jediswrapper;
 
 import java.util.List;
 
-public class RedisServerAsyncImpl typestate Redis_ServerAsync {
+public class Redis_ServerAsyncImpl typestate Redis_ServerAsync {
     void WATCH(String[] keys) {
     }
 

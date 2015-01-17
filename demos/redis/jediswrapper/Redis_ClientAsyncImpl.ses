@@ -1,7 +1,10 @@
 package demos.redis.jediswrapper;
 
-public class Test_Async typestate Redis_Client_Async {
+public class Redis_ClientAsyncImpl typestate Redis_ClientAsync {
+	private Redis_ServerAsyncImpl server = new Redis_ServerAsyncImpl();  
+	
 	Initial init () {
+		server.WATCH(new String[] {"name", "address"});
 		return null;
 	}
 
