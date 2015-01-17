@@ -1,0 +1,28 @@
+package demos.redis.jediswrapper;
+
+import java.util.List;
+
+public class RedisServerAsyncImpl typestate Redis_ServerAsync {
+    void WATCH(String[] keys) {
+    }
+
+    void GET_request(String keys) {
+    }
+    
+	List/*<String>*/ LRANGE() {
+       throw new RuntimeException();
+	}
+	
+	void MULTI () {
+	}
+
+    void SET(String key, String value) {
+    }
+
+    void DISCARD () {
+    }
+    
+    Result EXEC () {
+       return null;
+    } 
+}

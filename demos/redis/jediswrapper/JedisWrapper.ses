@@ -27,10 +27,6 @@ public class JedisWrapper typestate Redis_Server {
     void SET(String key, String value) {
     }
 
-    String LPOP (String key) {
-       throw new RuntimeException();
-    }
-    
     void DISCARD () {
     }
     

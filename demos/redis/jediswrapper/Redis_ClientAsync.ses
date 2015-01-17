@@ -1,9 +1,7 @@
-package demos.redis.jediswrapper;
-
-// Can't write down the initial state, because it depends on what the client decides to do (internally).
-// One would have to jump through some encoding hoops, introducing an enum to represent the two possibilities.
 // We can't dispatch to a state based the value passed as an argument. Again this reflects the fact that the 
 // resulting state is part of the _implementation_ of a method, not its signature.
+
+package demos.redis.jediswrapper;
 
 typestate Redis_Client_Async {
 	session
