@@ -1,6 +1,0 @@
-package demos.redis.jediswrapper;
-
-// The different ways a server can exit an EXEC_request.
-enum EXEC_requestExit {
-	OK, FAIL;
-} 

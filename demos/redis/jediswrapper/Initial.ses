@@ -1,5 +1,0 @@
-package demos.redis.jediswrapper;
-
-enum Initial {
-	GET_Response, EXEC_Response, OTHERWISE;
-} 

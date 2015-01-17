@@ -1,6 +1,0 @@
-package demos.redis.jediswrapper;
-
-// Enum capturing the various ways a client can exit the Queued flow.
-enum QueuedExit {
-	EXEC_Response, OTHERWISE;
-} 
