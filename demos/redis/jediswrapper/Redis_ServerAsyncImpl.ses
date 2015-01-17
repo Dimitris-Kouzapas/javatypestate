@@ -3,16 +3,15 @@ package demos.redis.jediswrapper;
 import java.util.List;
 
 public class Redis_ServerAsyncImpl /*typestate Redis_ServerAsync*/ {
+	private Redis_ClientAsyncImpl client = new Redis_ClientAsyncImpl();
+
     void WATCH(String[] keys) {
     }
 
-    void GET_request(String keys) {
+    void GET_request(String key) {
+    	client.GET_response("val");
     }
     
-	List/*<String>*/ LRANGE() {
-       throw new RuntimeException();
-	}
-	
 	void MULTI () {
 	}
 
