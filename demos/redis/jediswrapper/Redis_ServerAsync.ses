@@ -15,6 +15,6 @@ typestate Redis_ServerAsync {
 		Queued = {
 		    void SET(String, String): Queued,
 			void DISCARD(): end,
-			void EXEC(): Watching
+			EXEC_requestExit EXEC_request(): <OK: end, FAIL: Queued>
 		}
 }
