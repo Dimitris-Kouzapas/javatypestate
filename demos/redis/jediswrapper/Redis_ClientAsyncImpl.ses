@@ -1,21 +1,32 @@
 package demos.redis.jediswrapper;
 
-public class Redis_ClientAsyncImpl typestate Redis_ClientAsync {
+// Each method that isn't statically associated with a unique state change 
+// must specify its state change via a value of an enumerated type.
+
+public class Redis_ClientAsyncImpl /*typestate Redis_ClientAsync*/ {
 	private Redis_ServerAsyncImpl server = new Redis_ServerAsyncImpl();  
 	
 	Initial init () {
 		server.WATCH(new String[] {"name", "address"});
-		return null;
+		server.WATCH(new String[] {"DOB"});
+		server.GET_request("name");
+		return new Initial(Initial.GET_Response);
 	}
 
 	Initial GET_response(String v) {
-		return null;
+		server.MULTI();
+		server.SET("DOB", "05/12/70");
+		server.EXEC_request();
+		return new Initial(Initial.EXEC_Response);
 	}
 	 
 	void EXEC_response_OK() {
+		server = null;
 	}
 	
 	QueuedExit EXEC_response_FAIL() {
-		return null;
+		server.DISCARD();
+		server = null;
+		return new QueuedExit(QueuedExit.OTHERWISE);
 	}	
 }
