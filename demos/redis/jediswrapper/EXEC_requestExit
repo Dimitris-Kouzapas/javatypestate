@@ -1,5 +1,0 @@
-package demos.redis.jediswrapper;
-
-enum EXEC_requestExit {
-	OK, FAIL;
-} 

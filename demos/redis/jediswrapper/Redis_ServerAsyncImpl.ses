@@ -22,7 +22,7 @@ public class RedisServerAsyncImpl typestate Redis_ServerAsync {
     void DISCARD () {
     }
     
-    Result EXEC () {
+    EXEC_requestExit EXEC_request () {
        return null;
     } 
 }
