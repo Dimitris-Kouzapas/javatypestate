@@ -1,0 +1,6 @@
+package demos.redis.jediswrapper;
+
+class EmptyClient typestate Redis_Client {
+	void init() {
+	}
+}
