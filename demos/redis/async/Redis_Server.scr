@@ -1,0 +1,41 @@
+module demos.redis.jediswrapper.Redis_Server;
+
+type <java> "java.lang.Boolean" from "rt.jar" as bool;
+type <java> "java.lang.List" from "rt.jar" as List;
+type <java> "java.lang.String" from "rt.jar" as String;
+
+local protocol Redis at Server(role Client as C,role Server as S) {
+	WATCH(List) from C;
+	rec Watching {
+		choice at C {
+			GET_request(String) from C;
+			GET_response(String) to C;
+			continue Watching;
+		} or {
+			WATCH(List) from C;
+			continue Watching;
+		} or {
+			MULTI() from C;
+			rec Queued {
+				choice at C {
+					LPOP_request(String) from C;
+					LPOP_response(String) to C;
+					continue Queued;
+				} or {
+					SET(String,String) from C;
+					continue Queued;
+				} or {
+					DISCARD() from C;
+				} or {
+					EXEC_request() from C;
+					choice at S {
+						EXEC_response_OK() to C;
+					} or {
+						EXEC_response_FAIL() to C;
+						continue Queued;
+					}
+				}
+			}
+		}
+	}
+}

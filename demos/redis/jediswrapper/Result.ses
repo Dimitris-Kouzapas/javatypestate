@@ -1,0 +1,5 @@
+package demos.redis.jediswrapper;
+
+enum Result {
+	OK, FAIL;
+} 
