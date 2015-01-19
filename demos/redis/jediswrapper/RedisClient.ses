@@ -3,7 +3,7 @@ package demos.redis.jediswrapper;
 // From the client's perspective, the entire session is a single activity; there are no
 // passive states.
 
-typestate Redis_Client {
+typestate RedisClient {
 	session
 		Init = {
 			void init (): end
