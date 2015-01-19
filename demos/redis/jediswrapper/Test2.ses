@@ -2,31 +2,27 @@ package demos.redis.jediswrapper;
 
 public class Test2 {
 	public static void main (String[] args) {
-	   new Test2().run();
+		new Test2().run();
 	}
 	
 	void run () {
-	   JedisWrapper jedis = new JedisWrapper();
-	   jedis.WATCH(new String[]{ "name" });
-	   jedis.WATCH(new String[]{ "address" });
-	   doTransaction(jedis,5);
+	   	JedisWrapper jedis = new JedisWrapper();
+	   	jedis.WATCH(new String[]{ "name" });
+	   	jedis.WATCH(new String[]{ "address" });
+	   	doTransaction(jedis);
 	}
 
     // These methods seem to have a useful type inferred. We don't allow
     // inheritance, which simplifies things.
-	void doTransaction (JedisWrapper jedis, int n) {
-	   jedis.MULTI();
-	   switch (jedis.EXEC().getEnum()) {
-	   case Result.OK:
-	      break;
-	   case Result.FAIL:
-	   	  if (n == 0) {
-	      	discardTransaction(jedis);
-	      } else {
-	        doTransaction(jedis, n - 1);
-	      }
-	      break;
-	   }
+	void doTransaction (JedisWrapper jedis) {
+		jedis.MULTI();
+	   	switch (jedis.EXEC().getEnum()) {
+	   	case Result.OK:
+	      	break;
+	   	case Result.FAIL:
+  			discardTransaction(jedis);
+			break;
+	   	}
 	}
 
     void discardTransaction (JedisWrapper jedis) {
