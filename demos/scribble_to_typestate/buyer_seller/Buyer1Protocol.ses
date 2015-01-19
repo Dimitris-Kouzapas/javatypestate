@@ -16,10 +16,18 @@ typestate Buyer1Protocol {
 
 		State3 = {
 			ChoiceOption receiveLabelfromBuyer2():
-			<AGREE: State30, QUIT:end>
+			<AGREE: State30, QUIT:State31>
 		}
 
 		State30 = {
+			String receivePayloadforAGREEfromBuyer2(): State4
+		}
+
+		State31 = {
+			String receivePayloadforQUITfromBuyer2(): end
+		}
+
+		State4 = {
 			void sendtransferInttoSeller(int): end
 		}
 }
