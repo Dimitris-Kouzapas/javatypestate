@@ -1,13 +1,13 @@
 package demos.redis.async;
 
-public class RedisServerImpl {
+public class RedisServerImpl /*typestate RedisServer*/ {
 	private RedisClientImpl client = new RedisClientImpl();
 	
 	RedisServerImpl () {
 		client.init();
 	}
 
-    void WATCH(String[] keys) {
+	void WATCH(String[] keys) {
     	System.out.println("Initiating WATCH on keys " + keys);
     }
 
@@ -15,9 +15,9 @@ public class RedisServerImpl {
     	client.GET_response("hello"); // lookup in DB
     }
     
-	void MULTI () {
+    void MULTI () {
 		// initiate transaction
-	}
+    }
 
     void SET(String key, String value) {
     	// perform set

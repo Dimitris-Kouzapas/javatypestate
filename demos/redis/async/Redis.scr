@@ -1,4 +1,4 @@
-module demos.redis.jediswrapper.Redis;
+module demos.redis.async.Redis;
 
 type <java> "java.lang.Boolean" from "rt.jar" as bool;
 type <java> "java.lang.List" from "rt.jar" as List;

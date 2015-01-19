@@ -3,7 +3,7 @@ package demos.redis.async;
 // Each method that isn't statically associated with a unique state change 
 // must specify its state change via a value of an enumerated type.
 
-public class RedisClientImpl {
+public class RedisClientImpl /*typestate RedisClient*/ {
 	private RedisServerImpl server = new RedisServerImpl();  
 	
 	Init_Exit init () {

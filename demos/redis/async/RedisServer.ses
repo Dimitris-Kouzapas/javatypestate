@@ -1,4 +1,4 @@
-package demos.redis.jediswrapper;
+package demos.redis.async;
 
 typestate RedisServer {
 	session
@@ -15,6 +15,6 @@ typestate RedisServer {
 		Queued = {
 		    void SET(String, String): Queued,
 			void DISCARD(): end,
-			EXEC_Exit EXEC_request(): <OK: end, FAIL: Queued>
+			EXEC_requestExit EXEC_request(): <OK: end, FAIL: Queued>
 		}
 }

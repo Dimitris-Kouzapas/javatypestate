@@ -1,12 +1,12 @@
 // We can't dispatch to a state based the value passed as an argument. Again this reflects the fact that the 
 // resulting state is part of the _implementation_ of a method, not its signature.
 
-package demos.redis.jediswrapper;
+package demos.redis.async;
 
 typestate RedisClient {
 	session
 		Init = {
-			Initial init (): <
+			Init_Exit init (): <
 				GET: Awaiting_GET, 
 				EXEC: Awaiting_EXEC, 
 				OTHERWISE: end
@@ -14,7 +14,7 @@ typestate RedisClient {
 		}
 	where
 		Awaiting_GET = {
-			Initial GET_response(String): <
+			GET_responseExit GET_response(String): <
 				GET: Awaiting_GET, 
 				EXEC: Awaiting_EXEC, 
 				OTHERWISE: end
@@ -23,7 +23,7 @@ typestate RedisClient {
 
 		Awaiting_EXEC = {
 			void EXEC_response_OK(): end,
-			QueuedExit EXEC_response_FAIL(): <
+			EXEC_responseExit EXEC_response_FAIL(): <
 				EXEC: Awaiting_EXEC, 
 				OTHERWISE: end
 			>
