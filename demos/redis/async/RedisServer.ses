@@ -15,6 +15,6 @@ typestate RedisServer {
 		Queued = {
 		    void SET(String, String): Queued,
 			void DISCARD(): end,
-			EXEC_requestExit EXEC_request(): <OK: end, FAIL: Queued>
+			EXEC_Exit EXEC_request(): <OK: end, FAIL: Queued>
 		}
 }
