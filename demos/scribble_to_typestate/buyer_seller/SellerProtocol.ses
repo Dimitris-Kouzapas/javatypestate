@@ -5,7 +5,6 @@ typestate SellerProtocol {
 		State0 = {
 			String receivebookStringfromBuyer1(): State1
 		}
-
 	where
 		State1 = {
 			void sendbookInttoBuyer1(Int): State2
