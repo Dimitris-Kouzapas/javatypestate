@@ -7,24 +7,24 @@ typestate RedisClient {
 	session
 		Init = {
 			Initial init (): <
-				GET_Response: Awaiting_GET_Response, 
-				EXEC_Response: Awaiting_EXEC_Response, 
+				GET: Awaiting_GET, 
+				EXEC: Awaiting_EXEC, 
 				OTHERWISE: end
 			>
 		}
 	where
-		Awaiting_GET_Response = {
+		Awaiting_GET = {
 			Initial GET_response(String): <
-				GET_Response: Awaiting_GET_Response, 
-				EXEC_Response: Awaiting_EXEC_Response, 
+				GET: Awaiting_GET, 
+				EXEC: Awaiting_EXEC, 
 				OTHERWISE: end
 			>
 		}
 
-		Awaiting_EXEC_Response = {
+		Awaiting_EXEC = {
 			void EXEC_response_OK(): end,
 			QueuedExit EXEC_response_FAIL(): <
-				EXEC_Response: Awaiting_EXEC_Response, 
+				EXEC: Awaiting_EXEC, 
 				OTHERWISE: end
 			>
 		}
