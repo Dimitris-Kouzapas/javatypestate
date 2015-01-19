@@ -1,7 +1,5 @@
 package demos.redis.jediswrapper;
 
-import java.util.List;
-
 // Need to be able to specify classpath as a command-line argument.
 // import redis.clients.jedis.JedisCommands;
 
@@ -17,7 +15,7 @@ public class JedisWrapper typestate RedisServer {
        throw new RuntimeException();
     }
 
-	List/*<String>*/ LRANGE() {
+	String LPOP(String key) {
        throw new RuntimeException();
 	}
 	
