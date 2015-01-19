@@ -1,6 +1,6 @@
 package demos.redis.jediswrapper;
 
-typestate Redis_Server {
+typestate RedisServer {
 	session
 		Init = {
            void WATCH(String[]): Watching

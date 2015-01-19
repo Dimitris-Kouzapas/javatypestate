@@ -9,7 +9,7 @@ import java.util.List;
 // 1) Can't compile against a third-party library (we only compile .ses to .java)
 // 2) Based on a J2SE 1.4 front end, so we don't support any post-2002 language features.
 
-public class JedisWrapper typestate Redis_Server {
+public class JedisWrapper typestate RedisServer {
     void WATCH(String[] keys) {
     }
 
