@@ -1,4 +1,4 @@
-package demos.buyer_seller_socket;
+package demos.buyer_seller.socket;
 
 typestate Buyer2Protocol {
 	session
