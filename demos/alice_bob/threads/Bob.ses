@@ -1,0 +1,19 @@
+package demos.alice_bob.threads;
+
+import demos.broker.*;
+
+public class Bob typestate BobProtocol {
+	Session s;
+
+	public Bob(Session s) {
+		this.s = s;
+	}
+
+	public void sendStringToAlice(String a) {
+		s.send(a);
+	}
+
+	public String receiveStringFromAlice() {
+		return s.recvString();
+	}
+}

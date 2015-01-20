@@ -8,10 +8,22 @@ typestate Buyer2Protocol {
 	where
 		State1 = {
 			ChoiceOption sendLabeltoBuyer1Seller(String):
-			<AGREE: State10, QUIT:end>
+			<AGREE: State2, QUIT:State3>
 		}
 
-		State10 = {
-			void sendtransferInttoSeller(Int):end
+		State2 = {
+			void sendPayloadforAGREEtoBuyer1Seller(String): State4
+		}
+
+		State3 = {
+			void sendPayloadforQUITtoBuyer1Seller(String): State5
+		}
+
+		State4 = {
+			void sendtransferInttoSeller(Int):State5
+		}
+
+		State5 = {
+			void sendgreetingsStringtoSeller(String): end
 		}
 }

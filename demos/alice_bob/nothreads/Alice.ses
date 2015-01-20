@@ -1,0 +1,9 @@
+package demos.alice_bob.nothreads;
+
+class Alice typestate AliceSession {
+	String channel;
+
+	public void sendStringToBob(String s) {
+		channel = s;
+	}
+}

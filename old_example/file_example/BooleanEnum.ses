@@ -1,4 +1,0 @@
-package file_example;
-enum BooleanEnum {
-	TRUE, FALSE;
-}

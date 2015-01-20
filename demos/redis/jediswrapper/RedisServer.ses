@@ -1,0 +1,25 @@
+package demos.redis.jediswrapper;
+
+// A version of the server protocol where asychronous request/response pairs are coalesced
+// into synchronous methods with return values. The Scribble documentation recommends a naming 
+// convention that would make it relatively easy to adapt the translation to do this.
+
+typestate RedisServer {
+	session
+		Init = {
+           void WATCH(String[]): Watching
+		}
+	where
+		Watching = {
+			String GET(String): Watching,
+			void WATCH(String[]): Watching,
+			void MULTI(): Queued
+		}
+
+		Queued = {
+		    void SET(String, String): Queued,
+			String LPOP(String): Queued,
+			void DISCARD(): end,
+			Result EXEC(): <OK:end, FAIL:Queued>
+		}
+}

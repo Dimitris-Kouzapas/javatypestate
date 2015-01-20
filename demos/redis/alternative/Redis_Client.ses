@@ -1,0 +1,51 @@
+package demos.redis.alternative;
+
+typestate Redis_Client {
+	session
+		Init = {
+           void sendWATCH(String[]): Watching
+		}
+	where
+		Watching = {
+			WatchingLabel sendLabel_Watching(WatchingLabel): <
+				GET_request: SendArg_Watching_GET,
+				WATCH: SendArg_Watching_WATCH,
+				MULTI: Queued
+			>
+		}
+		
+		SendArg_Watching_GET = {
+			void sendArg_GET(String): AwaitingResponse_Watching_GET
+		}
+		
+	 	AwaitingResponse_Watching_GET = {
+			String receiveGET_response(): Watching
+	 	}
+	 	
+	 	SendArg_Watching_WATCH = {
+	 		void sendArg_WATCH(String[]): Watching
+	 	}
+		
+		Queued = {
+			QueuedLabel sendLabel_Queued(QueuedLabel): <
+		    	SET: SendArg0_Queued_SET,
+				DISCARD: end,
+				EXEC: AwaitingResponse_Queued_EXEC
+			>
+		}
+		
+		SendArg0_Queued_SET = {
+			void sendArg0_SET(String): SendArg1_Queued_SET 
+		}
+		
+		SendArg1_Queued_SET = {
+			void sendArg1_SET(String): Queued 
+		}
+		
+		AwaitingResponse_Queued_EXEC = {
+			ResultLabel receiveEXEC_response(): <
+				OK:end, 
+				FAIL:Queued
+			>
+		}
+}

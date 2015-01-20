@@ -1,0 +1,11 @@
+package demos.alice_bob.threads;
+
+typestate BobProtocol {
+	session
+			Init =	{
+					String receiveStringFromAlice() :
+					{
+						void sendStringToAlice(String) : end
+					}
+				}
+}

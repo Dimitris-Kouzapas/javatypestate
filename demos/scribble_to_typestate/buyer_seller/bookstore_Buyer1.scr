@@ -13,4 +13,5 @@ local protocol Bookstore at Buyer1(role Buyer1,role Buyer2,role Seller) {
 	} or {
 		quit(String) from Buyer2;
 	}
+	greetings(String) to Seller;
 }

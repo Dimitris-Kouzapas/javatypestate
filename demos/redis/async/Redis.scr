@@ -1,0 +1,37 @@
+module demos.redis.async.Redis;
+
+type <java> "java.lang.Boolean" from "rt.jar" as bool;
+type <java> "java.lang.List" from "rt.jar" as List;
+type <java> "java.lang.String" from "rt.jar" as String;
+
+global protocol Redis (role Client as C, role Server as S) {
+   WATCH(List) from C to S;
+   rec Watching {
+      choice at C {
+         GET_request(String) from C to S;
+         GET_response(String) from S to C;
+         continue Watching;
+      } or {
+      	 WATCH(List) from C to S;
+      	 continue Watching;
+      } or {
+         MULTI() from C to S;
+         rec Queued {
+            choice at C {
+               SET(String,String) from C to S;
+               continue Queued;
+            } or {
+               DISCARD() from C to S;
+            } or {
+               EXEC_request() from C to S;
+               choice at S {
+                   EXEC_response_OK() from S to C;
+               } or {
+               	   EXEC_response_FAIL() from S to C;
+               	   continue Queued;
+           	   }
+            }
+         }
+      }
+   }
+}

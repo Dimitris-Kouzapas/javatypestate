@@ -1,0 +1,8 @@
+package demos.redis.alternative;
+
+// Server choices available in Queued state.
+enum WatchingLabel {
+	GET_request,
+	WATCH,
+	MULTI;
+}

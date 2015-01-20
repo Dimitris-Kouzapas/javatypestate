@@ -5,7 +5,6 @@ typestate SellerProtocol {
 		State0 = {
 			String receivebookStringfromBuyer1(): State1
 		}
-
 	where
 		State1 = {
 			void sendbookInttoBuyer1(Int): State2
@@ -13,14 +12,30 @@ typestate SellerProtocol {
 
 		State2 = {
 			ChoiceOption receiveLabelfromBuyer2():
-			<AGREE:State20, QUIT:end>
-		}
-
-		State20 = {
-			Int receivetransferIntfromBuyer1(): State3
+			<AGREE:State3, QUIT:State4>
 		}
 
 		State3 = {
-			Int receivetransferIntfromBuyer2(): end
+			String receivePayloadforAGREEfromBuyer2(): State5
+		}
+
+		State4 = {
+			String receivePayloadforQUITfromBuyer2(): State8
+		}
+
+		State5 = {
+			Int receivetransferIntfromBuyer1(): State7
+		}
+
+		State7 = {
+			Int receivetransferIntfromBuyer2(): State8
+		}
+
+		State8 = {
+			String receivegreetingsStringfromBuyer1(): State9
+		}
+
+		State9 = {
+			String receivegreetingsStringfromBuyer2(): end
 		}
 }
