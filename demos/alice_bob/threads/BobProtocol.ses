@@ -5,7 +5,7 @@ typestate BobProtocol {
 			Init =	{
 					String receiveStringFromAlice() :
 					{
-						void sendStringToAlice(String) : Choice
+						void sendStringToAlice(String) : end
 					}
 				}
 }
