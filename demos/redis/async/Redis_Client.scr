@@ -1,4 +1,4 @@
-module demos.redis.jediswrapper.Redis_Client;
+module demos.redis.async.Redis_Client;
 
 type <java> "java.lang.Boolean" from "rt.jar" as bool;
 type <java> "java.lang.List" from "rt.jar" as List;
@@ -18,10 +18,6 @@ local protocol Redis at Client(role Client as C,role Server as S) {
 			MULTI() to S;
 			rec Queued {
 				choice at C {
-					LPOP_request(String) to S;
-					LPOP_response(String) from S;
-					continue Queued;
-				} or {
 					SET(String,String) to S;
 					continue Queued;
 				} or {
