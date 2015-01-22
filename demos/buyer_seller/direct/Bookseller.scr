@@ -11,6 +11,6 @@ global protocol Bookseller(role Buyer1, role Buyer2, role Seller) {
 		price_response(int) from Seller to Buyer1;
 		quote(int) from Buyer1 to Buyer2;
 	} or {
-		outOfStock() from Seller to Buyer1;
+		outOfStock() from Seller to Buyer1, Buyer2;
 	}
 }
