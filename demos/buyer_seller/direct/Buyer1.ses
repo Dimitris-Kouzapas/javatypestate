@@ -3,11 +3,10 @@ package demos.buyer_seller.direct;
 typestate Buyer1 {
 	session
 		Init = {
-			void price_response(int): AwaitingAgreement
+			Exit_price_request init(): <PRICE_RESPONSE: Awaiting_price_response, OUT_OF_STOCK: end>
 		}
 	where
-		AwaitingAgreement = {
-		 	void agree (): end,
-			void quit (): end
+		Awaiting_price_response = {
+			void price_response(int): end
 		}
 }

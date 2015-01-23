@@ -1,8 +1,0 @@
-package demos.buyer_seller.direct;
-
-typestate Buyer2 {
-	session
-		Init = {
-			void quote(int): end
-		}
-}

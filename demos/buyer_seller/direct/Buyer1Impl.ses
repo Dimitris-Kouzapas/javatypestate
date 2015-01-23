@@ -1,0 +1,13 @@
+package demos.buyer_seller.direct;
+
+class Buyer1Impl typestate Buyer1 {
+	private SellerImpl seller;
+
+	Buyer1Impl() {
+		seller = new SellerImpl();
+	}
+	
+	Exit_price_request init() {
+		seller.price_request("Brave New World");
+	}
+}

@@ -1,0 +1,20 @@
+module Bookseller_Seller;
+
+type <java> "java.lang.String" from "rt.jar" as String;
+type <java> "java.lang.Integer" from "rt.jar" as int;
+
+local protocol Bookseller at Seller(role Buyer1,role Buyer2,role Seller) {
+	price_request(String) from Buyer1;
+	choice at Seller {
+		price_response(int) to Buyer1;
+		choice at Buyer2 {
+			agree(String) from Buyer2;
+			payment1(int) from Buyer1;
+			payment2(int) from Buyer2;
+		} or {
+			quit(String) from Buyer2;
+		}
+	} or {
+		outOfStock() to Buyer1,Buyer2;
+	}
+}
