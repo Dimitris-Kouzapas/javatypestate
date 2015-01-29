@@ -116,8 +116,10 @@ aspect typeEnv {
 //				System.out.println(startExpr.get(i));
 //				n.printPaths();
 //				System.out.println("------------------------");
-				if(!t.includes(n))
-					startExpr.get(i).addSemanticError(errorMessage);
+				if(!t.includes(n)) {
+					t.getErrorNode().getExpr().addSemanticError("Typestate missmatch. Found: " + t.getErrorNode().toString() + ". Expected: " + t.getExpectedNode().nextToString());
+//					startExpr.get(i).addSemanticError(errorMessage);
+				}
 			}
 
 		}

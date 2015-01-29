@@ -21,11 +21,13 @@ aspect graphNode {
 	abstract class GraphNode {
 		private String id;
 		private TypeDecl[] parameters;
+		private ASTNode expr;
 		protected ArrayList<GraphNode> next;
 
-		protected GraphNode(String id, TypeDecl[] parameters) {
+		protected GraphNode(String id, TypeDecl[] parameters, ASTNode expr) {
 			this.id = id;
 			this.parameters = parameters;
+			this.expr = expr;
 			signature = null;
 			next = new ArrayList<GraphNode>();
 		}
@@ -54,6 +56,10 @@ aspect graphNode {
 
 		protected TypeDecl[] getParameters() {
 			return parameters;
+		}
+
+		protected ASTNode getExpr() {
+			return expr;
 		}
 
 		public GraphNode addNext(GraphNode n) {
@@ -116,6 +122,10 @@ aspect graphNode {
 			}
 		}
 
+
+		private static GraphNode errorNode;
+		private static GraphNode expectedNode;
+
 		protected boolean includes(GraphNode n, TupleSet ts) {
 			if(ts.has(this, n) || (!hasNext() && !n.hasNext()))
 				return true;
@@ -124,10 +134,14 @@ aspect graphNode {
 			for(GraphNode n1 : n.next) {
 				boolean b = false;
 				for(GraphNode n2: next)
-					if(b = n2.includes(n1, ts))
+					if((b = n2.includes(n1, ts)) == true)
 						break;
 
 				if(b == false) {
+					if(errorNode == null) {
+						errorNode = n;
+						expectedNode = this;
+					}
 					ts.remove(this, n);
 					return false;
 				}
@@ -136,7 +150,30 @@ aspect graphNode {
 		}
 
 		public boolean includes(GraphNode n) {
+			errorNode = null;
+			expectedNode = null;
 			return includes(n, new TupleSet());
+		}
+
+		public GraphNode getErrorNode() {
+			return errorNode;
+		}
+
+		public GraphNode getExpectedNode() {
+			return expectedNode;
+		}
+
+		//TODO rewrite this (or maybe it is a bit of over-engineering)
+		public String nextToString() {
+			String s = "";
+			boolean flag = false;
+			for(GraphNode n: next) {
+				if(flag == true)
+					s += ", ";
+				s += n.toString();
+				flag = true;
+			}
+			return s;
 		}
 
 		/**************************************************************/
@@ -305,6 +342,67 @@ aspect graphNode {
 		}
 
 		/***********************************************************/
+		/*                 Print Protocol                          */
+		/***********************************************************/
+
+		static int count;
+
+		//Polymorphic
+		protected String toProtocol(Map<GraphNode, Integer> stateMap) {
+			Integer state;
+			if((state = stateMap.get(this)) == null)
+				stateMap.put(this, (state = new Integer(count++)));
+			return "State_" + state;
+		}
+
+		private void printState(int state, Map<GraphNode, Integer> stateMap) {
+			System.out.print("State_" + state + " = {");
+			for(int i = 0; i < next.size(); i++) {
+				GraphNode n = next.get(i);
+				if (i != 0)
+					System.out.print(", ");
+				System.out.print(n.toProtocol(stateMap));
+			}
+
+			System.out.println("}");
+		}
+
+		//polymorphic
+		protected void printProtocol(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
+			if(isNodeVisited(visited))
+				return;
+
+			int state;
+			state = stateMap.get(this);
+
+			printState(state, stateMap);
+
+			for(GraphNode n: next)
+				n.printProtocol(visited, stateMap);
+		}
+
+		void printProtocol() {
+			Set<GraphNode> visited = new HashSet<GraphNode>();
+			Map<GraphNode, Integer> stateMap = new HashMap<GraphNode, Integer>();
+
+			count = 0;
+
+			if(isNodeVisited(visited))
+				return;
+
+			int state = new Integer(count++);
+			stateMap.put(this, state);
+
+			System.out.println("session");
+			printState(state, stateMap);
+			System.out.println("where");
+
+			for(GraphNode n: next)
+				n.printProtocol(visited, stateMap);
+
+		}
+
+		/***********************************************************/
 		/*                For Debug                                */
 		/***********************************************************/
 
@@ -335,15 +433,23 @@ aspect graphNode {
 	 * Instantiates a class that represents a method call.
 	 */
 	public class MethodNode extends GraphNode {
+		public MethodNode(String id, TypeDecl[] parameters, ASTNode methodAccess) {
+			super(id, parameters, methodAccess);
+		}
+
 		public MethodNode(String id, TypeDecl[] parameters) {
-			super(id, parameters);
+			this(id, parameters, null);
 		}
 
 		public String toString() {
-			return super.toString() + ";";
+			return super.toString();
 		}
 
-		protected boolean equalNode(GraphNode n) {
+		protected String toProtocol(Map<GraphNode, Integer> stateMap) {
+			return super.toString() + " : " + super.toProtocol(stateMap);
+		}
+
+		private boolean equalNode(GraphNode n) {
 			if(!(n instanceof MethodNode))
 				return false;
 
@@ -368,43 +474,43 @@ aspect graphNode {
 		}
 
 		protected GraphNode cloneNode() {
-			return new MethodNode(getId(), getParameters());
-		}
-	}
-
-	public class SwitchCase extends GraphNode {
-		public SwitchCase(String id) {
-			super(id, null);
-		}
-
-		public String toString() {
-			return getId() + ":";
-		}
-
-		protected boolean includes(GraphNode n, TupleSet ts) {
-			if((n instanceof SwitchCase) && getId().equals(n.getId()))
-				return super.includes(n, ts);
-			return false;
-		}
-
-		protected GraphNode cloneNode() {
-			return new SwitchCase(getId());
+			return new MethodNode(getId(), getParameters(), getExpr());
 		}
 	}
 
 	/*
-	 * SwitchNode inherits GraphNode.
+	 * SwitchNode inherits MethodNode.
 	 * Instantiates a class that represents a state where
 	 * the continuing state is depended on the result
-	 * of the previous method call.
+	 * of the method call.
 	 */
 	public class SwitchNode extends GraphNode {
+		public SwitchNode(ASTNode ss) {
+			super(null, null, ss);
+		}
+
 		public SwitchNode() {
-			super(null, null);
+			this(null);
 		}
 
 		public String toString() {
 			return "";
+		}
+
+		public String toProtocol(Map<GraphNode, Integer> stateMap) {
+			String s = "<";
+			for(int i = 0; i < next.size(); i++) {
+				if(i != 0)
+					s += ",";
+				s += next.get(i).toProtocol(stateMap);
+			}
+			s += ">";
+			return s;	
+		}
+
+		protected void printProtocol(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
+			for(GraphNode n: next)
+				n.printProtocol(visited, stateMap);
 		}
 
 		protected boolean includes(GraphNode n, TupleSet ts) {
@@ -414,10 +520,38 @@ aspect graphNode {
 		}
 
 		protected GraphNode cloneNode() {
-			return new SwitchNode();
+			return new SwitchNode(getExpr());
 		}
 	}
 	
+	public class SwitchCase extends GraphNode {
+		public SwitchCase(String id, ASTNode c) {
+			super(id, null, c);
+		}
+
+		public SwitchCase(String id) {
+			this(id, null);
+		}
+
+		public String toString() {
+			return getId() + ":";
+		}
+
+		protected String toProtocol(Map<GraphNode, Integer> stateMap) {
+			return getId() + " : " + super.toProtocol(stateMap);
+		}
+
+		protected boolean includes(GraphNode n, TupleSet ts) {
+			if((n instanceof SwitchCase) && getId().equals(n.getId()))
+				return super.includes(n, ts);
+			return false;
+		}
+
+		protected GraphNode cloneNode() {
+			return new SwitchCase(getId(), getExpr());
+		}
+	}
+
 	/*
 	 * LoopNode inherits GraphNode.
 	 * Auxiliary Node for creating a typestate graph
@@ -425,7 +559,7 @@ aspect graphNode {
 	 */
 	public class LoopNode extends GraphNode {
 		public LoopNode() {
-			super(null, null);
+			super(null, null, null);
 		}
 
 		public String toString() { 
@@ -477,12 +611,18 @@ aspect graphNode {
 	 */
 	public class EndNode extends GraphNode {
 		public EndNode() {
-			super(null, null);
+			super(null, null, null);
 		}
 
 		public String toString() {
-			return "End Node;";
+			return "end";
 		}
+
+		public String toProtocol(Map<GraphNode, Integer> stateMap) {
+			return "end";
+		}
+
+		protected void printProtocol(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {}
 
 		public GraphNode addNext(GraphNode n) {
 			return this;
@@ -508,8 +648,12 @@ aspect graphNode {
 	 * Represents the initial state.
 	 */
 	public class InitNode extends GraphNode {
+		public InitNode(ASTNode expr) {
+			super(null, null, expr);
+		}
+
 		public InitNode() {
-			super(null, null);
+			this(null);
 		}
 
 		public String toString() {
@@ -523,7 +667,7 @@ aspect graphNode {
 		}
 
 		protected GraphNode cloneNode() {
-			return new InitNode();
+			return new InitNode(getExpr());
 		}
 	}
 
