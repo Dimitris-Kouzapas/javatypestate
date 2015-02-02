@@ -30,23 +30,23 @@ typestate Redis_Server {
 		
 		Queued = {
 			QueuedLabel receiveLabel_Queued(): <
-		    	SET: ReceiveArg0_Queued_SET,
-				DISCARD: end,
+		  //   	SET: ReceiveArg0_Queued_SET,
+				// DISCARD: end,
 				EXEC: Responding_Queued_EXEC
 			>
 		}
 		
-		ReceiveArg0_Queued_SET = {
-			String receiveArg0_SET(): ReceiveArg1_Queued_SET 
-		}
+		// ReceiveArg0_Queued_SET = {
+		// 	String receiveArg0_SET(): ReceiveArg1_Queued_SET 
+		// }
 		
-		ReceiveArg1_Queued_SET = {
-			String receiveArg1_SET(): Queued 
-		}
+		// ReceiveArg1_Queued_SET = {
+		// 	String receiveArg1_SET(): Queued 
+		// }
 		
 		Responding_Queued_EXEC = {
 			ResultLabel sendEXEC_response(int): <
-				OK:end, 
+			//	OK:end, 
 				FAIL:Queued
 			>
 		}

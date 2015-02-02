@@ -64,18 +64,18 @@ class Redis_ServerImpl typestate Redis_Server {
 				case WatchingLabel.MULTI:
 					QUEUED: while (true) {
 						switch (redis.receiveLabel_Queued().getEnum()) {
-							case QueuedLabel.SET:
-								String set_k = redis.receiveArg0_SET();
-								String v = redis.receiveArg1_SET();
-								// set set_k to v
-								continue QUEUED;
-							case QueuedLabel.DISCARD:
-								break WATCHING;
+							// case QueuedLabel.SET:
+							// 	String set_k = redis.receiveArg0_SET();
+							// 	String v = redis.receiveArg1_SET();
+							// 	// set set_k to v
+							// 	continue QUEUED;
+							// case QueuedLabel.DISCARD:
+							// 	break WATCHING;
 							case QueuedLabel.EXEC:
 								// let's decide to succeed
-								switch (redis.sendEXEC_response(ResultLabel.OK).getEnum()) {
-									case ResultLabel.OK:
-										break WATCHING;
+								switch (redis.sendEXEC_response(ResultLabel.FAIL).getEnum()) {
+									// case ResultLabel.OK:
+									// 	break WATCHING;
 									// This case is impossible, yet I have to provide for it:
 									case ResultLabel.FAIL:
 										continue QUEUED;
