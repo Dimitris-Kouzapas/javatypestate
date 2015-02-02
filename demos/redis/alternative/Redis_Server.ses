@@ -4,49 +4,15 @@ package demos.redis.alternative;
 
 typestate Redis_Server {
 	session
-		Init = {
-           String[] receiveWATCH(): Watching
-		}
-	where
-		Watching = {
-			WatchingLabel receiveLabel_Watching(): <
-				GET_request: ReceiveArg_Watching_GET,
-				WATCH: ReceiveArg_Watching_WATCH,
-				MULTI: Queued
-			>
-		}
-		
-		ReceiveArg_Watching_GET = {
-			String receiveArg_GET(): Responding_Watching_GET
-		}
-		
-	 	Responding_Watching_GET = {
-			void sendGET_response(String): Watching
-	 	}
-	 	
-	 	ReceiveArg_Watching_WATCH = {
-	 		String[] receiveArg_WATCH(): Watching
-	 	}
-		
 		Queued = {
 			QueuedLabel receiveLabel_Queued(): <
-		  //   	SET: ReceiveArg0_Queued_SET,
-				// DISCARD: end,
 				EXEC: Responding_Queued_EXEC
 			>
 		}
 		
-		// ReceiveArg0_Queued_SET = {
-		// 	String receiveArg0_SET(): ReceiveArg1_Queued_SET 
-		// }
-		
-		// ReceiveArg1_Queued_SET = {
-		// 	String receiveArg1_SET(): Queued 
-		// }
-		
+	where	
 		Responding_Queued_EXEC = {
 			ResultLabel sendEXEC_response(int): <
-			//	OK:end, 
 				FAIL:Queued
 			>
 		}
