@@ -5,9 +5,7 @@ package demos.redis.alternative;
 typestate Redis_Server {
 	session
 		Queued = {
-			QueuedLabel receiveLabel_Queued(): <
-				EXEC: Responding_Queued_EXEC
-			>
+			int receiveLabel_Queued(): Responding_Queued_EXEC
 		}
 		
 	where	
