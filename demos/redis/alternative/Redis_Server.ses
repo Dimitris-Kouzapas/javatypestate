@@ -5,13 +5,13 @@ package demos.redis.alternative;
 typestate Redis_Server {
 	session
 		Queued = {
-			int receiveLabel_Queued(): Responding_Queued_EXEC
+			int receiveLabel_Queued(): Queued
 		}
 		
-	where	
-		Responding_Queued_EXEC = {
-			ResultLabel sendEXEC_response(int): <
-				FAIL:Queued
-			>
-		}
+	// where	
+	// 	Responding_Queued_EXEC = {
+	// 		ResultLabel sendEXEC_response(int): <
+	// 			FAIL:Queued
+	// 		>
+	// 	}
 }

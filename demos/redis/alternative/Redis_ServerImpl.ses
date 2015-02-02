@@ -17,12 +17,13 @@ class Redis_ServerImpl typestate Redis_Server {
 		Redis_ServerImpl redis = new Redis_ServerImpl();
 		 			QUEUED: while (true) {
 		 				int response = redis.receiveLabel_Queued();
+		 				continue QUEUED;
 						//switch (redis.receiveLabel_Queued().getEnum()) {
 							//case QueuedLabel.EXEC:
-								switch (redis.sendEXEC_response(ResultLabel.FAIL).getEnum()) {
-									case ResultLabel.FAIL:
-										continue QUEUED;
-								}
+								// switch (redis.sendEXEC_response(ResultLabel.FAIL).getEnum()) {
+								// 	case ResultLabel.FAIL:
+								// 		continue QUEUED;
+								// }
 						
 					}
 	}
