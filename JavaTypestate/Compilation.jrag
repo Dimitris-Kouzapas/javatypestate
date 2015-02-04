@@ -13,12 +13,16 @@ aspect Compilation {
 		verbose = true;
 	}
 
-	//TODO print errors here
 	private PrintStream Program.outStream = System.out;
+	private PrintStream Program.errorStream = System.err;
+
 	public void Program.setOutputStream(PrintStream s) {
 		outStream = s;
 	}
 
+	public void Program.setErrorStream(PrintStream s) {
+		errorStream = s;
+	}
 
 	private ArrayList<String> Program.compiledPaths = new ArrayList<String>();
 
@@ -83,11 +87,11 @@ aspect Compilation {
 		for(int i = 0; i < args.length; i++)
 			if(new File(args[i]).exists())
 				if(!args[i].endsWith(fileSuffix()))
-					System.err.println("File " + args[i] + " should have suffix: " + fileSuffix());
+					errorStream.println("File " + args[i] + " should have suffix: " + fileSuffix());
 				else
 					compile(args[i]);
 			else
-				System.err.println("File " + args[i] + " not found.");
+				errorStream.println("File " + args[i] + " not found.");
 
 		collect();
 		return !hasErrors();

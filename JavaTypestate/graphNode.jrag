@@ -19,12 +19,14 @@ aspect graphNode {
 	 */
 
 	abstract class GraphNode {
+		private Access type;
 		private String id;
 		private TypeDecl[] parameters;
 		private ASTNode expr;
 		protected ArrayList<GraphNode> next;
 
-		protected GraphNode(String id, TypeDecl[] parameters, ASTNode expr) {
+		protected GraphNode(Access type, String id, TypeDecl[] parameters, ASTNode expr) {
+			this.type = type;
 			this.id = id;
 			this.parameters = parameters;
 			this.expr = expr;
@@ -41,13 +43,17 @@ aspect graphNode {
 			if(id == null)
 				return signature = "";
 
-			signature = id + "(";
+			signature = type.toString() + " " + id + "(";
 			for(int i = 0; i < parameters.length; i++) {
 				if(i != 0)
 					signature += ", ";
 				signature += parameters[i].getID();
 			}
 			return signature += ")";
+		}
+
+		protected Access getType() {
+			return type;
 		}
 
 		protected String getId() {
@@ -126,6 +132,14 @@ aspect graphNode {
 		private static GraphNode errorNode;
 		private static GraphNode expectedNode;
 
+		public GraphNode getErrorNode() {
+			return errorNode;
+		}
+
+		public GraphNode getExpectedNode() {
+			return expectedNode;
+		}
+
 		protected boolean includes(GraphNode n, TupleSet ts) {
 			if(ts.has(this, n) || (!hasNext() && !n.hasNext()))
 				return true;
@@ -153,14 +167,6 @@ aspect graphNode {
 			errorNode = null;
 			expectedNode = null;
 			return includes(n, new TupleSet());
-		}
-
-		public GraphNode getErrorNode() {
-			return errorNode;
-		}
-
-		public GraphNode getExpectedNode() {
-			return expectedNode;
 		}
 
 		//TODO rewrite this (or maybe it is a bit of over-engineering)
@@ -273,7 +279,7 @@ aspect graphNode {
 			visited.add(this);
 
 			for(GraphNode n: next)
-				if(n.isPlugged(visited))
+				if(n.isPlugged(visited) == true)
 					return true;
 
 			return false;
@@ -345,26 +351,35 @@ aspect graphNode {
 		/*                 Print Protocol                          */
 		/***********************************************************/
 
+		//TODO I do not like the Print Protocol implementation
+
 		static int count;
+		//Polymorphic
+
+		protected String getContinuation(Map<GraphNode, Integer> stateMap, int state) {
+			return "State_" + state;
+		}
 
 		//Polymorphic
 		protected String toProtocol(Map<GraphNode, Integer> stateMap) {
 			Integer state;
 			if((state = stateMap.get(this)) == null)
 				stateMap.put(this, (state = new Integer(count++)));
-			return "State_" + state;
+			return next.get(0).getContinuation(stateMap, state); 
 		}
 
 		private void printState(int state, Map<GraphNode, Integer> stateMap) {
-			System.out.print("State_" + state + " = {");
-			for(int i = 0; i < next.size(); i++) {
-				GraphNode n = next.get(i);
-				if (i != 0)
-					System.out.print(", ");
-				System.out.print(n.toProtocol(stateMap));
-			}
+			if(!(next.get(0) instanceof SwitchNode)) {
+				System.out.print("State_" + state + " = {");
+				for(int i = 0; i < next.size(); i++) {
+					GraphNode n = next.get(i);
+					if (i != 0)
+						System.out.print(", ");
+					System.out.print(n.toProtocol(stateMap));
+				}
 
-			System.out.println("}");
+				System.out.println("}");
+			}
 		}
 
 		//polymorphic
@@ -433,12 +448,12 @@ aspect graphNode {
 	 * Instantiates a class that represents a method call.
 	 */
 	public class MethodNode extends GraphNode {
-		public MethodNode(String id, TypeDecl[] parameters, ASTNode methodAccess) {
-			super(id, parameters, methodAccess);
+		public MethodNode(Access type, String id, TypeDecl[] parameters, ASTNode methodAccess) {
+			super(type, id, parameters, methodAccess);
 		}
 
-		public MethodNode(String id, TypeDecl[] parameters) {
-			this(id, parameters, null);
+		public MethodNode(Access type, String id, TypeDecl[] parameters) {
+			this(type, id, parameters, null);
 		}
 
 		public String toString() {
@@ -474,7 +489,7 @@ aspect graphNode {
 		}
 
 		protected GraphNode cloneNode() {
-			return new MethodNode(getId(), getParameters(), getExpr());
+			return new MethodNode(getType(), getId(), getParameters(), getExpr());
 		}
 	}
 
@@ -486,7 +501,7 @@ aspect graphNode {
 	 */
 	public class SwitchNode extends GraphNode {
 		public SwitchNode(ASTNode ss) {
-			super(null, null, ss);
+			super(null, null, null, ss);
 		}
 
 		public SwitchNode() {
@@ -497,16 +512,20 @@ aspect graphNode {
 			return "";
 		}
 
-		public String toProtocol(Map<GraphNode, Integer> stateMap) {
+
+		protected String getContinuation(Map<GraphNode, Integer> stateMap, int state) {
+//		public String toProtocol(Map<GraphNode, Integer> stateMap) {
 			String s = "<";
 			for(int i = 0; i < next.size(); i++) {
 				if(i != 0)
-					s += ",";
+					s += ", ";
 				s += next.get(i).toProtocol(stateMap);
 			}
 			s += ">";
 			return s;	
 		}
+
+//		public String toProtocol(Map<GraphNode, Integer> stateMap) {return null;}
 
 		protected void printProtocol(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
 			for(GraphNode n: next)
@@ -526,7 +545,7 @@ aspect graphNode {
 	
 	public class SwitchCase extends GraphNode {
 		public SwitchCase(String id, ASTNode c) {
-			super(id, null, c);
+			super(null, id, null, c);
 		}
 
 		public SwitchCase(String id) {
@@ -559,7 +578,7 @@ aspect graphNode {
 	 */
 	public class LoopNode extends GraphNode {
 		public LoopNode() {
-			super(null, null, null);
+			super(null, null, null, null);
 		}
 
 		public String toString() { 
@@ -611,18 +630,23 @@ aspect graphNode {
 	 */
 	public class EndNode extends GraphNode {
 		public EndNode() {
-			super(null, null, null);
+			super(null, null, null, null);
 		}
 
 		public String toString() {
 			return "end";
 		}
 
-		public String toProtocol(Map<GraphNode, Integer> stateMap) {
+		protected String toProtocol(Map<GraphNode, Integer> stateMap) {
 			return "end";
 		}
 
-		protected void printProtocol(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {}
+//		protected String getContinuation(Map<GraphNode, Integer> stateMap, int state) {
+//			return "end";
+//		}
+
+		protected void printProtocol(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
+		}
 
 		public GraphNode addNext(GraphNode n) {
 			return this;
@@ -649,7 +673,7 @@ aspect graphNode {
 	 */
 	public class InitNode extends GraphNode {
 		public InitNode(ASTNode expr) {
-			super(null, null, expr);
+			super(null, null, null, expr);
 		}
 
 		public InitNode() {

@@ -2,7 +2,7 @@ TypestateClassDecl	:	ClassDecl	::=	TypestateArg: Access;
 
 TypestateDecl		:	TypeDecl	::=	InitState State*;
 
-State					::=	<ID: String> Typestate;
+State						::=	<ID: String> Typestate;
 InitState		:	State;
 
 abstract Typestate;

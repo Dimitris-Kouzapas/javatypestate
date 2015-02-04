@@ -2,6 +2,10 @@ import java.util.*;
 
 aspect typestateSemanticCheck {
 
+//	protected void TypestateDecl.semanticCheck() {
+//		createTypestate().normalise().printProtocol();
+//	}
+
 	protected void State.semanticCheck() {
 		if(isDuplicate())
 			addSemanticError("Duplicate State: " + getID() + ".");
