@@ -43,6 +43,9 @@ aspect graphNode {
 			if(id == null)
 				return signature = "";
 
+			if(parameters == null)
+				return signature = id;
+
 			signature = type.toString() + " " + id + "(";
 			for(int i = 0; i < parameters.length; i++) {
 				if(i != 0)
@@ -169,7 +172,7 @@ aspect graphNode {
 			return includes(n, new TupleSet());
 		}
 
-		//TODO rewrite this (or maybe it is a bit of over-engineering)
+		//TODO rewrite this (maybe it is a bit of over-engineering)
 		public String nextToString() {
 			String s = "";
 			boolean flag = false;
@@ -351,70 +354,50 @@ aspect graphNode {
 		/*                 Print Protocol                          */
 		/***********************************************************/
 
-		//TODO I do not like the Print Protocol implementation
+		private static int count;
 
-		static int count;
-		//Polymorphic
-
-		protected String getContinuation(Map<GraphNode, Integer> stateMap, int state) {
-			return "State_" + state;
-		}
-
-		//Polymorphic
-		protected String toProtocol(Map<GraphNode, Integer> stateMap) {
-			Integer state;
+		protected int getState(Map<GraphNode, Integer> stateMap) {
+			Integer state = null;
 			if((state = stateMap.get(this)) == null)
-				stateMap.put(this, (state = new Integer(count++)));
-			return next.get(0).getContinuation(stateMap, state); 
-		}
-
-		private void printState(int state, Map<GraphNode, Integer> stateMap) {
-			if(!(next.get(0) instanceof SwitchNode)) {
-				System.out.print("State_" + state + " = {");
-				for(int i = 0; i < next.size(); i++) {
-					GraphNode n = next.get(i);
-					if (i != 0)
-						System.out.print(", ");
-					System.out.print(n.toProtocol(stateMap));
-				}
-
-				System.out.println("}");
-			}
+				stateMap.put(this, state = new Integer(count++));
+			return state;
 		}
 
 		//polymorphic
-		protected void printProtocol(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
-			if(isNodeVisited(visited))
-				return;
-
-			int state;
-			state = stateMap.get(this);
-
-			printState(state, stateMap);
-
-			for(GraphNode n: next)
-				n.printProtocol(visited, stateMap);
+		protected boolean isState() {
+			return true;
 		}
 
-		void printProtocol() {
-			Set<GraphNode> visited = new HashSet<GraphNode>();
-			Map<GraphNode, Integer> stateMap = new HashMap<GraphNode, Integer>();
+		//polymorphic
+		protected String toState(Map<GraphNode, Integer> stateMap) {
+			return toString();
+		}
 
-			count = 0;
-
+		//Change the System.out.print call (use a TypestateStream object)
+		protected void stateLHS(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
 			if(isNodeVisited(visited))
 				return;
 
-			int state = new Integer(count++);
-			stateMap.put(this, state);
-
-			System.out.println("session");
-			printState(state, stateMap);
-			System.out.println("where");
+			if(isState()) {
+				int state = getState(stateMap);
+				System.out.print("State_" + state + "= {");
+				for(int i = 0; i < next.size(); i++) {
+					if(i != 0)
+						System.out.print(", ");
+					System.out.print(next.get(i).toState(stateMap));
+				}
+				System.out.println("}");
+			}
 
 			for(GraphNode n: next)
-				n.printProtocol(visited, stateMap);
+				n.stateLHS(visited, stateMap);
+		}
 
+		protected void stateLHS() {
+			Set<GraphNode> visited = new HashSet<GraphNode>();
+			Map<GraphNode, Integer> stateMap = new HashMap<GraphNode, Integer>();
+			count = 1;
+			stateLHS(visited, stateMap);
 		}
 
 		/***********************************************************/
@@ -456,12 +439,16 @@ aspect graphNode {
 			this(type, id, parameters, null);
 		}
 
-		public String toString() {
-			return super.toString();
+		//TODO I dont like here
+		protected boolean isState() {
+			if(next.size() == 1)
+				if((next.get(0) instanceof SwitchNode) || (next.get(0) instanceof EndNode))
+					return false;
+			return true;
 		}
 
-		protected String toProtocol(Map<GraphNode, Integer> stateMap) {
-			return super.toString() + " : " + super.toProtocol(stateMap);
+		protected String toState(Map<GraphNode, Integer> stateMap) {
+			return toString() + ": " + (isState() ? "State_" + getState(stateMap) : next.get(0).toState(stateMap));
 		}
 
 		private boolean equalNode(GraphNode n) {
@@ -508,28 +495,19 @@ aspect graphNode {
 			this(null);
 		}
 
-		public String toString() {
-			return "";
+		protected boolean isState() {
+			return false;
 		}
 
-
-		protected String getContinuation(Map<GraphNode, Integer> stateMap, int state) {
-//		public String toProtocol(Map<GraphNode, Integer> stateMap) {
+		protected String toState(Map<GraphNode, Integer> stateMap) {
 			String s = "<";
 			for(int i = 0; i < next.size(); i++) {
 				if(i != 0)
 					s += ", ";
-				s += next.get(i).toProtocol(stateMap);
+				s += next.get(i).toState(stateMap);
 			}
 			s += ">";
-			return s;	
-		}
-
-//		public String toProtocol(Map<GraphNode, Integer> stateMap) {return null;}
-
-		protected void printProtocol(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
-			for(GraphNode n: next)
-				n.printProtocol(visited, stateMap);
+			return s;
 		}
 
 		protected boolean includes(GraphNode n, TupleSet ts) {
@@ -552,12 +530,16 @@ aspect graphNode {
 			this(id, null);
 		}
 
-		public String toString() {
-			return getId() + ":";
+		//TODO I dont like here and there is reduntancy
+		protected boolean isState() {
+			if(next.size() == 1)
+				if((next.get(0) instanceof SwitchNode) || (next.get(0) instanceof EndNode))
+					return false;
+			return true;
 		}
 
-		protected String toProtocol(Map<GraphNode, Integer> stateMap) {
-			return getId() + " : " + super.toProtocol(stateMap);
+		protected String toState(Map<GraphNode, Integer> stateMap) {
+			return toString() + ": " + (isState() ? "State_" + getState(stateMap) : next.get(0).toState(stateMap));
 		}
 
 		protected boolean includes(GraphNode n, TupleSet ts) {
@@ -637,15 +619,8 @@ aspect graphNode {
 			return "end";
 		}
 
-		protected String toProtocol(Map<GraphNode, Integer> stateMap) {
-			return "end";
-		}
-
-//		protected String getContinuation(Map<GraphNode, Integer> stateMap, int state) {
-//			return "end";
-//		}
-
-		protected void printProtocol(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
+		protected boolean isState() {
+			return false;
 		}
 
 		public GraphNode addNext(GraphNode n) {
