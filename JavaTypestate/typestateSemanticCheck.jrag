@@ -3,7 +3,7 @@ import java.util.*;
 aspect typestateSemanticCheck {
 
 //	protected void TypestateDecl.semanticCheck() {
-//		createTypestate().normalise().printProtocol();
+//		createTypestate().normalise().printState();
 //	}
 
 	protected void State.semanticCheck() {

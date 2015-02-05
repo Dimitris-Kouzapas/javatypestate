@@ -363,24 +363,27 @@ aspect graphNode {
 			return state;
 		}
 
-		//polymorphic
+		//polymorphic on SwitchNode and EndNode
+		//TODO I dont like here
 		protected boolean isState() {
+			if(next.size() == 1)
+				if((next.get(0) instanceof SwitchNode) || (next.get(0) instanceof EndNode))
+					return false;
 			return true;
 		}
 
-		//polymorphic
+		//polymorphic on SwitchNode and EndNode
 		protected String toState(Map<GraphNode, Integer> stateMap) {
-			return toString();
+			return toString() + ": " + (isState() ? "State_" + getState(stateMap) : next.get(0).toState(stateMap));
 		}
 
 		//Change the System.out.print call (use a TypestateStream object)
-		protected void stateLHS(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
+		protected void printState(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
 			if(isNodeVisited(visited))
 				return;
 
 			if(isState()) {
-				int state = getState(stateMap);
-				System.out.print("State_" + state + "= {");
+				System.out.print("State_" + getState(stateMap) + " = {");
 				for(int i = 0; i < next.size(); i++) {
 					if(i != 0)
 						System.out.print(", ");
@@ -390,14 +393,14 @@ aspect graphNode {
 			}
 
 			for(GraphNode n: next)
-				n.stateLHS(visited, stateMap);
+				n.printState(visited, stateMap);
 		}
 
-		protected void stateLHS() {
+		protected void printState() {
 			Set<GraphNode> visited = new HashSet<GraphNode>();
 			Map<GraphNode, Integer> stateMap = new HashMap<GraphNode, Integer>();
 			count = 1;
-			stateLHS(visited, stateMap);
+			printState(visited, stateMap);
 		}
 
 		/***********************************************************/
@@ -437,18 +440,6 @@ aspect graphNode {
 
 		public MethodNode(Access type, String id, TypeDecl[] parameters) {
 			this(type, id, parameters, null);
-		}
-
-		//TODO I dont like here
-		protected boolean isState() {
-			if(next.size() == 1)
-				if((next.get(0) instanceof SwitchNode) || (next.get(0) instanceof EndNode))
-					return false;
-			return true;
-		}
-
-		protected String toState(Map<GraphNode, Integer> stateMap) {
-			return toString() + ": " + (isState() ? "State_" + getState(stateMap) : next.get(0).toState(stateMap));
 		}
 
 		private boolean equalNode(GraphNode n) {
@@ -530,18 +521,6 @@ aspect graphNode {
 			this(id, null);
 		}
 
-		//TODO I dont like here and there is reduntancy
-		protected boolean isState() {
-			if(next.size() == 1)
-				if((next.get(0) instanceof SwitchNode) || (next.get(0) instanceof EndNode))
-					return false;
-			return true;
-		}
-
-		protected String toState(Map<GraphNode, Integer> stateMap) {
-			return toString() + ": " + (isState() ? "State_" + getState(stateMap) : next.get(0).toState(stateMap));
-		}
-
 		protected boolean includes(GraphNode n, TupleSet ts) {
 			if((n instanceof SwitchCase) && getId().equals(n.getId()))
 				return super.includes(n, ts);
@@ -621,6 +600,10 @@ aspect graphNode {
 
 		protected boolean isState() {
 			return false;
+		}
+
+		protected String toState(Map<GraphNode, Integer> stateMap) {
+			return toString();
 		}
 
 		public GraphNode addNext(GraphNode n) {
