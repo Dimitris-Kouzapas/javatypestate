@@ -10,44 +10,32 @@ typestate Redis_Server {
 	where
 		Watching = {
 			WatchingLabel receiveLabel_Watching(): <
-				GET_request: ReceiveArg_GET,
-				WATCH: ReceiveArg_WATCH,
+				GET_request: {
+					String receiveArg_GET(): {
+						void sendGET_response(String): Watching
+					}
+				},
+				WATCH: {
+	 				String[] receiveArg_WATCH(): Watching
+	 			},
 				MULTI: Queued
 			>
 		}
 		
-		ReceiveArg_GET = {
-			String receiveArg_GET(): Responding_GET
-		}
-		
-	 	Responding_GET = {
-			void sendGET_response(String): Watching
-	 	}
-	 	
-	 	ReceiveArg_WATCH = {
-	 		String[] receiveArg_WATCH(): Watching
-	 	}
-		
 		Queued = {
 			QueuedLabel receiveLabel_Queued(): <
-		    	SET: ReceiveArg0_SET,
+		    	SET: {
+					String receiveArg0_SET(): {
+						String receiveArg1_SET(): Queued 
+					} 
+				},
 				DISCARD: end,
-				EXEC: Responding_EXEC
-			>
-		}
-		
-		ReceiveArg0_SET = {
-			String receiveArg0_SET(): ReceiveArg1_SET 
-		}
-		
-		ReceiveArg1_SET = {
-			String receiveArg1_SET(): Queued 
-		}
-		
-		Responding_EXEC = {
-			ResultLabel sendEXEC_response(int): <
-				OK:end, 
-				FAIL:Queued
+				EXEC: {
+					ResultLabel sendEXEC_response(int): <
+						OK:end, 
+						FAIL:Queued
+					>
+				}
 			>
 		}
 }
