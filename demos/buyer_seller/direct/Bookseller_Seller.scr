@@ -9,8 +9,6 @@ local protocol Bookseller at Seller(role Buyer1,role Buyer2,role Seller) {
 		price_response(int) to Buyer1;
 		choice at Buyer2 {
 			agree(String) from Buyer2;
-			payment1(int) from Buyer1;
-			payment2(int) from Buyer2;
 		} or {
 			quit(String) from Buyer2;
 		}

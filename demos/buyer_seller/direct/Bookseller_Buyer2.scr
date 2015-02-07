@@ -8,7 +8,6 @@ local protocol Bookseller at Buyer2(role Buyer1,role Buyer2,role Seller) {
 		quote(int) from Buyer1;
 		choice at Buyer2 {
 			agree(String) to Buyer1,Seller;
-			payment2(int) to Seller;
 		} or {
 			quit(String) to Buyer1,Seller;
 		}

@@ -3,7 +3,8 @@ module Bookseller;
 type <java> "java.lang.String" from "rt.jar" as String;
 type <java> "java.lang.Integer" from "rt.jar" as int;
 
-// Variant that allows Seller to abort if requested book is out of stock.
+// Variant that allows Seller to abort if requested book is out of stock. Also 
+// we only model the price negotiation part of the protocol, ignoring payment.
 
 global protocol Bookseller(role Buyer1, role Buyer2, role Seller) {
 	price_request(String) from Buyer1 to Seller;
@@ -12,8 +13,6 @@ global protocol Bookseller(role Buyer1, role Buyer2, role Seller) {
 		quote(int) from Buyer1 to Buyer2;
 		choice at Buyer2 {
 			agree(String) from Buyer2 to Buyer1, Seller;
-			payment1(int) from Buyer1 to Seller;
-			payment2(int) from Buyer2 to Seller;
 		} or {
 			quit(String) from Buyer2 to Buyer1, Seller;
 		}

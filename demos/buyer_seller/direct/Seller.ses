@@ -4,8 +4,13 @@ typestate Seller {
 	session
 		Init = {
 			Exit_price_request price_request(String): <
-				PRICE_RESPONSE: end, 
+				PRICE_RESPONSE: WaitingForAgreement, 
 				OUT_OF_STOCK: end
 			>
+		}
+	where
+		WaitingForAgreement = {
+			void agree (): end,
+			void quit (): end
 		}
 }
