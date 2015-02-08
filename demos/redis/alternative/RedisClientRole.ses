@@ -4,7 +4,7 @@ class RedisClientRole typestate RedisClientProtocol {
     void sendWATCH(String[] ks) {
 	}
 	
-	WatchingLabel sendLabel_Watching(WatchingLabel l) {
+	WatchingLabel sendLabel_Watching(int l) {
 		return null;
 	}
 	
@@ -18,7 +18,7 @@ class RedisClientRole typestate RedisClientProtocol {
 	void sendArg_WATCH(String[] ks) {
 	}
 	
-	QueuedLabel sendLabel_Queued(QueuedLabel l) {
+	QueuedLabel sendLabel_Queued(int l) {
 		return null;
 	}
 	
@@ -36,7 +36,7 @@ class RedisClientRole typestate RedisClientProtocol {
 		RedisClientRole redis = new RedisClientRole();
 		redis.sendWATCH(null); // TODO
 		WATCHING: while (true)
-			switch (redis.sendLabel_Watching(null).getEnum()) { // TODO
+			switch (redis.sendLabel_Watching(0).getEnum()) { // TODO
 				case WatchingLabel.GET_request:
 					redis.sendArg_GET(null); // TODO
 					String v = redis.receiveGET_response();
@@ -46,7 +46,7 @@ class RedisClientRole typestate RedisClientProtocol {
 					continue WATCHING;
 				case WatchingLabel.MULTI:
 					QUEUED: while (true)
-						switch (redis.sendLabel_Queued(null).getEnum()) {
+						switch (redis.sendLabel_Queued(0).getEnum()) {
 							case QueuedLabel.SET:
 								redis.sendArg0_SET(null);
 								redis.sendArg1_SET(null);
