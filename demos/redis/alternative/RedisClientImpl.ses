@@ -1,0 +1,35 @@
+package demos.redis.alternative;
+
+class RedisClientImpl typestate RedisClientProtocol {
+	public static void main (String[] args) {
+		Redis_ServerImpl redis = new Redis_ServerImpl();
+		String[] ks = redis.receiveWATCH();
+		WATCHING: while (true)
+			switch (redis.receiveLabel_Watching().getEnum()) {
+				case WatchingLabel.GET_request:
+					String k = redis.receiveArg_GET();
+					redis.sendGET_response(null); // TODO
+					continue WATCHING;
+				case WatchingLabel.WATCH:
+					String[] ks2 = redis.receiveArg_WATCH();
+					continue WATCHING;
+				case WatchingLabel.MULTI:
+					QUEUED: while (true)
+						switch (redis.receiveLabel_Queued().getEnum()) {
+							case QueuedLabel.SET:
+								String k2 = redis.receiveArg0_SET();
+								String v = redis.receiveArg1_SET();
+								continue QUEUED;
+							case QueuedLabel.DISCARD:
+								break WATCHING;
+							case QueuedLabel.EXEC:
+								switch (redis.sendEXEC_response(0).getEnum()) { // TODO
+									case ResultLabel.OK:
+										break WATCHING;
+									case ResultLabel.FAIL:
+										continue QUEUED;
+								}
+						}
+			}
+	}
+}

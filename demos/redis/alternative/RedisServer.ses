@@ -2,7 +2,7 @@ package demos.redis.alternative;
 
 // See my notes entitled "Scribble-to-typestate translation" for discussion.
 
-typestate Redis_Server {
+typestate RedisServerProtocol {
 	session
 		Init = {
            String[] receiveWATCH(): Watching

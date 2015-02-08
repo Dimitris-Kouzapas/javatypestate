@@ -4,7 +4,7 @@ package demos.redis.alternative;
 // Doesn't typecheck at the moment; need to put in the missing receive-arg calls, plus I 
 // couldn't get all the breaks/loops typechecking properly anyway.
 
-class Redis_ServerImpl typestate Redis_Server {
+class RedisServerImpl typestate RedisServerProtocol {
     String[] receiveWATCH() {
     	return null;
     }
@@ -50,36 +50,32 @@ class Redis_ServerImpl typestate Redis_Server {
 	public static void main (String[] args) {
 		Redis_ServerImpl redis = new Redis_ServerImpl();
 		String[] ks = redis.receiveWATCH();
-		WATCHING: while (true) {
+		WATCHING: while (true)
 			switch (redis.receiveLabel_Watching().getEnum()) {
 				case WatchingLabel.GET_request:
-					String get_k = redis.receiveArg_GET();
-					String get_response = null; // TODO: compute response
-					redis.sendGET_response(get_response);
+					String k = redis.receiveArg_GET();
+					redis.sendGET_response(null); // TODO
 					continue WATCHING;
 				case WatchingLabel.WATCH:
 					String[] ks2 = redis.receiveArg_WATCH();
 					continue WATCHING;
 				case WatchingLabel.MULTI:
-					QUEUED: while (true) {
+					QUEUED: while (true)
 						switch (redis.receiveLabel_Queued().getEnum()) {
 							case QueuedLabel.SET:
-								String set_k = redis.receiveArg0_SET();
+								String k2 = redis.receiveArg0_SET();
 								String v = redis.receiveArg1_SET();
 								continue QUEUED;
 							case QueuedLabel.DISCARD:
 								break WATCHING;
 							case QueuedLabel.EXEC:
-								ResultLabel EXEC_response = null; // TODO: compute response
-								switch (redis.sendEXEC_response(EXEC_response.getEnum()).getEnum()) {
+								switch (redis.sendEXEC_response(0).getEnum()) { // TODO
 									case ResultLabel.OK:
 										break WATCHING;
 									case ResultLabel.FAIL:
 										continue QUEUED;
 								}
 						}
-					}
 			}
-		}
 	}
 }
