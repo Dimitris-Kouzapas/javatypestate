@@ -1,29 +1,60 @@
 package demos.redis.alternative;
 
 class RedisClientRole typestate RedisClientProtocol {
+    void sendWATCH(String[] ks) {
+	}
+	
+	WatchingLabel sendLabel_Watching(WatchingLabel l) {
+		return null;
+	}
+	
+	void sendArg_GET(String k) {
+	}
+	
+	String receiveGET_response() {
+		return null;
+	}
+	
+	void sendArg_WATCH(String[] ks) {
+	}
+	
+	QueuedLabel sendLabel_Queued(QueuedLabel l) {
+		return null;
+	}
+	
+	void sendArg0_SET(String k) {
+	}
+	
+	void sendArg1_SET(String v) {
+	}
+
+	ResultLabel receiveEXEC_response() {
+		return null;
+	}
+
 	public static void main (String[] args) {
 		RedisClientRole redis = new RedisClientRole();
-		String[] ks = redis.receiveWATCH();
+		redis.sendWATCH(null); // TODO
 		WATCHING: while (true)
-			switch (redis.receiveLabel_Watching().getEnum()) {
+			switch (redis.sendLabel_Watching(null).getEnum()) { // TODO
 				case WatchingLabel.GET_request:
-					String k = redis.receiveArg_GET();
-					redis.sendGET_response(null); // TODO
+					redis.sendArg_GET(null); // TODO
+					String v = redis.receiveGET_response();
 					continue WATCHING;
 				case WatchingLabel.WATCH:
-					String[] ks2 = redis.receiveArg_WATCH();
+					redis.sendArg_WATCH(null); // TODO
 					continue WATCHING;
 				case WatchingLabel.MULTI:
 					QUEUED: while (true)
-						switch (redis.receiveLabel_Queued().getEnum()) {
+						switch (redis.sendLabel_Queued(null).getEnum()) {
 							case QueuedLabel.SET:
-								String k2 = redis.receiveArg0_SET();
-								String v = redis.receiveArg1_SET();
+								redis.sendArg0_SET(null);
+								redis.sendArg1_SET(null);
 								continue QUEUED;
 							case QueuedLabel.DISCARD:
 								break WATCHING;
 							case QueuedLabel.EXEC:
-								switch (redis.sendEXEC_response(0).getEnum()) { // TODO
+								switch (redis.receiveEXEC_response().getEnum()) {
 									case ResultLabel.OK:
 										break WATCHING;
 									case ResultLabel.FAIL:

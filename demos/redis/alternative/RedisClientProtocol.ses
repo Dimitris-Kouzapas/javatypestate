@@ -1,49 +1,39 @@
 package demos.redis.alternative;
 
-typestate RedisClient {
+typestate RedisClientProtocol {
 	session
 		Init = {
            void sendWATCH(String[]): Watching
 		}
 	where
 		Watching = {
-			WatchingLabel sendLabel_Watching(WatchingLabel): <
+			WatchingLabel sendLabel_Watching(int): <
 				GET_request: {
-					void sendArg_GET(String): AwaitingResponse_Watching_GET
+					void sendArg_GET(String): {
+						String receiveGET_response(): Watching
+	 				}
 				},
-				WATCH: SendArg_Watching_WATCH,
+				WATCH: {
+	 				void sendArg_WATCH(String[]): Watching
+	 			},
 				MULTI: Queued
 			>
 		}
 		
- 	 	AwaitingResponse_Watching_GET = {
-			String receiveGET_response(): Watching
-	 	}
-	 	
-	 	SendArg_Watching_WATCH = {
-	 		void sendArg_WATCH(String[]): Watching
-	 	}
-		
 		Queued = {
-			QueuedLabel sendLabel_Queued(QueuedLabel): <
-		    	SET: SendArg0_Queued_SET,
+			QueuedLabel sendLabel_Queued(int): <
+		    	SET: {
+					void sendArg0_SET(String): {
+						void sendArg1_SET(String): Queued 
+					} 
+				},
 				DISCARD: end,
-				EXEC: AwaitingResponse_Queued_EXEC
-			>
-		}
-		
-		SendArg0_Queued_SET = {
-			void sendArg0_SET(String): SendArg1_Queued_SET 
-		}
-		
-		SendArg1_Queued_SET = {
-			void sendArg1_SET(String): Queued 
-		}
-		
-		AwaitingResponse_Queued_EXEC = {
-			ResultLabel receiveEXEC_response(): <
-				OK:end, 
-				FAIL:Queued
+				EXEC: {
+					ResultLabel receiveEXEC_response(): <
+						OK:end, 
+						FAIL:Queued
+					>
+				}
 			>
 		}
 }
