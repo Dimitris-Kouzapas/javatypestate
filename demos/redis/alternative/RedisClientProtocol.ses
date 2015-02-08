@@ -1,6 +1,6 @@
 package demos.redis.alternative;
 
-typestate Redis_Client {
+typestate RedisClient {
 	session
 		Init = {
            void sendWATCH(String[]): Watching
@@ -8,17 +8,15 @@ typestate Redis_Client {
 	where
 		Watching = {
 			WatchingLabel sendLabel_Watching(WatchingLabel): <
-				GET_request: SendArg_Watching_GET,
+				GET_request: {
+					void sendArg_GET(String): AwaitingResponse_Watching_GET
+				},
 				WATCH: SendArg_Watching_WATCH,
 				MULTI: Queued
 			>
 		}
 		
-		SendArg_Watching_GET = {
-			void sendArg_GET(String): AwaitingResponse_Watching_GET
-		}
-		
-	 	AwaitingResponse_Watching_GET = {
+ 	 	AwaitingResponse_Watching_GET = {
 			String receiveGET_response(): Watching
 	 	}
 	 	

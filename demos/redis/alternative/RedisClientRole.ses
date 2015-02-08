@@ -1,8 +1,8 @@
 package demos.redis.alternative;
 
-class RedisClientImpl typestate RedisClientProtocol {
+class RedisClientRole typestate RedisClientProtocol {
 	public static void main (String[] args) {
-		Redis_ServerImpl redis = new Redis_ServerImpl();
+		RedisClientRole redis = new RedisClientRole();
 		String[] ks = redis.receiveWATCH();
 		WATCHING: while (true)
 			switch (redis.receiveLabel_Watching().getEnum()) {
