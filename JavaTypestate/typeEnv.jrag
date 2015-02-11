@@ -118,8 +118,10 @@ aspect typeEnv {
 //				System.out.println("------------------------");
 				if(!t.includes(n)) {
 					//TODO Recheck here... Maybe you can engineer this part somehow.
-					for(GraphNode m: t.getErrorNode().next)
-						m.getExpr().addSemanticError("Typestate mismatch. Found: " + m.toString() + ". Expected: " + t.getExpectedNode().nextToString() + ".");
+					for(GraphNode m: t.getErrorNode().next) {
+						t.getErrorNode().getExpr().addSemanticError("Typestate mismatch. Found: " + m.toString() + ". Expected: " + t.getExpectedNode().nextToString() + ".");
+//						m.getExpr().addSemanticError("Typestate mismatch. Found: " + m.toString() + ". Expected: " + t.getExpectedNode().nextToString() + ".");
+					}
 //					startExpr.get(i).addSemanticError(errorMessage);
 				}
 			}
