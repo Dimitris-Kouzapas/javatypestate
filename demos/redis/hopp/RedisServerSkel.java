@@ -6,17 +6,13 @@ class RedisServerSkel {
 		while (true)
 			switch (receiveMethodLabel()) {
 				case GET_request:
-					String k = receiveStringArg();
-					redis.GET_request(k);
+					redis.GET_request(receiveStringArg());
 					break;
 				case SET:
-					String k2 = receiveStringArg();
-					String v = receiveStringArg();
-					redis.SET(k2,v);
+					redis.SET(receiveStringArg(),receiveStringArg());
 					break;
 				case WATCH:
-					String[] ks2 = receiveStringArrayArg();
-					redis.WATCH(ks2);
+					redis.WATCH(receiveStringArrayArg());
 					break;
 				case MULTI:
 					redis.MULTI();
