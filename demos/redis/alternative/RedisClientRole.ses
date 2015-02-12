@@ -46,10 +46,10 @@ class RedisClientRole typestate RedisClientProtocol {
 					continue WATCHING;
 				case WatchingLabel.MULTI:
 					QUEUED: while (true)
-						switch (redis.sendLabel_Queued(0).getEnum()) {
+						switch (redis.sendLabel_Queued(0).getEnum()) { // TODO
 							case QueuedLabel.SET:
-								redis.sendArg0_SET(null);
-								redis.sendArg1_SET(null);
+								redis.sendArg0_SET(null); // TODO
+								redis.sendArg1_SET(null); // TODO
 								continue QUEUED;
 							case QueuedLabel.DISCARD:
 								break WATCHING;
