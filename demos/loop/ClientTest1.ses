@@ -1,32 +1,15 @@
 package demos.loop;
 
 /**
- * Arguably the loop typestate itself is inhabited (since we can create an object that
- * implements it), but its (informal) dual is uninhabited, in that we cannot define a 
- * client that consumes the loop.
- */
+ * We don't treat a comparison to TRUE analogously to switching on a Bool value;
+ * nor do we understand the implications for the typestate after the do...while.
+ */ 
 class ClientTest {
-	// We don't treat a comparison to TRUE analogously to switching on a Bool value;
-	// nor do we understand the implications for the typestate after the do...while.
-//  	void test_loop_condition () {
-//  		LoopImpl loop = new LoopImpl();
-//  		Bool finished;
-//  		do {
-//  			finished = loop.finished();
-//  		} while(finished != new Bool(Bool.TRUE)); 
-//  	}
-  	
-  	// Here we don't realise that the while loop only terminates when finished() has
-  	// returned TRUE.
-  	void test_break () {
+  	void test_loop_condition () {
   		LoopImpl loop = new LoopImpl();
-  		out: do {
-  			switch (loop.finished().getEnum()) {
-  			case Bool.FALSE:
-  				break; // continue would do as well
-  			case Bool.TRUE:
-  				break out;
-  			}
-  		} while(true);
+  		Bool finished;
+  		do {
+  			finished = loop.finished();
+  		} while(finished != new Bool(Bool.TRUE)); 
   	}
 }

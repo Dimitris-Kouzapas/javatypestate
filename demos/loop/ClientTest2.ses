@@ -1,8 +1,10 @@
 package demos.loop;
 
+/**
+ * Here we don't realise that the while loop only terminates when finished() has
+ * returned TRUE.
+ */
 class ClientTest2 {
- 	// Here we don't realise that the while loop only terminates when finished() has
-  	// returned TRUE.
   	void test_break () {
   		LoopImpl loop = new LoopImpl();
   		out: do {
