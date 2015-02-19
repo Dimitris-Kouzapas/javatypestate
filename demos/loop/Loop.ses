@@ -1,0 +1,8 @@
+package demos.loop;
+
+typestate Loop {
+	session
+		Start = {
+			Bool finished(): <FALSE: Start, TRUE: end>
+		}
+}

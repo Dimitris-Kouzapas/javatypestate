@@ -1,0 +1,7 @@
+package demos.loop;
+
+class LoopImpl typestate Loop {
+  	Bool finished() {
+  		return new Bool(Bool.TRUE);
+  	}
+}
