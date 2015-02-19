@@ -7,9 +7,13 @@ package demos.loop;
 class ClientTest1 {
   	void test () {
   		LoopImpl loop = new LoopImpl();
-  		Bool finished;
-  		do {
-  			finished = loop.finished();
-  		} while(finished != new Bool(Bool.TRUE)); 
+  		out: do {
+  			switch (loop.finished().getEnum()) {
+  			case Bool.FALSE:
+  				break; // continue would do as well
+  			case Bool.TRUE:
+  				break out;
+  			}
+  		} while(true);
   	}
 }
