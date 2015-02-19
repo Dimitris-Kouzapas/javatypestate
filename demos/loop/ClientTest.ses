@@ -6,11 +6,23 @@ package demos.loop;
  * client that consumes the loop.
  */
 class ClientTest {
-  	void test1 () {
+//  	void test_loop_condition () {
+//  		LoopImpl loop = new LoopImpl();
+//  		Bool finished;
+//  		do {
+//  			finished = loop.finished();
+//  		} while(finished != new Bool(Bool.TRUE)); 
+//  	}
+  	
+  	void test_break () {
   		LoopImpl loop = new LoopImpl();
-  		Bool finished;
-  		do {
-  			finished = loop.finished();
-  		} while(finished != new Bool(Bool.TRUE)); 
+  		out: do {
+  			switch (loop.finished().getEnum()) {
+  			case Bool.FALSE:
+  				break;
+  			case Bool.TRUE:
+  				break out;
+  			}
+  		} while(true);
   	}
 }
