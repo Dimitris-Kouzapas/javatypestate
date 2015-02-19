@@ -5,7 +5,7 @@ package demos.loop;
  * returned TRUE.
  */
 class ClientTest2 {
-  	void test_break () {
+  	void test () {
   		LoopImpl loop = new LoopImpl();
   		out: do {
   			switch (loop.finished().getEnum()) {

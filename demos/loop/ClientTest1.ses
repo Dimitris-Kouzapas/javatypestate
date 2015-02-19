@@ -4,8 +4,8 @@ package demos.loop;
  * We don't treat a comparison to TRUE analogously to switching on a Bool value;
  * nor do we understand the implications for the typestate after the do...while.
  */ 
-class ClientTest {
-  	void test_loop_condition () {
+class ClientTest1 {
+  	void test () {
   		LoopImpl loop = new LoopImpl();
   		Bool finished;
   		do {
