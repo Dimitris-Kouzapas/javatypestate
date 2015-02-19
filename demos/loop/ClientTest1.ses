@@ -2,7 +2,7 @@ package demos.loop;
 
 /**
  * We don't treat a comparison to TRUE analogously to switching on a Bool value;
- * nor do we understand the implications for the typestate after the do...while.
+ * nor do we spot that the loop only terminates if finished() returns TRUE.
  */ 
 class ClientTest1 {
   	void test () {
