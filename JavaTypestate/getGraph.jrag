@@ -575,11 +575,13 @@ aspect getGraph {
 			if(t == null || !t.equals(v))
 				v.start.put(this, new LoopNode());
 			else
-				v.start.put(this, new SwitchNode());
+				v.start.put(this, new SwitchNode(this));
 			v.end.put(this, v.current);
 		}
 		boolean c = false;
 		ArrayList<String> count = new ArrayList<String>();
+		ArrayList<Stmt> caseList = new ArrayList<Stmt>();
+
 		for(int i = b.getNumStmt() - 1; i >= 0; i--) {
 			if(b.getStmt(i) instanceof ConstCase) {
 				c = true;
@@ -588,10 +590,13 @@ aspect getGraph {
 					count.add(((Access)((ConstCase)b.getStmt(i)).getValue()).getLastAccess().toString());
 				else
 					count.add(((ConstCase)b.getStmt(i)).getValue().toString());
+
+				caseList.add(b.getStmt(i));
 			}
 			else if(b.getStmt(i) instanceof DefaultCase) {
 				c = true;
 				count.add("default");
+				caseList.add(b.getStmt(i));
 			}
 			else {
 				if(c == true)
@@ -600,11 +605,12 @@ aspect getGraph {
 							v.start.get(this).addNext(v.current);
 						else {
 							for(int j = 0; j < count.size(); j++) {
-								SwitchCase sc = new SwitchCase(count.get(j));
+								SwitchCase sc = new SwitchCase(count.get(j), caseList.get(j));
 								sc.addNext(v.current);
 								v.start.get(this).addNext(sc);
 							}
 							count.clear();
+							caseList.clear();
 						}
 					}
 
@@ -619,11 +625,12 @@ aspect getGraph {
 					v.start.get(this).addNext(v.current);
 				else {
 					for(int j = 0; j < count.size(); j++) {
-						SwitchCase sc = new SwitchCase(count.get(j));
+						SwitchCase sc = new SwitchCase(count.get(j), caseList.get(j));
 						sc.addNext(v.current);
 						v.start.get(this).addNext(sc);
 					}
 					count.clear();
+					caseList.clear();
 				}
 			}
 
@@ -679,7 +686,7 @@ aspect getGraph {
 		TypestateVar t;
 		if(isTypestate) {
 			if(getInit() instanceof ClassInstanceExpr) {
-				typestate.current = new InitNode().addNext(typestate.current);
+				typestate.current = new InitNode(getInit()).addNext(typestate.current);
 				typestate.addTypestate(getInit(), getBodyDeclAncestor());
 			}
 			else if((t = getInit().getTypestateVar()) != null) {
@@ -712,7 +719,7 @@ aspect getGraph {
 		TypestateVar s;
 		if(d != null) {
 			if(getSource() instanceof ClassInstanceExpr) {
-				d.current = new InitNode().addNext(d.current);
+				d.current = new InitNode(getSource()).addNext(d.current);
 				d.addTypestate(getSource(), getBodyDeclAncestor());
 			}
 			else if((s = getSource().getTypestateVar()) != null) {
@@ -828,7 +835,7 @@ aspect getGraph {
 				TypestateVar source;
 				if(dest != null) {
 					if(getArg(i) instanceof ClassInstanceExpr) {
-						dest.current = new InitNode().addNext(parameters[i]);
+						dest.current = new InitNode(getArg(i)).addNext(parameters[i]);
 						dest.addTypestate(getArg(i), getBodyDeclAncestor());
 					}
 					else if((source = getArg(i).getTypestateVar()) != null) {
@@ -879,7 +886,7 @@ aspect getGraph {
 			else if(getQualifiedType().isTypestateClassDeclType()) {
 				TypestateVar t = getQualifiedTypestateVar();
 				if (t != null)
-					t.current = new MethodNode(getID(), getParameterTypes()).addNext(t.current);
+					t.current = new MethodNode(lookupMethod(getQualifiedType()).getTypeAccess(), getID(), getParameterTypes(), this).addNext(t.current);
 
 				for(int i = md.getNumParameter() - 1; i >=0; i--)
 					if(md.getParameter(i).typestate != null)
@@ -891,7 +898,7 @@ aspect getGraph {
 				TypestateVar source;
 				if(dest != null) {
 					if(getArg(i) instanceof ClassInstanceExpr) {
-						dest.current = new InitNode().addNext(parameters[i]);
+						dest.current = new InitNode(getArg(i)).addNext(parameters[i]);
 						dest.addTypestate(getArg(i), getBodyDeclAncestor());
 					}
 					else if((source = getArg(i).getTypestateVar()) != null) {

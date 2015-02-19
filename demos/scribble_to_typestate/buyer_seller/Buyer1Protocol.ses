@@ -28,10 +28,12 @@ typestate Buyer1Protocol {
 		}
 
 		State6 = {
-			void sendtransferInttoSeller(int): State7
+			void sendtransferInttoSeller(int): State8
 		}
 
-		State7 = {
+		State7 = State8
+
+		State8 = {
 			void sendgreetingsStringtoSeller(String): end
 		}
 }

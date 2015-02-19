@@ -27,7 +27,6 @@ aspect Errors {
 	}
 
 	public abstract class TypestateError {
-
 		private final String msg;
 		private String file;
 		private final int start;
@@ -36,7 +35,7 @@ aspect Errors {
 
 		protected TypestateError(String msg, String file, int start, int end, String errorType) {
 			this.msg = msg;
-			this. file = file;
+			this.file = file;
 			this.start = start;
 			this.end = end;
 			this.errorType = errorType;
@@ -54,10 +53,13 @@ aspect Errors {
 		}
 
 		protected void print() {
-			System.err.println();
-			System.err.print(toString());
-			System.err.println();
+			print(System.err);
+		}
 
+		protected void print(PrintStream err) {
+			err.println();
+			err.print(toString());
+			err.println();
 		}
 	}
 
@@ -106,7 +108,7 @@ aspect Errors {
 
 	public void Program.printErrors() {
 		for(TypestateError te: errors)
-			te.print();
+			te.print(errorStream);
 	}
 
 	protected void ASTNode.addWarning(String warningMsg) {

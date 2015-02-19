@@ -29,7 +29,7 @@ public class SellerMain{
             // Ask user for the price
             System.out.print("Seller to Buyer1: The price of the book is £");
             int price = Integer.parseInt(safeRead(sl));
-            seller.sendPriceToBuyer1(price);
+            //seller.sendPriceToBuyer1(price);
 
             switch (seller.receiveLabelFromBuyer2().getEnum()) {
                 case AgreementLabel.AGREE:

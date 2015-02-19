@@ -2,7 +2,7 @@ package demos.redis.alternative;
 
 // Server choices available in Queued state.
 enum QueuedLabel {
-	SET,
-	DISCARD,
+	// SET,
+	// DISCARD,
 	EXEC;
 }
