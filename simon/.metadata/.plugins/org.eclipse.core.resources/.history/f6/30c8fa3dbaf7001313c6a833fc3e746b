@@ -1,8 +1,0 @@
-package buyer_seller;
-
-typestate B1Protocol {
-	session
-		InitSession = 	{
-					void run(): end
-				}
-	}

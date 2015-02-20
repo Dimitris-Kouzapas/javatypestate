@@ -1,2 +1,0 @@
-INDEX VERSION 1.126+/Users/simon/TypeStateGitHub/javatypestate/simon/.metadata/.plugins/org.eclipse.jdt.core
-3187589937.index

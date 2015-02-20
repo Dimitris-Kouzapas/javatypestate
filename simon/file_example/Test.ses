@@ -1,9 +1,0 @@
-package demos.file_example;
-
-class Test {
-	public static void main(String[] args) {
-		UseFile f = new UseFile();
-		f.aMethod();
-		f.bMethod();
-	}
-}
