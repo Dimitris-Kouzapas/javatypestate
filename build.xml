@@ -56,7 +56,7 @@
 		<javac
 			debug="true" nowarn="true" srcdir="."
 			includes="${Typestate}/**/*.java, ${Frontend}/**/*.java, **/*.java"
-			excludes="${Typestate}/test/**, ${Frontend}/test/**, test/**, protocol/**, file_example/**" 
+			excludes="${Typestate}/test/**, ${Frontend}/test/**, test/**, protocol/**, file_example/**, compiler-notes/**"
 			includeantruntime="false"
 			classpath=".:${tools}/junit.jar"
 		/>
