@@ -1,7 +1,5 @@
 package demos.alice_bob.threads;
 
-import demos.broker.*;
-
 public class Bob typestate BobProtocol {
 	Session s;
 
