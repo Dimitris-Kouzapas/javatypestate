@@ -67,7 +67,7 @@
 		& v & \bnfis & \dots \bnfbar o\\
 		& r & \bnfis & \dots \bnfbar o \\
 		\textrm{(Context)} & \mathcal{E} &\bnfis& \hole \bnfbar \mathcal{E}; e \bnfbar r.m(\mathcal{E}) \bnfbar r = \mathcal{E}\\
-				&&\bnfbar& \return{\mathcal{E}}
+				&&\bnfbar& \return{\mathcal{E}} \bnfbar \ifthenelse{\mathcal{E}}{e}{e}
 	\end{array}
 \]
 
@@ -108,16 +108,32 @@
 		}
 		\\
 		\\
+%		\tree{
+%			(h; \sigma; e_1) \red^* (h'; \sigma'; \true) %\qquad (h''; \sigma''; e_2) \red (h'; \sigma'; e')
+%		}{
+%			(h; \sigma; \lambda: \while{\true}{e}) \red (h; \sigma; e;\lambda: \while{??}{e})
+%		}\\[4mm]
+
 		\tree{
-			(h; \sigma; e_1) \red^* (h''; \sigma''; \true) %\qquad (h''; \sigma''; e_2) \red (h'; \sigma'; e')
 		}{
-			(h; \sigma; \lambda: \while{\true}{e}) \red (h'; \sigma'; e_2;\lambda: \while{e_1}{e_2})
+			(h; \sigma; \ifthenelse{\true}{e_1}{e_2}) \red (h; \sigma; e_1)
+		}\\[4mm]
+
+		\tree{
+		}{
+			(h; \sigma; \ifthenelse{\false}{e_1}{e_2}) \red (h; \sigma; e_2)
+		}\\[4mm]
+
+		\tree{
+%			(h; \sigma; e_1) \red^* (h'; \sigma'; \true) %\qquad (h''; \sigma''; e_2) \red (h'; \sigma'; e')
+		}{
+			(h; \sigma; \lambda: \while{e_1}{e_2}) \red (h; \sigma; \ifthenelse{e_1}{e_2;\lambda: \while{e_1}{e_2}}{\false})
 		}\\[4mm]
 
 		\tree{
 %			(h; \sigma; e_1) \red (h'; \sigma'; \false)
 		}{
-			(h; \sigma; \lambda: \while{\false}{e_2}) \red (h; \sigma; \false)
+			(h; \sigma; \lambda: \while{\false}{e}) \red (h; \sigma; \false)
 		}
 	\end{array}
 \]
