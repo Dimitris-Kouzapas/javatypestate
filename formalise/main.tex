@@ -9,17 +9,17 @@
 
 \input{macros}
 
-\newcommand{\class}{\ensuremath{\mathtt{class}\ }}
-\newcommand{\enum}{\ensuremath{\mathtt{enum}\ }}
-\newcommand{\Null}{\ensuremath{\mathtt{Null}\ }}
-\newcommand{\nul}{\ensuremath{\mathtt{null}\ }}
-\newcommand{\this}{\ensuremath{\mathtt{this}\ }}
-\newcommand{\brk}{\ensuremath{\mathtt{break}\ }}
-\newcommand{\continue}{\ensuremath{\mathtt{continue}\ }}
-\newcommand{\return}{\ensuremath{\mathtt{return}\ }}
-\newcommand{\lab}[1]{\ensuremath{\mathtt{#1:}\ }}
+\newcommand{\class}{\ensuremath{\mathtt{class}}\xspace}
+\newcommand{\enum}{\ensuremath{\mathtt{enum}}\xspace}
+\newcommand{\Null}{\ensuremath{\mathtt{Null}}\xspace}
+\newcommand{\nul}{\ensuremath{\mathtt{null}}\xspace}
+\newcommand{\this}{\ensuremath{\mathtt{this}}\xspace}
+\newcommand{\brk}[1]{\ensuremath{\mathtt{break}}\ #1}
+\newcommand{\continue}[1]{\ensuremath{\mathtt{continue}}\ #1}
+\newcommand{\return}[1]{\ensuremath{\mathtt{return}}\ #1}
+\newcommand{\lab}[1]{\ensuremath{\mathtt{#1:}}\xspace}
 \newcommand{\ctype}[2]{#1[#2]}
-\newcommand{\base}{\ensuremath{\mathtt{base}\ }}
+\newcommand{\base}{\ensuremath{\mathtt{base}}\xspace}
 \newcommand{\method}[4]{#1\ #2(#3)\set{#4}}
 \newcommand{\vdecl}[2]{#1\ #2}
 \newcommand{\mcall}[2]{#1(#2)}
@@ -45,17 +45,16 @@
 	Syntax:
 \[
 	\begin{array}{lrcl}
-		&D &\bnfis& \class C \set{S; \vect{F}; \vect{M}} \bnfbar \enum E \set{\vec{l}}\\
+		&D &\bnfis& \class\ C \set{S; \vect{F}; \vect{M}} \bnfbar \enum\ E \set{\vec{l}}\\
 		\textrm{(Types)} & T &\bnfis& \Null \bnfbar \ctype{C}{S}\\% \bnfbar \base\\
 		\textrm{(Fields)} &F &\bnfis& \vdecl{T}{f}\\		
 		\textrm{(Local)} &V &\bnfis& \vdecl{T}{x}\\
 		\textrm{(Methods)} &M &\bnfis& \method{T}{m}{T x}{e}\\
 		\textrm{(Values)} &v& \bnfis& \nul \bnfbar l\\
-		\textrm{(Paths)}  &r& \bnfis & \this.f \bnfbar x\\
-%		\textrm{(goto)} &g& \bnfis & \brk \bnfbar \continue\\
-		\textrm{(Expressions)} &e& \bnfis & V \bnfbar v \bnfbar x \bnfbar r \bnfbar r.\mcall{m}{e} \bnfbar e;e \bnfbar r = e\\
-		&&\bnfbar & \newo{C} \bnfbar \return e \bnfbar \switch{e}{l : e_l}_{l \in E} \\
-		&&\bnfbar & \brk \lambda \bnfbar \continue \lambda \bnfbar \lambda: \while{e_1}{e_2}\\
+		\textrm{(Paths)}  &r& \bnfis & \this \bnfbar \this.f \bnfbar x\\
+		\textrm{(Expressions)} &e& \bnfis & V \bnfbar v \bnfbar r \bnfbar r.\mcall{m}{e} \bnfbar e;e \bnfbar r = e\\
+		&&\bnfbar & \newo{C} \bnfbar \return{e} \bnfbar \switch{e}{l : e_l}_{l \in E} \\
+		&&\bnfbar & \brk{\lambda} \bnfbar \continue \lambda \bnfbar{\lambda}: \while{e_1}{e_2}\\
 		&&\bnfbar & \ifthenelse{e}{e}{e}
 	\end{array}
 \]
@@ -65,9 +64,10 @@
 	\begin{array}{lrcl}
 		& T & \bnfis & C[\set{T_i\ f_i}_{i \in I}]\\
 		& v & \bnfis & \dots \bnfbar o\\
-		& r & \bnfis & \dots \bnfbar o \\
-		\textrm{(Context)} & \mathcal{E} &\bnfis& \hole \bnfbar \mathcal{E}; e \bnfbar r.m(\mathcal{E}) \bnfbar r = \mathcal{E}\\
-				&&\bnfbar& \return{\mathcal{E}} \bnfbar \ifthenelse{\mathcal{E}}{e}{e}
+		& r & \bnfis & o \bnfbar x \bnfbar r.f \\
+		\textrm{(Context)} & \mathcal{E} &\bnfis& \hole \bnfbar \mathcal{E}; e \bnfbar r.m(\mathcal{E}) \bnfbar r = \mathcal{E}
+				\bnfbar \return{\mathcal{E}}\\
+				&&\bnfbar& \switch{\mathcal{E}}{l:e}_{l \in E} \bnfbar \ifthenelse{\mathcal{E}}{e}{e}
 	\end{array}
 \]
 
@@ -85,7 +85,7 @@
 	\begin{eqnarray*}
 		h &\bnfis& h \cat o = C[\vect{f} = \vec{\nul}] \bnfbar \epsilon\\
 		\sigma &\bnfis& \sigma \cat \phi \bnfbar \phi\\
-		\phi &\bnfis& \set{\widetilde{x = o}}
+		\phi &\bnfis& \set{\widetilde{x = r}}
 	\end{eqnarray*}
 %
 \[
@@ -94,47 +94,90 @@
 			o\ \textrm{fresh} \quad C.\mathsf{fields} = \vect{f}
 		}{
 			(h; \sigma; \newo{C}) \red (h \cat o = C[\vect{f} = \vect{\nul}]; \sigma; o)
-		}\\[4mm]
+		}
+		\\[4mm]
+
 		\tree{
 		}{
 			(h; \sigma \cat \phi; \vdecl{T}{x}) \red (h; \sigma \cat \phi \cup \set{x = \nul}; \nul)
-		}\\[4mm]
-			(h; \sigma; v; e) \red (h; \sigma; e)
+		}
 		\\[4mm]
+
+		\tree{
+			\phi(x) = r \qquad h(r) = v
+		}{
+			(h; \sigma \cat \phi; x) \red (h \set{r = \nul}; \sigma \cat \phi; v)
+		}
+		\\[4mm]
+
+		\tree{
+			h(o) = v
+		}{
+			(h; \sigma; o) \red (h \set{o = \nul}; \sigma; v)
+		}\\[4mm]
+
+		\tree{
+			h(r).f = v
+		}{
+			(h; \sigma; r.f) \red (h \set{r.f = \nul}; \sigma; v)
+		}\\[4mm]
+
+		\tree {
+			r \not= x
+		}{
+			(h;\sigma; r = v) \red (h\set{r = v};\sigma; \nul)
+		}\\[4mm]
+
+		\tree {
+			\phi(x) = r
+		}{
+			(h;\sigma \cat \phi; x = v) \red (h\set{r = v};\sigma \cat \phi; \nul)
+		}\\[4mm]
+
+
+		\tree {
+			\method{T_1}{m}{T_2 x}{e} \in h(r).\class 
+		}{
+			(h;\sigma;r.m(v)) \red (h; \sigma \cat \es; e \subst{r}{\this} \subst{v}{x})
+		}\\[4mm]
+
+		(h; \sigma; v; e) \red (h; \sigma; e)
+		\\[4mm]
+
 		\tree{
 			(h; \sigma; e) \red (h'; \sigma'; e')
 		}{
 			(h; \sigma; \econtext{E}{e}) \red (h'; \sigma'; \econtext{E}{e'})
 		}
-		\\
-		\\
-%		\tree{
-%			(h; \sigma; e_1) \red^* (h'; \sigma'; \true) %\qquad (h''; \sigma''; e_2) \red (h'; \sigma'; e')
-%		}{
-%			(h; \sigma; \lambda: \while{\true}{e}) \red (h; \sigma; e;\lambda: \while{??}{e})
-%		}\\[4mm]
+		\\[4mm]
+
+		(h;\sigma \cat \phi; \return{v}) \red (h;\sigma;v)
+		\\[4mm]
+
+		\tree{
+			l_k \in E
+		}{
+			(h;\sigma;\switch{l_k}{l: e_l}_{l \in E}) \red (h;\sigma; e_{l_k})
+		}\\[4mm]
 
 		\tree{
 		}{
 			(h; \sigma; \ifthenelse{\true}{e_1}{e_2}) \red (h; \sigma; e_1)
-		}\\[4mm]
+		}
+		\\[4mm]
 
 		\tree{
 		}{
 			(h; \sigma; \ifthenelse{\false}{e_1}{e_2}) \red (h; \sigma; e_2)
-		}\\[4mm]
-
-		\tree{
-%			(h; \sigma; e_1) \red^* (h'; \sigma'; \true) %\qquad (h''; \sigma''; e_2) \red (h'; \sigma'; e')
-		}{
-			(h; \sigma; \lambda: \while{e_1}{e_2}) \red (h; \sigma; \ifthenelse{e_1}{e_2;\lambda: \while{e_1}{e_2}}{\false})
-		}\\[4mm]
-
-		\tree{
-%			(h; \sigma; e_1) \red (h'; \sigma'; \false)
-		}{
-			(h; \sigma; \lambda: \while{\false}{e}) \red (h; \sigma; \false)
 		}
+		\\[4mm]
+
+		\tree{
+		}{
+			(h; \sigma; \lambda: \while{e_1}{e_2}) \red (h; \sigma; \ifthenelse{e_1}{e_2 ;\lambda: \while{e_1}{e_2}}{\false})
+		}
+		\\[4mm]
+
 	\end{array}
 \]
 %
