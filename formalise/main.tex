@@ -1,5 +1,6 @@
 \documentclass[a4paper]{llncs}
 %\documentclass[a4paper]{article}
+\usepackage{color}
 \usepackage{comment}
 \usepackage{xspace}
 \usepackage{amsfonts}
@@ -27,6 +28,9 @@
 \newcommand{\switch}[2]{\ensuremath{\mathtt{switch}(#1)\set{#2}}}
 \newcommand{\while}[2]{\ensuremath{\mathtt{while}(#1)\set{#2}}}
 
+
+\newcommand{\init}{\mathsf{init};}
+
 \newcommand{\econtext}[2]{\mathcal{#1}[#2]}
 
 %%%%%%%%%%
@@ -42,6 +46,8 @@
 
 	\maketitle
 
+
+\section{Syntax}
 	Syntax:
 \[
 	\begin{array}{lrcl}
@@ -95,91 +101,179 @@
 		}{
 			(h; \sigma; \newo{C}) \red (h \cat o = C[\vect{f} = \vect{\nul}]; \sigma; o)
 		}
-		\\[4mm]
+		\\[6mm]
 
 		\tree{
 		}{
 			(h; \sigma \cat \phi; \vdecl{T}{x}) \red (h; \sigma \cat \phi \cup \set{x = \nul}; \nul)
 		}
-		\\[4mm]
+		\\[6mm]
 
 		\tree{
 			\phi(x) = r \qquad h(r) = v
 		}{
 			(h; \sigma \cat \phi; x) \red (h \set{r = \nul}; \sigma \cat \phi; v)
 		}
-		\\[4mm]
+		\\[6mm]
+
+%		\tree{
+%			h(o) = v
+%		}{
+%			(h; \sigma; o) \red (h \set{o = \nul}; \sigma; v)
+%		}\\[6mm]
 
 		\tree{
-			h(o) = v
+			r \not= x \qquad h(r) = v
 		}{
-			(h; \sigma; o) \red (h \set{o = \nul}; \sigma; v)
-		}\\[4mm]
-
-		\tree{
-			h(r).f = v
-		}{
-			(h; \sigma; r.f) \red (h \set{r.f = \nul}; \sigma; v)
-		}\\[4mm]
+			(h; \sigma; r) \red (h \set{r = \nul}; \sigma; v)
+		}\\[6mm]
 
 		\tree {
 			r \not= x
 		}{
 			(h;\sigma; r = v) \red (h\set{r = v};\sigma; \nul)
-		}\\[4mm]
+		}\\[6mm]
 
 		\tree {
 			\phi(x) = r
 		}{
 			(h;\sigma \cat \phi; x = v) \red (h\set{r = v};\sigma \cat \phi; \nul)
-		}\\[4mm]
+		}\\[6mm]
 
 
 		\tree {
 			\method{T_1}{m}{T_2 x}{e} \in h(r).\class 
 		}{
 			(h;\sigma;r.m(v)) \red (h; \sigma \cat \es; e \subst{r}{\this} \subst{v}{x})
-		}\\[4mm]
+		}\\[6mm]
 
-		(h; \sigma; v; e) \red (h; \sigma; e)
-		\\[4mm]
+		\tree{}{(h; \sigma; v; e) \red (h; \sigma; e)}
+		\\[6mm]
 
 		\tree{
 			(h; \sigma; e) \red (h'; \sigma'; e')
 		}{
 			(h; \sigma; \econtext{E}{e}) \red (h'; \sigma'; \econtext{E}{e'})
 		}
-		\\[4mm]
+		\\[6mm]
 
-		(h;\sigma \cat \phi; \return{v}) \red (h;\sigma;v)
-		\\[4mm]
+		\tree{}{(h;\sigma \cat \phi; \return{v}) \red (h;\sigma;v)}
+		\\[6mm]
 
 		\tree{
 			l_k \in E
 		}{
 			(h;\sigma;\switch{l_k}{l: e_l}_{l \in E}) \red (h;\sigma; e_{l_k})
-		}\\[4mm]
+		}\\[6mm]
 
 		\tree{
 		}{
 			(h; \sigma; \ifthenelse{\true}{e_1}{e_2}) \red (h; \sigma; e_1)
 		}
-		\\[4mm]
+		\\[6mm]
 
 		\tree{
 		}{
 			(h; \sigma; \ifthenelse{\false}{e_1}{e_2}) \red (h; \sigma; e_2)
 		}
-		\\[4mm]
+		\\[6mm]
 
 		\tree{
 		}{
 			(h; \sigma; \lambda: \while{e_1}{e_2}) \red (h; \sigma; \ifthenelse{e_1}{e_2 ;\lambda: \while{e_1}{e_2}}{\false})
 		}
-		\\[4mm]
+		\\[6mm]
 
 	\end{array}
 \]
+
+\section{Typing}
+
+\begin{eqnarray*}
+	\Gamma &\bnfis& r: C[\set{S_i}]_{i \in I} \cat \Gamma \bnfbar \es\\
+	\Delta &\bnfis& r: T \cat \Delta \bnfis \es 
+\end{eqnarray*}
+
+\[
+	\begin{array}{c}
+		\tree {
+			\Gamma(x) = C[\set{S_i}]_{i \in I} 
+		}{
+			\Gamma; \Delta \proves C[S]\ x: C[\tinact] \dashv \Gamma; \Delta \cat x: C[\tinact]
+		}\ \trule{Scope}
+		\\[6mm]
+
+		\tree {
+		}{
+			\Gamma; \Delta \proves \nul : \Null \dashv \Gamma;\Delta
+		}\ \trule{Null}
+		\\[6mm]
+
+		\tree {
+			\dk{l \in E}
+		}{
+			\Gamma; \Delta \proves l : E \dashv \Gamma; \Delta
+		}\ \trule{Enum}
+		\\[6mm]
+
+		\tree {
+		}{
+			\Gamma; \Delta \cat r: \tinact \proves r: T \dashv \Gamma; \Delta \cat r: T
+		}\ \trule{Path}
+		\\[6mm]
+
+		\tree {
+			\Gamma; \Delta r: T \proves e: T' \dashv \Gamma''; \Delta'' \cat r: C[m(T_x\ x); S] \qquad
+			\method{T_m}{m}{T_x\ x}{e'} \in C.\class
+			\qquad
+			\dk{\textrm{stack frame}}
+		}{
+			\Gamma; \Delta \cat r: T \proves r.m(e): T \dashv \Gamma'; \Delta' \cat r: C[S]
+		}\ \trule{Call}
+		\\[6mm]
+
+		\tree {
+			\Gamma; \Delta \proves e_1 \dashv \Gamma''; \Delta'' \qquad
+			\Gamma''; \Delta'' \proves e_2 \dashv \Gamma'; \Delta'
+		}{
+			\Gamma; \Delta \proves e_1; e_2: T \dashv \Gamma'; \Delta'
+		}\ \trule{Seq}
+		\\[6mm]
+
+		\tree {
+			\Gamma \cat r: C[\set{S}_{i \in I}]; \Delta \cat r: C[S] \proves e: C[S] \dashv \Gamma' \cat r: C[\set{S}_{i \in I}]; \Delta' \cat r: C[S']
+		}{
+			\Gamma \cat r: C[\set{S}_{i \in I} \cup \set{S}]; \Delta \cat r: C[\tinact] \proves r = e : C[\tinact] \dashv \Gamma' \cat r: C[\set{S}_{i \in I}]; \Delta' \cat r: C[S']
+		}\ \trule{Assign}
+		\\[6mm]
+
+		\tree {
+			\dk{o ???} \qquad \dk{\textrm{o should be assignable}}
+		}{
+			\Gamma; \Delta \cat o: C[\init S] \proves \newo{C} : C[\init S] \dashv \Gamma; \Delta \cat o: C[S]
+		}\ \trule{New}
+		\\[6mm]
+
+
+		\tree {
+			\Gamma; \Delta \proves e \dashv \Gamma'; \Delta' \qquad \dk{\textrm{stack frame}}
+		}{
+			\Gamma; \Delta \cat \tilde{x}: \tilde{T} \proves \return{e} \dashv \Gamma'; \Delta'
+		}\ \trule{Return}
+		\\[6mm]
+
+		\tree {
+			\begin{array}{l}
+				\Gamma; \Delta \cat r : T \proves r.m(e) : E \dashv \Gamma''; \Delta'' \cat r: C[\lrangle{S_l}_{i \in E}] \\
+				\forall l \in E, \Gamma''; \Delta'' \cat r: C[S_l] \proves e_l: C[S_l] \dashv \Gamma'; \Delta' \cat r: C[S]
+			\end{array}
+		}{
+			\Gamma; \Delta \cat r: T \proves \switch{r.m(e)}{l: e_l}_{l \in E} \dashv \Gamma'; \Delta \cat r: C[S]
+		}
+	\end{array}
+\]
+
+
 %
 
 
