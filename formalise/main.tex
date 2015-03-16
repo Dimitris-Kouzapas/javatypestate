@@ -285,6 +285,21 @@
 		}{
 			\Gamma; \Delta \cat r: T \proves \lambda: \while{e_1}{e_2} \dashv \Gamma'; \Delta'
 		}
+		\\[6mm]
+
+		\tree {
+			\begin{array}{l}
+				\Gamma_1; \Delta_1 \proves e; e_1 \dashv \Gamma'; \Delta'
+				\qquad 
+				\Gamma_2; \Delta_2 \proves e;e_2 \dashv \Gamma''; \Delta''
+				\\
+				r: C[\set{S_1, S_2}] \in \Delta \textrm{ if } r: C[S_1] \in \Delta_2 \wedge r: C[S_2] \in \Delta_2
+				\\
+				\Gamma = \dk{\Gamma' \cup \Gamma''}
+			\end{array}
+		}{
+			\Gamma; \Delta \cat r: T \proves \lambda: \ifthenelse{e_1}{e_2} \dashv \Gamma'; \Delta'
+		}
 	\end{array}
 \]
 
