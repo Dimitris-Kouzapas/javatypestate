@@ -71,6 +71,8 @@
 		& T & \bnfis & C[\set{T_i\ f_i}_{i \in I}]\\
 		& v & \bnfis & \dots \bnfbar o\\
 		& r & \bnfis & o \bnfbar x \bnfbar r.f \\
+		& S & \bnfis & \init S^i \bnfbar S^i\\
+		& S^i &\bnfis & \tinact \bnfbar T_1\ m(T_2\ x); S \bnfbar \set{S_i}_{i \in I} \bnfbar \lrangle{S_i}_{i \in I}\\
 		\textrm{(Context)} & \mathcal{E} &\bnfis& \hole \bnfbar \mathcal{E}; e \bnfbar r.m(\mathcal{E}) \bnfbar r = \mathcal{E}
 				\bnfbar \return{\mathcal{E}}\\
 				&&\bnfbar& \switch{\mathcal{E}}{l:e}_{l \in E} \bnfbar \ifthenelse{\mathcal{E}}{e}{e}
@@ -190,8 +192,15 @@
 \section{Typing}
 
 \begin{eqnarray*}
-	\Gamma &\bnfis& r: C[\set{S_i}]_{i \in I} \cat \Gamma \bnfbar \es\\
+	\Gamma &\bnfis& r: C[\set{S_i}_{i \in I}] \cat \Gamma \bnfbar \es\\
 	\Delta &\bnfis& r: T \cat \Delta \bnfis \es 
+\end{eqnarray*}
+
+\begin{eqnarray*}
+	\Delta_1 \uplus \Delta_2	&=&	\set{r: C[S_1, S_2] \setbar r: C[S_1] \in \Delta_1, r: C[S_2] \in \Delta_2}\\
+					&\cup&	\Delta_1\backslash\Delta_2 \cup \Delta_2\backslash\Delta_1\\
+	\Gamma_1 \uplus \Gamma_2	&=&	\set{r: C[\set{S}_{i \in I} \cup \set{S}_{j \in J}] \setbar r: C[\set{S}_{i \in I}] \in \Delta_1, r: C[\set{S}_{j \in J}] \in \Delta_2}\\
+					&\cup&	\Gamma_1\backslash\Gamma_2 \cup \Gamma_2\backslash\Gamma_1
 \end{eqnarray*}
 
 \[
@@ -223,7 +232,7 @@
 		\\[6mm]
 
 		\tree {
-			\Gamma; \Delta r: T \proves e: T' \dashv \Gamma''; \Delta'' \cat r: C[m(T_x\ x); S] \qquad
+			\Gamma; \Delta \cat r: T \proves e: T' \dashv \Gamma''; \Delta'' \cat r: C[m(T_x\ x); S] \qquad
 			\method{T_m}{m}{T_x\ x}{e'} \in C.\class
 			\qquad
 			\dk{\textrm{stack frame}}
@@ -278,9 +287,8 @@
 				\qquad 
 				\Gamma_2; \Delta_2 \proves e_1;e_2 \dashv \Gamma''; \Delta''
 				\\
-				r: C[\set{S_1, S_2}] \in \Delta \textrm{ if } r: C[S_1] \in \Delta_2 \wedge r: C[S_2] \in \Delta_2
-				\\
-				\Gamma = \dk{\Gamma' \cup \Gamma''}
+				\Delta = \Delta' \uplus \Delta'' \qquad
+				\Gamma = \Gamma' \uplus \Gamma''
 			\end{array}
 		}{
 			\Gamma; \Delta \cat r: T \proves \lambda: \while{e_1}{e_2} \dashv \Gamma'; \Delta'
@@ -293,9 +301,8 @@
 				\qquad 
 				\Gamma_2; \Delta_2 \proves e;e_2 \dashv \Gamma''; \Delta''
 				\\
-				r: C[\set{S_1, S_2}] \in \Delta \textrm{ if } r: C[S_1] \in \Delta_2 \wedge r: C[S_2] \in \Delta_2
-				\\
-				\Gamma = \dk{\Gamma' \cup \Gamma''}
+				\Delta = \Delta' \uplus \Delta'' \qquad
+				\Gamma = \Gamma' \uplus \Gamma''
 			\end{array}
 		}{
 			\Gamma; \Delta \cat r: T \proves \lambda: \ifthenelse{e_1}{e_2} \dashv \Gamma'; \Delta'
