@@ -3,6 +3,7 @@ package demos.loop;
 class ClientTest1 {
   	void test () {
   		LoopImpl loop = new LoopImpl();
+  		boolean b = 5 == 6;
   		out: do {
   			switch (loop.finished().getEnum()) {
   			case Bool.FALSE:
@@ -10,6 +11,6 @@ class ClientTest1 {
   			case Bool.TRUE:
   				break out;
   			}
-  		} while(true);
+  		} while(b);
   	}
 }
