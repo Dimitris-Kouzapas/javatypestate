@@ -1,12 +1,11 @@
 package demos.loop;
 
-class ClientTest1 {
+class ClientTest3 {
 	void test2() {
 		test(new LoopImpl());
 	}
 
   	void test (LoopImpl loop) {
-//  		LoopImpl loop = new LoopImpl();
 		switch(loop.finished().getEnum()) {
 			case Bool.FALSE:
 				test(loop);
