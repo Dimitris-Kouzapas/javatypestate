@@ -37,7 +37,6 @@ public class SMTPMessage {
       message = this.command + " " + this.payload + "\\r\\n";
     }
 
-    System.out.println(message);
     return message;
   }
 

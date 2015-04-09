@@ -1,9 +1,10 @@
-package demos.Final_demos.SMTP;
+package demos.SMTP;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Console;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
@@ -33,12 +34,12 @@ public class CMain {
 
 		// Method invocation follows the C typestate
 		SMTPMessage payload1 = SMTPMessage.Parse(currentC.receive_220StringFromS());
-		System.out.println("S: " + payload1);
-		System.out.print("Choose EHLO or QUIT: ");
+		System.out.println("Received from S: " + payload1);
+		System.out.print("Choose a label among EHLO, or QUIT: ");
 		String label1 = safeRead(readerC).equals("EHLO") ? "1" : "2";
 		switch(currentC.send_Choice1LabelToS(label1).getEnum()) {
 			case Choice1.EHLO:
-			System.out.print("Payload for EHLO: ");
+			System.out.print("Send to S text for EHLO: ");
 			String payload2 = safeRead(readerC);
 			currentC.send_ehloStringToS((new SMTPMessage("EHLO", payload2)).toString());
 			_X: do{
@@ -51,7 +52,7 @@ public class CMain {
 					case Choice2._250:
 					String payload4 = currentC.receive_250StringFromS();
 					// System.out.println("Received from S: " + payload4);
-					System.out.print("Choose STARTTLS or QUIT: ");
+					System.out.print("Choose a label among STARTTLS, or QUIT: ");
 					String label2 = safeRead(readerC).equals("STARTTLS") ? "1" : "2";
 
 					switch(currentC.send_Choice3LabelToS(label2).getEnum()) {
@@ -81,13 +82,13 @@ public class CMain {
 							System.exit(-1);
 						}
 
-						System.out.println("S: " + payload6);
-						System.out.print("Choose EHLO or QUIT: ");
+						System.out.println("Received from S: " + payload6);
+						System.out.print("Choose a label among EHLO, or QUIT: ");
 						String label3 = safeRead(readerC).equals("EHLO") ? "1" : "2";
 
 						switch(currentC.send_Choice1LabelToS(label3).getEnum()) {
 							case Choice1.EHLO:
-							System.out.print("Payload for EHLO: ");
+							System.out.print("Send to S text for EHLO: ");
 							String payload7 = safeRead(readerC);
 							currentC.send_ehloStringToS((new SMTPMessage("EHLO", payload7)).toString());
 							_X1: do{
@@ -101,22 +102,23 @@ public class CMain {
 									String payload9 = currentC.receive_250StringFromS();
 									// System.out.println("Received from S: " + payload9);
 									_Y: do{
-										System.out.print("Choose AUTH or QUIT: ");
+										System.out.print("Choose a label among AUTH, QUIT: ");
 										String label4 = safeRead(readerC).equals("AUTH") ? "1" : "2";
 										switch(currentC.send_Choice4LabelToS(label4).getEnum()) {
 											case Choice4.AUTH:
 											System.out.print("Username: ");
 											String username = safeRead(readerC);
-											System.out.print("Password: ");
-											//String password = safeRead(readerC);
-											String password = "sona85eni";
+
+											Console console = System.console();
+											Object[] tmp = {};
+											String password = new String(console.readPassword("Password: ", tmp));
 
 											String token = "";
 											try {
 												BASE64Encoder encoder = new BASE64Encoder();
 												token = encoder.encodeBuffer((username + "\0" + username + "\0" + password).getBytes("UTF-8")).trim();
 											} catch (IOException e) {
-												System.out.println("Unable to use base64 encoding");
+												System.out.println("unable to use base64 encoding");
 											}
 
 											currentC.send_authStringToS((new SMTPMessage("AUTH PLAIN", token)).toString());
@@ -126,7 +128,7 @@ public class CMain {
 												String payload11 = currentC.receive_235StringFromS();
 												// System.out.println("Received from S: " + payload11);
 												_Z1: do{
-													System.out.print("Choose MAIL or QUIT: ");
+													System.out.print("Choose a label among MAIL, or QUIT: ");
 													String label5 = safeRead(readerC).equals("MAIL") ? "1" : "2";
 													switch(currentC.send_Choice6LabelToS(label5).getEnum()) {
 														case Choice6.MAIL:
@@ -142,13 +144,13 @@ public class CMain {
 
 															case Choice7._250:
 															String payload14 = currentC.receive_250StringFromS();
-															//System.out.println("S: " + payload14);
+															System.out.println("Received from S: " + payload14);
 															_Z2: do{
-																System.out.print("Choose RCPT or DATA: ");
+																System.out.print("Choose a label among RCPT, or DATA: ");
 																String label6 = safeRead(readerC).equals("RCPT") ? "1" : "2";
 																switch(currentC.send_Choice8LabelToS(label6).getEnum()) {
 																	case Choice8.RCPT:
-																	System.out.print("Email to: ");
+																	System.out.print("Send to S text for RCPT: ");
 																	String payload15 = safeRead(readerC);
 																	currentC.send_rcptStringToS((new SMTPMessage("RCPT TO:<"+payload15+">")).toString());
 																	switch(currentC.receive_Choice9LabelFromS().getEnum()) {
@@ -163,10 +165,10 @@ public class CMain {
 																	// String payload17 = safeRead(readerC);
 																	currentC.send_dataStringToS((new SMTPMessage("DATA")).toString());
 																	String payload18 = currentC.receive_354StringFromS();
-																	System.out.println("S: " + payload18);
+																	System.out.println("Received from S: " + payload18);
 																	_Z3: do{
 																		String label7 = "";
-																		System.out.print("Choose DATALINE, SUBJECT or ATAD: ");
+																		System.out.print("Choose a label among DATALINE, SUBJECT, or ATAD: ");
 																		String sR = safeRead(readerC);
 																		if (sR.equals("DATALINE")) {
 																			label7 = "1";
@@ -177,12 +179,12 @@ public class CMain {
 																		}
 																		switch(currentC.send_Choice10LabelToS(label7).getEnum()) {
 																			case Choice10.DATALINE:
-																			System.out.print("Email: ");
+																			System.out.print("Send to S text for DATALINE: ");
 																			String payload19 = safeRead(readerC);
 																			currentC.send_datalineStringToS(payload19 + CRLF);
 																			continue _Z3;
 																			case Choice10.SUBJECT:
-																			System.out.print("Subject of the Email: ");
+																			System.out.print("Send to S text for SUBJECT: ");
 																			String payload20 = safeRead(readerC);
 																			currentC.send_subjectStringToS((new SMTPMessage("SUBJECT:"+payload20, CRLF)).toString());
 																			continue _Z3;
@@ -191,7 +193,7 @@ public class CMain {
 																			// String payload21 = safeRead(readerC);
 																			currentC.send_atadStringToS("." + CRLF);
 																			String payload22 = currentC.receive_250StringFromS();
-																			//System.out.println("S: " + payload22);
+																			System.out.println("Received from S: " + payload22);
 																			continue _Z1;
 																		}
 																	}
@@ -214,7 +216,7 @@ public class CMain {
 												break _Y;
 												case Choice5._535:
 												String payload24 = currentC.receive_535StringFromS();
-												//System.out.println("Received from S: " + payload24);
+												System.out.println("Received from S: " + payload24);
 												continue _Y;
 											}
 											break _Y;
