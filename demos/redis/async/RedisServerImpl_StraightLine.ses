@@ -1,4 +1,0 @@
-package demos.redis.async;
-
-public class RedisServerImpl_StraightLine typestate RedisClient {
-}

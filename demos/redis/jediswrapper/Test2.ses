@@ -11,7 +11,7 @@ public class Test2 {
 	   	jedis.WATCH(new String[]{ "address" });
 	   	doTransaction(jedis);
 	}
-
+	
     // These methods seem to have a useful type inferred. We don't allow
     // inheritance, which simplifies things.
 	void doTransaction (JedisWrapper jedis) {

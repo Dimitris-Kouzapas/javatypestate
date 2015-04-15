@@ -10,7 +10,7 @@ public class Test1 {
 	   // jedis.MULTI();   
 	   jedis.SET("address", "Milton Keynes");
 	   // Adding watches after MULTI is not allowed
-       jedis.WATCH(new String[]{ "address" });
+       // jedis.WATCH(new String[]{ "address" });
 	   switch (jedis.EXEC().getEnum()) {
 	   case Result.OK:
 	      // Can't exec again:
