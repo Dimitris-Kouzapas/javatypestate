@@ -1,6 +1,0 @@
-package demos.redis.async;
-
-// Enumerates the various ways a client can exit EXEC_response.
-enum GET_responseExit {
-	GET, EXEC, OTHERWISE;
-} 
