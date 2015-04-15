@@ -44,23 +44,20 @@ class RedisServerRole typestate RedisServerProtocol {
 	// waits for labels to be received and dispatches on them in order to execute the relevant bit of 
 	// code. In this sense it is an unorthodox programming model for Java.
 	
-	// We could factor the straight-line code into methods which "manage" the implementation of each
-	// service (I think this is the "modularity" idea in Gay et al 2010).
-	
 	public static void main (String[] args) {
 		RedisServerRole redis = new RedisServerRole();
 		String[] ks = redis.receiveWATCH();
-		WATCHING: while (true)
+		WATCHING: do {
 			switch (redis.receiveLabel_Watching().getEnum()) {
 				case WatchingLabel.GET_request:
 					String k = redis.receiveArg_GET();
-					redis.sendGET_response(null); // TODO
+					redis.sendGET_response(""); // TODO
 					continue WATCHING;
 				case WatchingLabel.WATCH:
 					String[] ks2 = redis.receiveArg_WATCH();
 					continue WATCHING;
 				case WatchingLabel.MULTI:
-					QUEUED: while (true)
+					QUEUED: do {
 						switch (redis.receiveLabel_Queued().getEnum()) {
 							case QueuedLabel.SET:
 								String k2 = redis.receiveArg0_SET();
@@ -76,6 +73,8 @@ class RedisServerRole typestate RedisServerProtocol {
 										continue QUEUED;
 								}
 						}
+					} while (false);
 			}
+		} while (false);
 	}
 }
