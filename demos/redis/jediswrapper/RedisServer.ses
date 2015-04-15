@@ -1,8 +1,7 @@
 package demos.redis.jediswrapper;
 
 // A version of the server protocol where asychronous request/response pairs are coalesced
-// into synchronous methods with return values. The Scribble documentation recommends a naming 
-// convention that would make it relatively easy to adapt the translation to do this.
+// into synchronous methods with return values.
 
 typestate RedisServer {
 	session

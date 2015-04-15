@@ -3,14 +3,13 @@ package demos.loop;
 class ClientTest1 {
   	void test () {
   		LoopImpl loop = new LoopImpl();
-  		boolean b = 5 == 6;
   		out: do {
-  			switch (loop.finished().getEnum()) {
+  			switch (loop.finished()) {
   			case Bool.FALSE:
-  				continue out;
+  				continue out
   			case Bool.TRUE:
-  				break out;
+  				*
   			}
-  		} while(b);
+  		} while(false)
   	}
 }
