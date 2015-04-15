@@ -34,22 +34,22 @@ class RedisClientRole typestate RedisClientProtocol {
 
 	public static void main (String[] args) {
 		RedisClientRole redis = new RedisClientRole();
-		redis.sendWATCH(null); // TODO
-		WATCHING: while (true)
+		redis.sendWATCH(new String[] {}); // TODO
+		WATCHING: do {
 			switch (redis.sendLabel_Watching(0).getEnum()) { // TODO
 				case WatchingLabel.GET_request:
-					redis.sendArg_GET(null); // TODO
+					redis.sendArg_GET(""); // TODO
 					String v = redis.receiveGET_response();
 					continue WATCHING;
 				case WatchingLabel.WATCH:
-					redis.sendArg_WATCH(null); // TODO
+					redis.sendArg_WATCH(new String[] {}); // TODO
 					continue WATCHING;
 				case WatchingLabel.MULTI:
-					QUEUED: while (true)
+					QUEUED: do {
 						switch (redis.sendLabel_Queued(0).getEnum()) { // TODO
 							case QueuedLabel.SET:
-								redis.sendArg0_SET(null); // TODO
-								redis.sendArg1_SET(null); // TODO
+								redis.sendArg0_SET(""); // TODO
+								redis.sendArg1_SET(""); // TODO
 								continue QUEUED;
 							case QueuedLabel.DISCARD:
 								break WATCHING;
@@ -61,6 +61,8 @@ class RedisClientRole typestate RedisClientProtocol {
 										continue QUEUED;
 								}
 						}
+					} while (false);
 			}
+		} while (false);
 	}
 }
