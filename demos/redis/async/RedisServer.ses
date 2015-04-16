@@ -1,0 +1,22 @@
+package demos.redis.async;
+
+// A version of the server protocol where the original asynchrony is retained.
+
+typestate RedisServer {
+	session
+		Init = {
+           void WATCH(String[]): Watching
+		}
+	where
+		Watching = {
+			void GET_req(String): Watching,
+			void WATCH(String[]): Watching,
+			void MULTI(): Queued
+		}
+
+		Queued = {
+		    void SET(String, String): Queued,
+			void DISCARD(): end,
+			void EXEC(): <OK:end, FAIL:Queued>
+		}
+}
