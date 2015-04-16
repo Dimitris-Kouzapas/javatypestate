@@ -1,6 +1,6 @@
 package demos.redis.jediswrapper;
 
-// A version of the server protocol where asychronous request/response pairs are coalesced
+// A version of the server protocol where asynchronous request/response pairs are coalesced
 // into synchronous methods with return values.
 
 typestate RedisServer {

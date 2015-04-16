@@ -1,8 +1,7 @@
 To install the javatypestate
 
 0) go to your desired directory:	cd my/path/directory
-1) Downlowad the code:			git clone https://github.com/Dimitris-Kouzapas/javatypestate
+1) Download the code:			git clone https://github.com/Dimitris-Kouzapas/javatypestate
 2) build the project:			ant
-3) run the typecheker:			tjavac [OPTIONS] [FILENAME]
+3) run the typechecker:			mungo [OPTIONS] [FILENAME]
 4) alternative running:			java TypestateMain [OPTIONS] [FILENAME]
-
