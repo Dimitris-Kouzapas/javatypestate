@@ -3,7 +3,7 @@ package demos.redis.async;
 typestate RedisClient {
 -	session
 -		Init = {
--			Init_Exit init (): <
+-			Post_Init init (): <
 -				GET: Read, 
 -				EXEC: Execute, 
 -				OTHERWISE: end
@@ -11,16 +11,16 @@ typestate RedisClient {
 -		}
 -	where
 -		Read = {
--			GET_responseExit GET_response(String): <
--				GET: Awaiting_GET, 
--				EXEC: Awaiting_EXEC, 
+-			Post_GET GET_resp(String): <
+-				GET: Read, 
+-				EXEC: Execute, 
 -				OTHERWISE: end
 -			>
 -		}
 -
 -		Execute = {
--			void EXEC_response_OK(): end,
--			EXEC_responseExit EXEC_response_FAIL(): <
+-			void EXEC_ok(): end,
+-			Post_EXEC_fail EXEC_fail(): <
 -				EXEC: Awaiting_EXEC, 
 -				OTHERWISE: end
 -			>
