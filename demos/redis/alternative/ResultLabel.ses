@@ -1,6 +1,0 @@
-package demos.redis.alternative;
-
-enum ResultLabel {
-	OK, 
-	FAIL;
-} 

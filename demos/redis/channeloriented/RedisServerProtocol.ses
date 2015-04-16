@@ -1,6 +1,4 @@
-package demos.redis.alternative;
-
-// See my notes entitled "Scribble-to-typestate translation" for discussion.
+package demos.redis.channeloriented;
 
 typestate RedisServerProtocol {
 	session
