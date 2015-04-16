@@ -1,7 +1,5 @@
 package demos.redis.async;
 
-// A version of the server protocol where the original asynchrony is retained.
-
 typestate RedisServer {
 	session
 		Init = {
@@ -17,6 +15,8 @@ typestate RedisServer {
 		Queued = {
 		    void SET(String, String): Queued,
 			void DISCARD(): end,
-			Post_EXEC_req EXEC_req(): <OK:end, FAIL:Queued>
+			// What is my state after receiving an asynchronous EXEC request?
+			// I won't know until I'm ready to respond to the client.
+			void EXEC_req(): ???
 		}
 }
