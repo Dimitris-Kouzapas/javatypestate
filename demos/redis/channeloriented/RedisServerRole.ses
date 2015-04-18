@@ -1,7 +1,5 @@
 package demos.redis.channeloriented;
 
-// Dummy implementation, which we can use to illustrate the problem with implementing services.
-
 class RedisServerRole typestate RedisServerProtocol {
     String[] receiveWATCH() {
     	return null;
