@@ -8,8 +8,8 @@ global protocol Redis (role Client as C, role Server as S) {
    WATCH(List) from C to S;
    rec Watching {
       choice at C {
-         GET_request(String) from C to S;
-         GET_response(String) from S to C;
+         GET(String) from C to S;
+         GET_resp(String) from S to C;
          continue Watching;
       } or {
       	 WATCH(List) from C to S;
@@ -23,11 +23,11 @@ global protocol Redis (role Client as C, role Server as S) {
             } or {
                DISCARD() from C to S;
             } or {
-               EXEC_request() from C to S;
+               EXEC() from C to S;
                choice at S {
-                   EXEC_response_OK() from S to C;
+                   EXEC_ok() from S to C;
                } or {
-               	   EXEC_response_FAIL() from S to C;
+               	   EXEC_fail() from S to C;
                	   continue Queued;
            	   }
             }

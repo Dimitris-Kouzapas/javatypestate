@@ -8,8 +8,8 @@ local protocol Redis at Server(role Client as C,role Server as S) {
 	WATCH(List) from C;
 	rec Watching {
 		choice at C {
-			GET_request(String) from C;
-			GET_response(String) to C;
+			GET(String) from C;
+			GET_resp(String) to C;
 			continue Watching;
 		} or {
 			WATCH(List) from C;
@@ -23,11 +23,11 @@ local protocol Redis at Server(role Client as C,role Server as S) {
 				} or {
 					DISCARD() from C;
 				} or {
-					EXEC_request() from C;
+					EXEC() from C;
 					choice at S {
-						EXEC_response_OK() to C;
+						EXEC_ok() to C;
 					} or {
-						EXEC_response_FAIL() to C;
+						EXEC_fail() to C;
 						continue Queued;
 					}
 				}
