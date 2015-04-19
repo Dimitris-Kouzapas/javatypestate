@@ -10,12 +10,12 @@ public class Test2 {
 	   	redis.WATCH(new String[]{ "name" });
 	   	redis.WATCH(new String[]{ "address" });
 	   	doTransaction(redis);
+		redis.MULTI();
 	}
 	
     // These methods seem to have a useful type inferred. We don't allow
     // inheritance, which simplifies things.
 	void doTransaction (Redis redis) {
-		redis.MULTI();
 	   	switch (redis.EXEC().getEnum()) {
 	   	case Result.OK:
 	      	break;
