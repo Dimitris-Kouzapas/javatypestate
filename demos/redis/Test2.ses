@@ -1,4 +1,4 @@
-package demos.redis.jediswrapper;
+package demos.redis;
 
 public class Test2 {
 	public static void main (String[] args) {
@@ -6,26 +6,26 @@ public class Test2 {
 	}
 	
 	void run () {
-	   	JedisWrapper jedis = new JedisWrapper();
-	   	jedis.WATCH(new String[]{ "name" });
-	   	jedis.WATCH(new String[]{ "address" });
-	   	doTransaction(jedis);
+	   	Redis redis = new Redis();
+	   	redis.WATCH(new String[]{ "name" });
+	   	redis.WATCH(new String[]{ "address" });
+	   	doTransaction(redis);
 	}
 	
     // These methods seem to have a useful type inferred. We don't allow
     // inheritance, which simplifies things.
-	void doTransaction (JedisWrapper jedis) {
-		jedis.MULTI();
-	   	switch (jedis.EXEC().getEnum()) {
+	void doTransaction (Redis redis) {
+		redis.MULTI();
+	   	switch (redis.EXEC().getEnum()) {
 	   	case Result.OK:
 	      	break;
 	   	case Result.FAIL:
-  			discardTransaction(jedis);
+  			discardTransaction(redis);
 			break;
 	   	}
 	}
 
-    void discardTransaction (JedisWrapper jedis) {
-    	jedis.DISCARD();
+    void discardTransaction (Redis redis) {
+    	redis.DISCARD();
     }
 }

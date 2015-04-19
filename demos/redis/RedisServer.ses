@@ -1,0 +1,20 @@
+package demos.redis;
+
+typestate RedisServer {
+	session
+		Init = {
+           void WATCH(String[]): Watching
+		}
+	where
+		Watching = {
+			String GET(String): Watching,
+			void WATCH(String[]): Watching,
+			void MULTI(): Queued
+		}
+
+		Queued = {
+		    void SET(String, String): Queued,
+			void DISCARD(): end,
+			Result EXEC(): <OK:end, FAIL:Queued>
+		}
+}

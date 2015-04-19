@@ -1,20 +1,31 @@
-package demos.redis.jediswrapper;
+package demos.redis;
 
-typestate RedisServer {
-	session
-		Init = {
-           void WATCH(String[]): Watching
-		}
-	where
-		Watching = {
-			String GET(String): Watching,
-			void WATCH(String[]): Watching,
-			void MULTI(): Queued
-		}
+// Would like to wrap an existing client, such as Jedis.
+// import redis.clients.jedis.JedisCommands;
+// But we're based on a J2SE 1.4 front end.
 
-		Queued = {
-		    void SET(String, String): Queued,
-			void DISCARD(): end,
-			Result EXEC(): <OK:end, FAIL:Queued>
-		}
+public class Redis typestate RedisServer {
+    void WATCH(String[] keys) {
+    }
+
+    String GET(String keys) {
+       throw new RuntimeException();
+    }
+
+	String LPOP(String key) {
+       throw new RuntimeException();
+	}
+	
+	void MULTI () {
+	}
+
+    void SET(String key, String value) {
+    }
+
+    void DISCARD () {
+    }
+    
+    Result EXEC () {
+       return null;
+    } 
 }

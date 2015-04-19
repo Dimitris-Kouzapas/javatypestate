@@ -1,25 +1,25 @@
-package demos.redis.jediswrapper;
+package demos.redis;
 
 public class Test1 {
 	public static void main (String[] args) {
-	   JedisWrapper jedis = new JedisWrapper();
-	   jedis.WATCH(new String[]{ "name", "address" });
-	   jedis.MULTI();
-	   jedis.SET("name", "Alan");
+	   Redis redis = new Redis();
+	   redis.WATCH(new String[]{ "name", "address" });
+	   redis.MULTI();
+	   redis.SET("name", "Alan");
 	   // Nested MULTI is not allowed
 	   // jedis.MULTI();   
-	   jedis.SET("address", "Milton Keynes");
+	   redis.SET("address", "Milton Keynes");
 	   // Adding watches after MULTI is not allowed
-       // jedis.WATCH(new String[]{ "address" });
-	   switch (jedis.EXEC().getEnum()) {
+       // redis.WATCH(new String[]{ "address" });
+	   switch (redis.EXEC().getEnum()) {
 	   case Result.OK:
 	      // Can't exec again:
-	      // jedis.EXEC();
+	      // redis.EXEC();
 	      break;
 	   case Result.FAIL:
 	      // On fail I can do extra stuff (presumably pointlessly):
-     	  jedis.SET("name", "Turing");
-	      jedis.DISCARD();
+     	  redis.SET("name", "Turing");
+	      redis.DISCARD();
 	      break;
 	   }
 	}
