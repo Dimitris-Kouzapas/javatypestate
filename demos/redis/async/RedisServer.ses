@@ -7,7 +7,7 @@ typestate RedisServer {
 		}
 	where
 		Watching = {
-			void GET_req(String): Watching,
+			void GET(String): Watching,
 			void WATCH(String[]): Watching,
 			void MULTI(): Queued
 		}
@@ -17,6 +17,6 @@ typestate RedisServer {
 			void DISCARD(): end,
 			// What is my state after receiving an asynchronous EXEC request?
 			// I won't know until I'm ready to respond to the client.
-			void EXEC_req(): ???
+			void EXEC(): ???
 		}
 }

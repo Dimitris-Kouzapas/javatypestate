@@ -8,7 +8,7 @@ typestate RedisServerProtocol {
 	where
 		Watching = {
 			WatchingLabel receiveLabel_Watching(): <
-				GET_request: {
+				GET: {
 					String receiveArg_GET(): {
 						void sendGET_response(String): Watching
 					}
