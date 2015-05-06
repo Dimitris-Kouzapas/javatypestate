@@ -93,41 +93,6 @@ aspect getGraph {
 	protected TypestateVar ParameterDeclaration.typestate = null;
 	protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it is a typestate method
 
-/*	protected TypeEnvironment BodyDecl.env;
-
-	class TypeEnvironment implements Iterable<TypestateVar> {
-		private Set<TypestateVar> variables;
-		private Set<TypestateVar> env;
-
-		TypeEnvironment() {
-			variables = new HashSet<TypestateVar>();
-			env = new HashSet<TypestateVar>();
-		}
-
-		protected boolean add(TypestateVar v) {
-			variables.add(v);
-			return env.add(v);
-		}
-
-		protected boolean remove(TypestateVar v) {
-			return env.remove(v);
-		}
-
-		protected void plugGraph() {
-			for(TypestateVar t: variables)
-				t.plugGraph();
-		}
-
-		protected void plugMethodGraph() {
-			for(TypestateVar t: variables)
-				t.plugMethodGraph();
-		}
-
-		public Iterator<TypestateVar> iterator() {
-			return env.iterator();
-		}
-	}
-*/
 	protected ArrayList<GraphNode> BodyDecl.pluggedGraph = new ArrayList<GraphNode>();
 	protected ArrayList<ASTNode> BodyDecl.pluggedExpr = new ArrayList<ASTNode>();
 	protected ArrayList<TypestateVar> BodyDecl.pluggedTypestate = new ArrayList<TypestateVar>();
@@ -135,23 +100,8 @@ aspect getGraph {
 	syn boolean BodyDecl.plugGraph() {
 		for(int i = 0; i < pluggedGraph.size(); i++) {
 			TypestateVar t = pluggedTypestate.get(i);
-			//GraphNode tmp = t.current;
-			t.current = pluggedGraph.get(i).plugGraph();
-			//TODO I dont like the implementation here
-			if(t.current instanceof InitNode)
-				t.addTypestate(((Expr) pluggedExpr.get(i)), this);
-			else
-				t.checkError(((Expr) pluggedExpr.get(i)));
-			//t.current = tmp;
-		}
-		return true;
-	}
-
-/*	syn boolean ConstructorDecl.plugGraph() {
-		for(int i = 0; i < pluggedGraph.size(); i++) {
-			TypestateVar t = pluggedTypestate.get(i);
 			GraphNode tmp = t.current;
-			t.current = pluggedGraph.get(i).plugGraph();
+			t.current = pluggedGraph.get(i).clonePlugGraph();
 			//TODO I dont like the implementation here
 			if(t.current instanceof InitNode)
 				t.addTypestate(((Expr) pluggedExpr.get(i)), this);
@@ -161,13 +111,35 @@ aspect getGraph {
 		}
 		return true;
 	}
-*/
+
+	syn boolean ConstructorDecl.plugGraph() {
+		GraphNode [] tmp = new GraphNode[pluggedGraph.size()];
+		for(int i = 0; i < pluggedGraph.size(); i++) {
+			TypestateVar t = pluggedTypestate.get(i);
+			tmp[i] = t.current;
+			t.current = pluggedGraph.get(i).clonePlugGraph();
+			//TODO I dont like the implementation here
+			if(t.current instanceof InitNode)
+				t.addTypestate(((Expr) pluggedExpr.get(i)), this);
+//			else
+//				t.checkError(((Expr) pluggedExpr.get(i)));
+		}
+		for(VariableDecl vd: getTypestateFields())
+			vd.typestate.checkError(vd);
+
+		for(int i = 0; i < pluggedGraph.size(); i++) {
+			TypestateVar t = pluggedTypestate.get(i);
+			t.current = tmp[i];
+		}
+		return true;
+	}
+
 	//TODO redundant
 	syn boolean BodyDecl.plugMethodGraph() {
 		for(int i = 0; i < pluggedGraph.size(); i++) {
 			TypestateVar t = pluggedTypestate.get(i);
 			GraphNode tmp = t.current;
-			t.current = pluggedGraph.get(i).plugParameterGraph();
+			t.current = pluggedGraph.get(i).plugGraph();
 			//TODO I dont like the implementation here
 			if(t.current instanceof InitNode)
 				t.addTypestate(((Expr) pluggedExpr.get(i)), this);
@@ -211,12 +183,11 @@ aspect getGraph {
 
 				for(ConstructorDecl c: getConstructorDecls())
 					c.plugGraph();
-//					c.env.plugGraph();
 				//TODO Rethink here
 				//TODO this is a big bug. it only works with one constructor
 //				if(getConstructorDecls().isEmpty())
-				for(VariableDecl vd: getTypestateFields())
-					vd.typestate.checkError(vd);
+//				for(VariableDecl vd: getTypestateFields())
+//					vd.typestate.checkError(vd);
 			}
 		}
 
@@ -251,10 +222,7 @@ aspect getGraph {
 		for(GraphNode n: r.next) {
 			getFieldGraph(n, visited);
 			for(VariableDecl vd: getTypestateFields()) {
-//				System.out.println("\n\n\n\n" + n);
 				s.get(vd).addNext(vd.typestate.current);
-//				s.get(vd).printPaths();
-//				System.out.println("\n\n\n\n");				
 			}
 		}
 
@@ -268,9 +236,8 @@ aspect getGraph {
 
 		if(md != null) {
 			md.plugGraph();
-//			md.env.plugGraph();
 			for(VariableDecl vd: getTypestateFields())
-				vd.typestate.current = vd.typestate.getConnectionGraph(md).plugGraph();//TODO .cloneGraph(vd.typestate.current);
+				vd.typestate.current = vd.typestate.getConnectionGraph(md).clonePlugGraph();//TODO .cloneGraph(vd.typestate.current);
 		}
 
 		return true;
@@ -301,7 +268,6 @@ aspect getGraph {
 				md.getGraph();
 
 		Set<TypestateVar> env = new HashSet<TypestateVar>();
-//		env = new TypeEnvironment();
 
 		for(VariableDecl vd : getTypestateFields()) {
 			if(vd.typestate == null)
@@ -356,7 +322,6 @@ aspect getGraph {
 				c.getGraph();
 
 		Set<TypestateVar> env = new HashSet<TypestateVar>();
-//		env = new TypeEnvironment();
 
 		for(VariableDecl vd : getTypestateFields()) {
 			if(vd.typestate == null)
@@ -842,12 +807,11 @@ aspect getGraph {
 			GraphNode[] parameters = new GraphNode[md.getNumParameter()];
 			for(int i = md.getNumParameter() - 1; i >=0; i--)
 				if(md.getParameter(i).typestate != null)
-					parameters[i] = md.getParameterTypestate(i).plugParameterGraph();	//TODO change the name of the plugParameterGraph()
+					parameters[i] = md.getParameterTypestate(i).plugGraph();
 
 			md.plugMethodGraph();
-//			md.env.plugMethodGraph();
 			for(VariableDecl vd: getTypestateFields())
-				vd.typestate.current = vd.typestate.getConnectionGraph(md).plugParameterGraph();		//TODO plug only the parameter graph (not the field graph)
+				vd.typestate.current = vd.typestate.getConnectionGraph(md).plugGraph();		//plug only (no clone)
 
 			for(int i = md.getNumParameter() - 1; i >= 0; i--) {
 				TypestateVar dest = md.getParameter(i).typestate;
@@ -886,7 +850,7 @@ aspect getGraph {
 						if(md.getParameter(i).typestate != null)
 							parameters[i] = md.getParameterTypestate(i);
 
-					md.typestate.current = md.typestate.current.plugGraph();			//TODO Is this correct?
+					md.typestate.current = md.typestate.current.clonePlugGraph();			//TODO Is this correct? why clone?
 
 					for(VariableDecl vd : getTypestateFields())
 						vd.typestate.current = vd.typestate.getConnectionGraph(md);
@@ -894,22 +858,22 @@ aspect getGraph {
 				else {
 					for(int i = md.getNumParameter() - 1; i >=0; i--)
 						if(md.getParameter(i).typestate != null)
-							parameters[i] = md.getParameterTypestate(i).plugParameterGraph();	//TODO plug only the parameter graph (not the field graph)
+							parameters[i] = md.getParameterTypestate(i).plugGraph();	//plug only (no clone)
 
 					md.plugMethodGraph();
-//					md.env.plugMethodGraph();
 					for(VariableDecl vd: getTypestateFields())
-						vd.typestate.current = vd.typestate.getConnectionGraph(md).plugParameterGraph();	//TODO plug only the parameter graph (not the field graph)
+						vd.typestate.current = vd.typestate.getConnectionGraph(md).plugGraph();	//plug only (no clone)
 				}
 			}
 			else if(getQualifiedType().isTypestateClassDeclType()) {
+				//TODO Bug here. What happens with the return typestate?
 				TypestateVar t = getQualifiedTypestateVar();
 				if (t != null)
 					t.current = new MethodNode(lookupMethod(getQualifiedType()).getTypeAccess(), getID(), getParameterTypes(), this).addNext(t.current);
 
 				for(int i = md.getNumParameter() - 1; i >=0; i--)
 					if(md.getParameter(i).typestate != null)
-						parameters[i] = md.getParameterTypestate(i).plugParameterGraph();		//TODO change the name...
+						parameters[i] = md.getParameterTypestate(i).plugGraph();
 			}
 
 			for(int i = md.getNumParameter() - 1; i >= 0; i--) {

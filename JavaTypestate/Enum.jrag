@@ -85,6 +85,65 @@ aspect Enum {
 			)
 		);
 
+		/* Constructor Declaration
+			public E(String enumString) {
+				if(e.equals("enumLit"))
+					enum = enumLit;
+				...
+			}
+		*/
+
+		par = new ParameterDeclaration(new Modifiers(), new ParseName("String"), "enumString");
+
+
+		List<Stmt> SList = new List<Stmt>().add(
+			new VarDeclStmt(
+				new Modifiers(),
+				new PrimitiveTypeAccess("int"),
+				new List<VariableDecl>().add(
+					new VariableDecl(
+						"tmp", 
+						new List<Dims>(), 
+						new Opt(new IntegerLiteral("0"))
+					)
+				)
+			)
+		);
+
+		for(int i = 0; i < getNumBodyDecl(); i++) {
+			EnumConstant e = (EnumConstant) getBodyDecl(i);
+			MethodAccess m = new MethodAccess("equals", new List().add(new StringLiteral(e.getEnumID())));
+			Expr ex = new ParseName("enumString").qualifiesAccess(m);
+			Expr assignment = new AssignSimpleExpr(new ParseName("tmp"), new ParseName(e.getEnumID()));
+			IfStmt is = new IfStmt(ex, new Block(new List<Stmt>().add(new ExprStmt(assignment))), new Opt());
+			SList.add(is);
+		}
+/*		bodyStmt
+*/
+
+		SList.add(
+			new ExprStmt(
+				new AssignSimpleExpr(
+					new ParseName("enumValue"),
+					new ParseName("tmp")
+				)
+			)
+		);
+
+		block = new Block(SList);
+
+		bodyD.add(
+			new ConstructorDecl(
+				modifiers,
+				getID(),
+				new List<ParameterDeclaration>().add(par),
+				new List<Access>(),
+				new Opt(),
+				block						//TODO set the block
+			)
+		);
+
+
 		/* Enum getter declaration
 			public int getEnum() { return enum; }
 		*/

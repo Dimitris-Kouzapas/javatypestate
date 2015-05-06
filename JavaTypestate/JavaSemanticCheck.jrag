@@ -130,7 +130,7 @@ aspect JavaSemanticCheck {
 	protected void ClassInstanceExpr.semanticCheck() {
 		if(getAccess().lookupType().isEnumDeclType()) {
 			EnumDecl e = getAccess().lookupType().getEnumDecl();
-			if(!e.getEnums().contains(getArg(0).toString()))
+			if(!e.getEnums().contains(getArg(0).toString()) && !(getArg(0) instanceof StringLiteral && e.getEnums().contains(e.getID() + "." + ((StringLiteral) getArg(0)).getLITERAL()  )))
 				addSemanticError("Argument for enumeration instance creation should have type: " + e.getID() + ".");
 		}
 	}
