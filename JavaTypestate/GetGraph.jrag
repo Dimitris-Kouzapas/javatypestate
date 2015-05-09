@@ -1,4 +1,4 @@
-aspect getGraph {
+aspect GetGraph {
 
 	//Attributes for handling recursion using break, continue and labels
 

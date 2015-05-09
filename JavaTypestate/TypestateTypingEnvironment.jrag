@@ -1,4 +1,4 @@
-aspect typeEnv {
+aspect TypestateTypingEnvironment {
 
 	/*******************************************************************************/
 	/*                 Type Environment Structures                                 */

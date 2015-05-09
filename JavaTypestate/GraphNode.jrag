@@ -1,4 +1,4 @@
-aspect graphNode {
+aspect GraphNode {
 	/*
 	 * Class GraphNode represents a node in the graph structure that
 	 * represents a typestate type.
