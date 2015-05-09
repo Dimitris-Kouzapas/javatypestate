@@ -17,7 +17,6 @@ aspect Errors {
 			getChild(i).collectTypestate();
 	}
 
-
 	public void ASTNode.setStart(int s) {
 		start = s;
 	}

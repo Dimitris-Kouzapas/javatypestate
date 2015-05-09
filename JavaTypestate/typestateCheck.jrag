@@ -1,6 +1,7 @@
 aspect typestateCheck {
 	protected void ClassDecl.typestateCheck() {
-		getGraph();
+		if(isGraph != true)
+			getGraph();
 	}
 
 	protected void VariableDecl.typestateCheck() {

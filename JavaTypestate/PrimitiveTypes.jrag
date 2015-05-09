@@ -3,11 +3,6 @@ aspect PrimitiveTypes {
 		"boolean", "byte", "short", "int", "long", "char", "float", "double"
 	};
 
-//	static private final PrimitiveType CompilationUnit.primitiveType[] = {
-//		new BooleanType(), new ByteType(), new ShortType(), new IntType(),
-//		new LongType(), new CharType(), new FloatType(), new DoubleType()
-//	};
-
 	static private final PrimitiveType CompilationUnit.primitiveType[] = {
 		new BooleanType(new Modifiers(), "boolean", new Opt(), new List()),
 		new ByteType(new Modifiers(), "byte", new Opt(), new List()),

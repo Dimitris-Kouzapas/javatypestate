@@ -68,18 +68,23 @@ aspect Compilation {
 	}
 
 	public void Program.collect() {
-		for(int i = 0; i < getNumCompilationUnit(); i++) {
+		for(int i = 0; i < getNumCompilationUnit(); i++)
 			getCompilationUnit(i).collectSemantic();
+
+		for(int i = 0; i < getNumCompilationUnit(); i++) {
 			errors.addAll(getCompilationUnit(i).errors);
 			numWarnings += getCompilationUnit(i).numWarnings;
 		}
 
-		if(!hasErrors())
-			for(int i = 0; i < getNumCompilationUnit(); i++) {
+		if(!hasErrors()) {
+			for(int i = 0; i < getNumCompilationUnit(); i++)
 				getCompilationUnit(i).collectTypestate();
+
+			for(int i = 0; i < getNumCompilationUnit(); i++) {
 				errors.addAll(getCompilationUnit(i).errors);
 				numWarnings += getCompilationUnit(i).numWarnings;
 			}
+		}
 
 	}
 
