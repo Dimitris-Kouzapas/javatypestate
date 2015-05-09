@@ -173,6 +173,7 @@ aspect graphNode {
 		}
 
 		//TODO rewrite this (maybe it is a bit of over-engineering)
+		//TODO if next is switch node it returns an empty string.
 		public String nextToString() {
 			String s = "";
 			boolean flag = false;
@@ -270,11 +271,11 @@ aspect graphNode {
 			return onlyEndNodes(new HashSet<GraphNode>());
 		}
 
-		//polymorphic on PlugNode
 		protected boolean isPlugged() {
 			return isPlugged(new HashSet<GraphNode>());
 		}
 
+		//polymorphic on PlugNode
 		protected boolean isPlugged(Set<GraphNode> visited) {
 			if(visited.contains(this))
 				return false;
@@ -283,6 +284,27 @@ aspect graphNode {
 
 			for(GraphNode n: next)
 				if(n.isPlugged(visited) == true)
+					return true;
+
+			return false;
+		}
+
+
+		//TODO maybe some redudancy with isPlugged
+
+		protected boolean isReturned() {
+			return isReturned(new HashSet<GraphNode>());
+		}
+
+		//polymorphic on ReturnNode
+		protected boolean isReturned(Set<GraphNode> visited) {
+			if(visited.contains(this))
+				return false;
+
+			visited.add(this);
+
+			for(GraphNode n: next)
+				if(n.isReturned(visited) == true)
 					return true;
 
 			return false;
@@ -363,30 +385,33 @@ aspect graphNode {
 			return toString() + ": " + (isState() ? "State_" + getState(stateMap) : next.get(0).toState(stateMap));
 		}
 
-		//TODO Change the System.out.print call (use a TypestateStream object)
-		protected void printState(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap) {
+		private TypestateStream printState(Set<GraphNode> visited, Map<GraphNode, Integer> stateMap, TypestateStream stream) {
 			if(isNodeVisited(visited))
-				return;
+				return stream;
 
 			if(isState()) {
-				System.out.print("State_" + getState(stateMap) + " = {");
+				stream.println("State_" + getState(stateMap) + " = {");
+				stream.pushIndent();
 				for(int i = 0; i < next.size(); i++) {
 					if(i != 0)
-						System.out.print(", ");
-					System.out.print(next.get(i).toState(stateMap));
+						stream.print(", ");
+					stream.print(next.get(i).toState(stateMap));
 				}
-				System.out.println("}");
+				stream.popIndent();
+				stream.println("");
+				stream.println("}");
 			}
 
 			for(GraphNode n: next)
-				n.printState(visited, stateMap);
+				n.printState(visited, stateMap, stream);
+
+			return stream;
 		}
 
 		protected void printState() {
-			Set<GraphNode> visited = new HashSet<GraphNode>();
-			Map<GraphNode, Integer> stateMap = new HashMap<GraphNode, Integer>();
 			count = 1;
-			printState(visited, stateMap);
+			TypestateStream stream = printState(new HashSet<GraphNode>(), new HashMap<GraphNode, Integer>(), new TypestateStream());
+			System.out.println(stream.toString());
 		}
 
 		/***********************************************************/
@@ -470,6 +495,10 @@ aspect graphNode {
 
 		public SwitchNode() {
 			this(null);
+		}
+
+		public String toString() {
+			return "<" + nextToString() + ">";
 		}
 
 		protected boolean isState() {
@@ -653,6 +682,7 @@ aspect graphNode {
 
 		protected boolean isPlugged(Set<GraphNode> visited) {
 			//this means that if there are next nodes then this is not plugged
+			//TODO why pluggedNode can have next nodes? It shouldn't have
 			if(next.size() == 0)
 				return true;
 			return super.isPlugged(visited);
@@ -660,6 +690,17 @@ aspect graphNode {
 
 		protected GraphNode plugGraph(Map<GraphNode, GraphNode> visited, boolean clone) {
 			return (clone) ? typestate.current.cloneGraph(null) : typestate.current;
+		}
+	}
+
+	public class ReturnNode extends PlugNode {
+
+		public ReturnNode(TypestateVar typestate) {
+			super(typestate);
+		}
+
+		protected boolean isReturned(Set<GraphNode> visited) {
+			return true;
 		}
 	}
 }

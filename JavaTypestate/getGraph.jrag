@@ -98,7 +98,8 @@ aspect getGraph {
 	protected ArrayList<TypestateVar> BodyDecl.pluggedTypestate = new ArrayList<TypestateVar>();
 
 	syn boolean BodyDecl.plugGraph() {
-		for(int i = 0; i < pluggedGraph.size(); i++) {
+		int size = pluggedGraph.size();
+		for(int i = 0; i < size; i++) {
 			TypestateVar t = pluggedTypestate.get(i);
 			GraphNode tmp = t.current;
 			t.current = pluggedGraph.get(i).clonePlugGraph();
@@ -114,15 +115,13 @@ aspect getGraph {
 
 	syn boolean ConstructorDecl.plugGraph() {
 		GraphNode [] tmp = new GraphNode[pluggedGraph.size()];
-		for(int i = 0; i < pluggedGraph.size(); i++) {
+		int size = pluggedGraph.size();
+		for(int i = 0; i < size; i++) {
 			TypestateVar t = pluggedTypestate.get(i);
 			tmp[i] = t.current;
 			t.current = pluggedGraph.get(i).clonePlugGraph();
-			//TODO I dont like the implementation here
 			if(t.current instanceof InitNode)
 				t.addTypestate(((Expr) pluggedExpr.get(i)), this);
-//			else
-//				t.checkError(((Expr) pluggedExpr.get(i)));
 		}
 		for(VariableDecl vd: getTypestateFields())
 			vd.typestate.checkError(vd);
@@ -135,8 +134,10 @@ aspect getGraph {
 	}
 
 	//TODO redundant
+	//TODO bug... adding a typestate may increase the pluggedGraph.size()
 	syn boolean BodyDecl.plugMethodGraph() {
-		for(int i = 0; i < pluggedGraph.size(); i++) {
+		int size = pluggedGraph.size();
+		for(int i = 0; i < size; i++) {
 			TypestateVar t = pluggedTypestate.get(i);
 			GraphNode tmp = t.current;
 			t.current = pluggedGraph.get(i).plugGraph();
@@ -150,6 +151,23 @@ aspect getGraph {
 		return true;
 	}
 
+	//TODO more redundant code
+	syn boolean BodyDecl.plugReturnNode() {
+		int size = returnGraph.size();
+		for(int i = 0; i < size; i++) {
+			TypestateVar t = returnTypestate.get(i);
+			GraphNode tmp = t.current;
+			t.current = returnGraph.get(i).plugGraph();
+			if(t.current instanceof InitNode)
+				t.addTypestate(((Expr) pluggedExpr.get(i)), this);
+			else
+				t.checkError(((Expr) pluggedExpr.get(i)));
+			t.current = tmp;
+		}
+
+		return true;
+	}
+
 /*****************************************************************************************************/
 
 	syn Set<VariableDecl> ClassDecl.getTypestateFields() {
@@ -160,8 +178,11 @@ aspect getGraph {
 		return s;
 	}
 
+	protected boolean ClassDecl.isGraph = false;
 
 	syn lazy boolean ClassDecl.getGraph() {
+		isGraph = true;
+
 		//TODO I don't like the next block. Find another way.
 		if(isTypestateClassDeclType() && ((TypestateClassDecl)this).existsTypestateDecl())
 			for(TypestateMethod m : getTypestateDecl().getMethods()) {
@@ -183,11 +204,6 @@ aspect getGraph {
 
 				for(ConstructorDecl c: getConstructorDecls())
 					c.plugGraph();
-				//TODO Rethink here
-				//TODO this is a big bug. it only works with one constructor
-//				if(getConstructorDecls().isEmpty())
-//				for(VariableDecl vd: getTypestateFields())
-//					vd.typestate.checkError(vd);
 			}
 		}
 
@@ -228,6 +244,15 @@ aspect getGraph {
 
 		for(VariableDecl vd: getTypestateFields())
 			vd.typestate.current = s.get(vd);
+
+		//TODO instead of the previews two for loops write:
+		/*
+		for(GraphNode n: r.next) {
+			getFieldGraph(n, visited);
+			for(VariableDecl vd: getTypestateFields())
+				vd.typestate.current =  s.get(vd).addNext(vd.typestate.current);
+		}
+		*/
 
 
 		MethodDecl md = null;
@@ -642,7 +667,8 @@ aspect getGraph {
 		if(t != null)
 			if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType()) {
 				t.checkError(getResult(), getBodyDeclAncestor());
-				t.current = new PlugNode(getMethodDeclAncestor().typestate);
+//				t.current = new PlugNode(getMethodDeclAncestor().typestate);
+				t.current = new ReturnNode(getMethodDeclAncestor().typestate);
 //				t.current = getMethodDeclAncestor().getTypestateMethod().getTType().createTypestate(); //TODO cloneGraphNode ??
 			}
 
@@ -837,6 +863,55 @@ aspect getGraph {
 		return true;
 	}
 
+
+
+	//TODO move the next two methods in another file
+
+	//TODO The code for this method is redundant
+	syn boolean ClassDecl.getQualifiedFieldGraph(GraphNode r, Map<GraphNode, Map<VariableDecl, GraphNode>> visited) {
+		if(visited.get(r) != null) {
+			for(VariableDecl vd: getTypestateFields())
+				vd.typestate.current = visited.get(r).get(vd);
+			return true;
+		}
+
+		Map<VariableDecl, GraphNode> s = new HashMap<VariableDecl, GraphNode>();
+		visited.put(r, s);
+
+		if(r.next.isEmpty()) {
+			for(VariableDecl vd: getTypestateFields()) {
+				vd.typestate.current = new EndNode();
+			}
+			return true;
+		}
+
+		for(VariableDecl vd: getTypestateFields())
+			s.put(vd, new LoopNode());
+
+		for(GraphNode n: r.next) {
+			getQualifiedFieldGraph(n, visited);
+			for(VariableDecl vd: getTypestateFields()) {
+				vd.typestate.current = s.get(vd).addNext(vd.typestate.current);
+			}
+		}
+
+		MethodDecl md = null;
+		if(r.getId() != null && r.getParameters() != null)
+			md = lookupMethod(r.getId(), r.getParameters());
+
+		if(md != null) {
+			for(VariableDecl vd: getTypestateFields())
+				vd.typestate.current = vd.typestate.getConnectionGraph(md).clonePlugGraph();
+		}
+		return true;
+	}
+
+	protected ArrayList<GraphNode> BodyDecl.returnGraph = new ArrayList<GraphNode>();
+	protected ArrayList<ASTNode> BodyDecl.returnExpr = new ArrayList<ASTNode>();
+	protected ArrayList<TypestateVar> BodyDecl.returnTypestate = new ArrayList<TypestateVar>();
+
+
+
 	//TODO implement me
 	eq MethodAccess.getGraph(Set<TypestateVar> env) {
 		MethodDecl md = getTarget();
@@ -861,15 +936,24 @@ aspect getGraph {
 							parameters[i] = md.getParameterTypestate(i).plugGraph();	//plug only (no clone)
 
 					md.plugMethodGraph();
+					md.plugReturnNode();
 					for(VariableDecl vd: getTypestateFields())
 						vd.typestate.current = vd.typestate.getConnectionGraph(md).plugGraph();	//plug only (no clone)
 				}
 			}
 			else if(getQualifiedType().isTypestateClassDeclType()) {
-				//TODO Bug here. What happens with the return typestate?
+				//TODO write in a better way
 				TypestateVar t = getQualifiedTypestateVar();
+				ClassDecl c = ((ClassDecl) getQualifiedType());
 				if (t != null)
 					t.current = new MethodNode(lookupMethod(getQualifiedType()).getTypeAccess(), getID(), getParameterTypes(), this).addNext(t.current);
+
+				if(c.isGraph == false)
+					c.getGraph();
+
+				c.getQualifiedFieldGraph(t.current, new HashMap<GraphNode, Map<VariableDecl, GraphNode>>());
+
+				md.plugReturnNode();
 
 				for(int i = md.getNumParameter() - 1; i >=0; i--)
 					if(md.getParameter(i).typestate != null)

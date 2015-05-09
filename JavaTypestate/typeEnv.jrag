@@ -37,7 +37,12 @@ aspect typeEnv {
 		}
 
 		protected void addTypestate(Expr e, BodyDecl bd) {
-			if(current.isPlugged()) {
+			if(current.isReturned()) {
+				bd.returnGraph.add(current);
+				bd.returnExpr.add(e);
+				bd.returnTypestate.add(this);
+			}
+			else if(current.isPlugged()) {
 				bd.pluggedGraph.add(current);
 				bd.pluggedExpr.add(e);
 				bd.pluggedTypestate.add(this);
