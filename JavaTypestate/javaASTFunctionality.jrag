@@ -1,6 +1,6 @@
 aspect javaASTFunctionality {
 
-	/*	CompilationUnit								*/
+	/*	ASTNode								*/
 	protected CompilationUnit ASTNode.getCompilationUnitAncestor() {
 		ASTNode node = this;
 		while(node != null && !(node instanceof CompilationUnit))
@@ -8,8 +8,10 @@ aspect javaASTFunctionality {
 		return (CompilationUnit) node;
 	}
 
-	eq CompilationUnit.getImportDecl(int i).getClassDeclAncestor() = null;		//TODO dont like
-	eq CompilationUnit.getTypeDecl().getSwitchStmtAncestor() = null;		//TODO dont like
+	/*	CompilationUnit								*/
+	// The next two atrributes are defined for consistency of the ast classes definition.
+	eq CompilationUnit.getImportDecl(int i).getClassDeclAncestor() = null;
+	eq CompilationUnit.getTypeDecl().getSwitchStmtAncestor() = null;
 
 	/*	TypeDecl								*/
 	syn lazy boolean TypeDecl.isTypestateDeclType() = false;
@@ -74,7 +76,7 @@ aspect javaASTFunctionality {
 	coll Set<MethodAccess> MethodDecl.selfMethodAccess() [new HashSet<MethodAccess>()] with add root MethodDecl;
 
 	syn lazy String MethodDecl.signature() {
-		// TODO Dont need getModifiers().toString();??
+		// TODO Need of getModifiers().toString();??
 		String s = getTypeAccess().toString() + " " + getID() + "(";
 		for(int i = 0; i < getNumParameter(); i++) {
 			if (i != 0)

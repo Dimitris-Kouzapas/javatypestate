@@ -11,7 +11,7 @@ aspect Enum {
 	}
 	
 	syn lazy ClassDecl EnumDecl.toClassDecl() {
-		List<BodyDecl> bodyD = new List<BodyDecl>();
+		List<BodyDecl> classBody = new List<BodyDecl>();
 
 		Modifiers modifiers = new Modifiers(
 			new List<Modifier>().
@@ -20,26 +20,26 @@ aspect Enum {
 				add(new Modifier("final"))
 		);
 
-		List<VariableDecl> Vlist = new List<VariableDecl>();
+		List<VariableDecl> variableList = new List<VariableDecl>();
 
 		for(int i = 0; i < getNumBodyDecl(); i++) {
 			EnumConstant e = (EnumConstant) getBodyDecl(i);
-			IntegerLiteral il = new IntegerLiteral("" + (i + 1));
-			il.setStart(e.getStart());
-			il.setEnd(e.getEnd());
-			Vlist.add(
+			IntegerLiteral iliteral = new IntegerLiteral("" + (i + 1));
+			iliteral.setStart(e.getStart());
+			iliteral.setEnd(e.getEnd());
+			variableList.add(
 				new VariableDecl(
 					e.getEnumID(), 
 					new List<Dims>(), 
-					new Opt(il)
+					new Opt(iliteral)
 				)
 			);
 		}
 		/* Add enumerations
 			private static final int A = 1, B = 2, ....;
 		*/
-		bodyD.add(
-			new FieldDecl(modifiers, new PrimitiveTypeAccess("int"), Vlist)
+		classBody.add(
+			new FieldDecl(modifiers, new PrimitiveTypeAccess("int"), variableList)
 		);
 
 		/* field declaration
@@ -50,35 +50,38 @@ aspect Enum {
 				add(new Modifier("private")).
 				add(new Modifier("final"))
 		);
-		Vlist = new List<VariableDecl>().
+		variableList = new List<VariableDecl>().
 			add(
 				new VariableDecl("enumValue", new List<Dims>(), new Opt())
 			);
 
-		bodyD.add(
-			new FieldDecl(modifiers, new PrimitiveTypeAccess("int"), Vlist)
+		classBody.add(
+			new FieldDecl(modifiers, new PrimitiveTypeAccess("int"), variableList)
 		);
 
 		/* Constructor Declaration
-			public E(int e) { enum = e; }
+			public E(int e) {
+				enumValue = e;
+			}
 		*/
 		modifiers = new Modifiers(
 			new List<Modifier>().
 				add(new Modifier("public"))
 		);
 
-		ParameterDeclaration par = new ParameterDeclaration(new Modifiers(), new PrimitiveTypeAccess("int"), "e");
+		ParameterDeclaration parameter = new ParameterDeclaration(new Modifiers(), new PrimitiveTypeAccess("int"), "e");
 		List<Stmt> bodyStmt = new List<Stmt>().
 			add(new ExprStmt(
 				new AssignSimpleExpr(new ParseName("enumValue"), new ParseName("e")))
 		);
 
 		Block block = new Block(bodyStmt);
-		bodyD.add(
+
+		classBody.add(
 			new ConstructorDecl(
 				modifiers, 
 				getID(), 
-				new List<ParameterDeclaration>().add(par), 
+				new List<ParameterDeclaration>().add(parameter), 
 				new List<Access>(), 
 				new Opt(),
 				block
@@ -93,10 +96,9 @@ aspect Enum {
 			}
 		*/
 
-		par = new ParameterDeclaration(new Modifiers(), new ParseName("String"), "enumString");
+		parameter = new ParameterDeclaration(new Modifiers(), new ParseName("String"), "enumString");
 
-
-		List<Stmt> SList = new List<Stmt>().add(
+		bodyStmt = new List<Stmt>().add(
 			new VarDeclStmt(
 				new Modifiers(),
 				new PrimitiveTypeAccess("int"),
@@ -116,12 +118,10 @@ aspect Enum {
 			Expr ex = new ParseName("enumString").qualifiesAccess(m);
 			Expr assignment = new AssignSimpleExpr(new ParseName("tmp"), new ParseName(e.getEnumID()));
 			IfStmt is = new IfStmt(ex, new Block(new List<Stmt>().add(new ExprStmt(assignment))), new Opt());
-			SList.add(is);
+			bodyStmt.add(is);
 		}
-/*		bodyStmt
-*/
 
-		SList.add(
+		bodyStmt.add(
 			new ExprStmt(
 				new AssignSimpleExpr(
 					new ParseName("enumValue"),
@@ -130,16 +130,16 @@ aspect Enum {
 			)
 		);
 
-		block = new Block(SList);
+		block = new Block(bodyStmt);
 
-		bodyD.add(
+		classBody.add(
 			new ConstructorDecl(
 				modifiers,
 				getID(),
-				new List<ParameterDeclaration>().add(par),
+				new List<ParameterDeclaration>().add(parameter),
 				new List<Access>(),
 				new Opt(),
-				block						//TODO set the block
+				block
 			)
 		);
 
@@ -161,7 +161,7 @@ aspect Enum {
 
 		block = new Block(bodyStmt);
 
-		bodyD.add(
+		classBody.add(
 			new MethodDecl(
 				modifiers, 
 				new PrimitiveTypeAccess("int"), 
@@ -171,7 +171,7 @@ aspect Enum {
 				new Opt(block))
 		);
 
-		return new ClassDecl(new Modifiers(), getID(), new Opt(), new List(), bodyD);
+		return new ClassDecl(new Modifiers(), getID(), new Opt(), new List(), classBody);
 	}
 
 	coll Set<String> EnumDecl.getEnumLabels() [new HashSet<String>()] with add root EnumDecl;
@@ -184,6 +184,7 @@ aspect Enum {
 
 		return s;
 	}
+
 	inh EnumDecl EnumConstant.getEnumDeclAncestor();
 	eq EnumDecl.getBodyDecl(int i).getEnumDeclAncestor() = this;
 	eq TypeDecl.getBodyDecl(int i).getEnumDeclAncestor() = null;

@@ -1,4 +1,4 @@
-aspect createTypestate {
+aspect CreateTypestate {
 
 	syn lazy GraphNode TypestateDecl.createTypestate() = new InitNode().addNext(getInitState().createTypestate());
 
