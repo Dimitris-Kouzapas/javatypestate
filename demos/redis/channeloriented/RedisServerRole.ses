@@ -45,7 +45,7 @@ class RedisServerRole typestate RedisServerProtocol {
 		String[] ks = redis.receiveWATCH();
 		WATCHING: do {
 			switch (redis.receiveLabel_Watching().getEnum()) {
-				case WatchingLabel.GET_request:
+				case WatchingLabel.GET:
 					String k = redis.receiveArg_GET();
 					redis.sendGET_response(""); // TODO
 					continue WATCHING;
