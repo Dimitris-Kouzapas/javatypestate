@@ -1,8 +1,5 @@
 package demos.redis;
 
-// Would like to wrap an existing client, such as Jedis.
-// import redis.clients.jedis.JedisCommands;
-// But we're based on a J2SE 1.4 front end.
 
 public class Redis typestate RedisServer {
     void WATCH(String[] keys) {
