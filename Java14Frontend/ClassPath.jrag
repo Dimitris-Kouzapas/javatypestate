@@ -298,7 +298,8 @@ aspect ClassPath {
     protected boolean isSource;
     protected String fileSuffix() {
 //      return isSource ? ".java" : ".class";			//Dimitris comment out this line 
-        return isSource ? ".ses" : ".class";			//Dimitris coded this line
+//        return isSource ? ".ses" : ".class";			//Dimitris coded this line
+        return isSource ? ".mungo" : ".class";			//Dimitris coded this line
     }
 
     public static PathPart createSourcePath(String fileName, Program program) {

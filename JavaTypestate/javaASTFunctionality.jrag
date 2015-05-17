@@ -101,6 +101,8 @@ aspect javaASTFunctionality {
 //	inh ConstructorDecl MethodAccess.getConstructorDeclAncestor();
 //	eq ConstructorDecl.getBlock().getConstructorDeclAncestor() = this;
 
+
+/*
 	syn lazy Set<MethodDecl> MethodAccess.selfSuccessors() = getTarget() != null ? getTarget().selfSuccessors() : new HashSet<MethodDecl>(); 
 	syn Set<MethodDecl> MethodAccess.reachable() circular [new HashSet<MethodDecl>()];
 
@@ -115,6 +117,9 @@ aspect javaASTFunctionality {
 	}
 
 	syn lazy boolean MethodAccess.isRecursiveCall() = reachable().contains(getMethodDeclAncestor());
+*/
+
+
 	syn lazy MethodDecl MethodAccess.getTarget() = lookupMethod(getQualifiedType());
 
 	syn lazy String MethodAccess.signature() {

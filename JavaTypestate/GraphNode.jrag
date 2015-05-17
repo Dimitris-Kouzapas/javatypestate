@@ -143,6 +143,7 @@ aspect GraphNode {
 			return expectedNode;
 		}
 
+		//TODO big bug on includes (i think)... Recursive graphs (with no EndNodes) are included in any Graph prefixed with the recursive graph
 		protected boolean includes(GraphNode n, TupleSet ts) {
 			if(ts.has(this, n) || (!hasNext() && !n.hasNext()))
 				return true;
@@ -289,8 +290,24 @@ aspect GraphNode {
 			return false;
 		}
 
+		protected boolean isReturned() {
+			return isReturned(new HashSet<GraphNode>());
+		}
 
-		//TODO maybe some redudancy with isPlugged
+		//polymorphic on ReturnNode
+		protected boolean isReturned(Set<GraphNode> visited) {
+			if(visited.contains(this))
+				return false;
+
+			visited.add(this);
+
+			for(GraphNode n: next)
+				if(n.isReturned(visited) == true)
+					return true;
+			return false;
+		}
+
+/*
 
 		protected boolean isReturned() {
 			return isReturned(new HashSet<GraphNode>());
@@ -309,13 +326,12 @@ aspect GraphNode {
 
 			return false;
 		}
-
+*/
 		/***********************************************************/
 		/*               Clone Graphs			           */
 		/***********************************************************/
 
-		//TODO cloneGraph and plugGraph are similar... find a way to fuse
-
+/*
 		abstract protected GraphNode cloneNode();
 
 		protected GraphNode cloneGraph(GraphNode end) {
@@ -357,7 +373,7 @@ aspect GraphNode {
 
 			return r;
 		}
-
+*/
 		/***********************************************************/
 		/*                 Print Protocol                          */
 		/***********************************************************/
@@ -477,9 +493,9 @@ aspect GraphNode {
 			return equalNode(n) ? super.includes(n, ts) : false;
 		}
 
-		protected GraphNode cloneNode() {
-			return new MethodNode(getType(), getId(), getParameters(), getExpr());
-		}
+//		protected GraphNode cloneNode() {
+//			return new MethodNode(getType(), getId(), getParameters(), getExpr());
+//		}
 	}
 
 	/*
@@ -522,9 +538,9 @@ aspect GraphNode {
 			return false;
 		}
 
-		protected GraphNode cloneNode() {
-			return new SwitchNode(getExpr());
-		}
+//		protected GraphNode cloneNode() {
+//			return new SwitchNode(getExpr());
+//		}
 	}
 	
 	public class SwitchCase extends GraphNode {
@@ -542,9 +558,9 @@ aspect GraphNode {
 			return false;
 		}
 
-		protected GraphNode cloneNode() {
-			return new SwitchCase(getId(), getExpr());
-		}
+//		protected GraphNode cloneNode() {
+//			return new SwitchCase(getId(), getExpr());
+//		}
 	}
 
 	/*
@@ -573,17 +589,17 @@ aspect GraphNode {
 			return (!this.equals(next.get(i))) ? super.computeNextArrayList(i, visited) : new ArrayList<GraphNode>();
 		}
 
-		protected GraphNode cloneNode() {
-			return new LoopNode();
-		}
+//		protected GraphNode cloneNode() {
+//			return new LoopNode();
+//		}
 
-		protected GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
+/*		protected GraphNode cloneGraph(GraphNode end, Map<GraphNode, GraphNode> visited) {
 			//This means that the graph ends in a LoopNode -> the graph is still incomplete
 			if(next.size() == 0)
 				return cloneNode().addNext(end);
 			return super.cloneGraph(end, visited);
 		}
-
+*/
 		protected int onlyEndNodes(Set<GraphNode> visited) {
 			if(isNodeVisited(visited))
 				return 0;
@@ -631,9 +647,9 @@ aspect GraphNode {
 			return false;
 		}
 
-		protected GraphNode cloneNode() {
-			return new EndNode();
-		}
+//		protected GraphNode cloneNode() {
+//			return new EndNode();
+//		}
 
 		protected int onlyEndNodes(Set<GraphNode> visited) {
 			return 1;
@@ -663,11 +679,39 @@ aspect GraphNode {
 			return false;
 		}
 
-		protected GraphNode cloneNode() {
-			return new InitNode(getExpr());
+//		protected GraphNode cloneNode() {
+//			return new InitNode(getExpr());
+//		}
+	}
+
+	public class ReturnNode extends EndNode {
+		public ReturnNode() {
+			super();
+		}
+
+		public String toString() {
+			return "ReturnNode;";
+		}
+
+		protected boolean isReturned(Set<GraphNode> visited) {
+			return true;
 		}
 	}
 
+	public class PlugNode extends LoopNode {
+		public PlugNode() {
+			super();
+		}
+
+		public String toString() {
+			return "PlugNode;";
+		}
+
+		protected boolean isPlugged(Set<GraphNode> visited) {
+			return true;
+		}
+	}
+/*
 	public class PlugNode extends LoopNode {
 		private TypestateVar typestate;		//TODO This is not a good programming practice. Should not use typestate in this module
 
@@ -693,6 +737,7 @@ aspect GraphNode {
 		}
 	}
 
+
 	public class ReturnNode extends PlugNode {
 
 		public ReturnNode(TypestateVar typestate) {
@@ -703,4 +748,5 @@ aspect GraphNode {
 			return true;
 		}
 	}
+*/
 }

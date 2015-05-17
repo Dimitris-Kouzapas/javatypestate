@@ -24,10 +24,14 @@ aspect Compilation {
 		errorStream = s;
 	}
 
+	protected String CompilationUnit.getFilePath() {
+		return filePath;
+	}
+
 	private ArrayList<String> Program.compiledPaths = new ArrayList<String>();
 
 	protected static String Program.fileSuffix() {
-		return ".ses";
+		return ".mungo";
 	}
 
 	protected static String Program.javaFileSuffix() {
