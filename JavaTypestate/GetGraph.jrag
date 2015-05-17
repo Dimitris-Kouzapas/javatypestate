@@ -134,7 +134,6 @@ aspect GetGraph {
 	}
 
 	//TODO redundant
-	//TODO bug... adding a typestate may increase the pluggedGraph.size()
 	syn boolean BodyDecl.plugMethodGraph() {
 		int size = pluggedGraph.size();
 		for(int i = 0; i < size; i++) {
@@ -865,9 +864,9 @@ aspect GetGraph {
 
 
 
-	//TODO move the next two methods in another file
+	//TODO move the next two methods in another place
 
-	//TODO The code for this method is redundant
+	//TODO The code for this method is redundant --> see ClassDecl.getFieldGraph
 	syn boolean ClassDecl.getQualifiedFieldGraph(GraphNode r, Map<GraphNode, Map<VariableDecl, GraphNode>> visited) {
 		if(visited.get(r) != null) {
 			for(VariableDecl vd: getTypestateFields())
@@ -951,7 +950,12 @@ aspect GetGraph {
 				if(c.isGraph == false)
 					c.getGraph();
 
+				//TODO bug: Should check if t.current ends with plug
+				//TODO bug: Should normalise
+
 				c.getQualifiedFieldGraph(t.current, new HashMap<GraphNode, Map<VariableDecl, GraphNode>>());
+
+				//TODO bug: Check for if there is a return node to plug
 
 				md.plugReturnNode();
 
