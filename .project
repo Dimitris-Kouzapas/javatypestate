@@ -16,7 +16,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1420573093390</id>
+			<id>1431878389741</id>
 			<name></name>
 			<type>21</type>
 			<matcher>
@@ -25,16 +25,16 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1420573093392</id>
+			<id>1431878389744</id>
 			<name></name>
 			<type>21</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.ses</arguments>
+				<arguments>1.0-name-matches-false-false-*.mungo</arguments>
 			</matcher>
 		</filter>
 		<filter>
-			<id>1420573093395</id>
+			<id>1431878389746</id>
 			<name></name>
 			<type>21</type>
 			<matcher>

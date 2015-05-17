@@ -1,18 +1,18 @@
 package demos.redis.async;
 
 typestate RedisClient {
--	session
--		// What state am I in initially? Depends what I *do* on startup.
--	where
--		Read = {
-			// And what state do I go to after receiving a GET reponse?
+	session
+		// What state am I in initially? Depends what I *do* on startup.
+	where
+		Read = {
+			// And what state do I go to after receiving a GET response?
 			// Again, it depends on what I do.
--			void GET_resp(String): ???
--		}
--
--		Execute = {
--			void EXEC_ok(): end,
-			// Same problem here.
--			void EXEC_fail(): ???
--		}
--}
+			void GET_val(String): ???
+		}
+
+		Execute = {
+			void EXEC_ok(): end,
+		// Same problem here.
+			void EXEC_fail(): ???
+		}
+}
