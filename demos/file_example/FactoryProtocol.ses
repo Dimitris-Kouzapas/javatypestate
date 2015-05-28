@@ -3,9 +3,11 @@ typestate FactoryProtocol {
 
 	session
 		Init =		{
-					File	<NewFile>	new_File() : end//{ foo : end}
+					File new_File() : { void method() : end}
 				}
 
+
+/*
 	where
 
 		NewFile =	{
@@ -26,4 +28,5 @@ typestate FactoryProtocol {
 				}
 
 
+*/
 }

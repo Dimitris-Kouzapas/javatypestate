@@ -1,18 +1,18 @@
 package demos.file_example;
 
 class FileFactory typestate FactoryProtocol {
-	private File aFile;
+	private File myFile;
 
 	// demonstrates the return typestate of
 	// a method. It returns a typestate field.
 
 	File new_File() {
-		aFile = new File("file.txt");
-		return aFile;
+		myFile = new File("file.txt");
+	//	return aFile;
 	}
 
 	void method() {
-		File myFile = new_File();
+	//	File myFile = new_File();
 		switch(myFile.open().getEnum()) {
 			case Status.OK:
 				loop:
