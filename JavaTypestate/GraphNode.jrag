@@ -143,12 +143,31 @@ aspect GraphNode {
 			return expectedNode;
 		}
 
-		//TODO big bug on includes (i think)... Recursive graphs (with no EndNodes) are included in any Graph prefixed with the recursive graph
+		/*
+			Algorithm:
+
+			1.	G_1 <= G_2			if	emptyset |- G_1 <= G_2	(Start)
+			2.	R |- EndNode <= EndNode						(End)
+			3.	R |- G_1 <= G_2			if	(G_1, G_2) in R		(Terminate)
+			4.	R |- {G_1} <= {G_2}		if	i) {G_1} not empty and
+									ii) for all G_1 in {G_1}, exists G_2 in G_2 such that
+									R union {({G_1}, {G_2})} |- G_1 <= G_2	(Set)
+		*/
+
+		//TODO Test a case for Set Rule precondition i)
 		protected boolean includes(GraphNode n, TupleSet ts) {
+			//Terminate Rule and End Rule
 			if(ts.has(this, n) || (!hasNext() && !n.hasNext()))
 				return true;
 
 			ts.insert(this, n);
+
+			//Set Rule
+			//Set rule: precondition i)
+			if(!n.hasNext())
+				return false;
+
+			//Set rule: precondition ii)
 			for(GraphNode n1 : n.next) {
 				boolean b = false;
 				for(GraphNode n2: next)
@@ -168,6 +187,7 @@ aspect GraphNode {
 		}
 
 		public boolean includes(GraphNode n) {
+			//Start Rule
 			errorNode = null;
 			expectedNode = null;
 			return includes(n, new TupleSet());
@@ -307,26 +327,6 @@ aspect GraphNode {
 			return false;
 		}
 
-/*
-
-		protected boolean isReturned() {
-			return isReturned(new HashSet<GraphNode>());
-		}
-
-		//polymorphic on ReturnNode
-		protected boolean isReturned(Set<GraphNode> visited) {
-			if(visited.contains(this))
-				return false;
-
-			visited.add(this);
-
-			for(GraphNode n: next)
-				if(n.isReturned(visited) == true)
-					return true;
-
-			return false;
-		}
-*/
 		/***********************************************************/
 		/*               Clone Graphs			           */
 		/***********************************************************/
@@ -455,6 +455,21 @@ aspect GraphNode {
 	/********************************************************************************/
 	/*                       Graph Nodes                                            */ 
 	/********************************************************************************/
+
+
+	/*
+		A syntax for the Graphs:
+
+		Init	::=	init {S_i | i in I}
+		S	::=	T_1 m(T_2) {S_i | i in I}	(MethodNode)
+			 |	E m(T) <l:S_e | e in E>		(MethodNode) -> (SwitchNode) -> ({SwitchCases}
+
+		{} (empty set) corresponds to the EndNode
+
+		LoopNode and ReturnNode are auxiliary structures
+	*/
+
+
 
 	/*
 	 * MethodNode inherits GraphNode
