@@ -310,6 +310,23 @@ aspect GraphNode {
 			return false;
 		}
 
+		protected boolean isReturnPlugged() {
+			return isReturnPlugged(new HashSet<GraphNode>());
+		}
+
+		//polymorphic on ReturnedPlug
+		protected boolean isReturnPlugged(Set<GraphNode> visited) {
+			if(visited.contains(this))
+				return false;
+
+			visited.add(this);
+
+			for(GraphNode n: next)
+				if(n.isReturnPlugged(visited) == true)
+					return true;
+			return false;
+		}
+
 		protected boolean isReturned() {
 			return isReturned(new HashSet<GraphNode>());
 		}
@@ -723,6 +740,20 @@ aspect GraphNode {
 		}
 
 		protected boolean isPlugged(Set<GraphNode> visited) {
+			return true;
+		}
+	}
+
+	public class ReturnPlug extends PlugNode {
+		public ReturnPlug() {
+			super();
+		}
+
+		public String toString() {
+			return "ReturnPlug";
+		}
+
+		protected boolean isReturnPlugged(Set<GraphNode> visited) {
 			return true;
 		}
 	}

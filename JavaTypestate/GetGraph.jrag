@@ -725,7 +725,7 @@ aspect GetGraph {
 			if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType()) {
 				t.checkError(getResult()/*, getBodyDeclAncestor()*/);
 //				t.current = new ReturnNode(getMethodDeclAncestor().typestate);
-				t.current = getMethodDeclAncestor().typestate.current;
+				t.current = new ReturnPlug().addNext(getMethodDeclAncestor().typestate.current);
 			}
 
 		getResult().getGraph(env);
@@ -966,19 +966,29 @@ aspect GetGraph {
 						sessionParameter = true;
 						break;
 					}
+//				System.out.println(this);
+//				System.out.println(md.getTypeAccess().lookupType());
 
 
-				if(md.getTypeAccess().getType().isTypestateClassDeclType() || sessionParameter == true) {
+				if(md.getTypeAccess().lookupType().isTypestateClassDeclType() || sessionParameter == true) {
 					ClassDecl c = ((ClassDecl) getQualifiedType());
 					GraphNode tmp = md.typestate.current;
 //					md.typestate.current = new EndNode();
-					Set<TypestateVar> typestateEnvironment = c.getFieldGraph(t.current.normalise());
+					Set<TypestateVar> typestateEnvironment = c.getFieldGraph(t.current/*.normalise()*/);
 
 					//TODO check if return is consistent.
 					//TODO the typestateEnvironment should contain information about the return type.
 					//TODO make the typestateEnvironment contain information about the return type.
+
 					md.typestate.current = tmp;
 					md.getGraph();
+
+					for(TypestateVar vdt: typestateEnvironment) {
+//vdt.current.printPaths();
+						if(vdt.current.isReturnPlugged())
+							System.out.println("Cannot infer return type for method call: " + this);
+					}
+
 				}
 				if (t != null)
 					t.current = new MethodNode(lookupMethod(getQualifiedType()).getTypeAccess(), getID(), getParameterTypes(), this).addNext(t.current);
