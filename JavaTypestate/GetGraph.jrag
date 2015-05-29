@@ -193,6 +193,7 @@ aspect GetGraph {
 			TypestateClassDecl cd = (TypestateClassDecl) this;
 			if(cd.existsTypestateDecl()) {
 				GraphNode r = cd.getTypestateDecl().createTypestate().normalise();
+				TypestateVar.addTypestate = true; //TODO better implementation here
 				getFieldGraph(r);
 //				cd.getFieldGraph(r, new HashMap<GraphNode, Map<VariableDecl, GraphNode>>());
 
@@ -942,8 +943,18 @@ aspect GetGraph {
 					for(VariableDecl vd : getTypestateFields())
 						vd.typestate.current = vd.typestate.getConnectionGraph(md);
 
-					//TODO fix the return type
+					//TODO check if you can infer recursive typestate
 //					md.typestate.current = md.typestate.current.clonePlugGraph();
+
+					//TODO better implementation here
+					Boolean sessionParameter = false;
+					for(int i = md.getNumParameter() - 1; i >=0; i--)
+						if(md.getParameter(i).typestate != null) {
+							sessionParameter = true;
+							break;
+						}
+					if(md.getTypeAccess().lookupType().isTypestateClassDeclType() || sessionParameter == true)
+						md.addSemanticError("Cannot infer return type for recursive method call.");
 
 				}
 				else {
@@ -959,6 +970,7 @@ aspect GetGraph {
 			else if(getQualifiedType().isTypestateClassDeclType()) {
 				TypestateVar t = getQualifiedTypestateVar();
 
+				//TODO better implementation here
 				//only call c.getFieldGraph when return type or parameter type is a session typestate.
 				Boolean sessionParameter = false;
 				for(int i = md.getNumParameter() - 1; i >=0; i--)
@@ -966,28 +978,23 @@ aspect GetGraph {
 						sessionParameter = true;
 						break;
 					}
-//				System.out.println(this);
-//				System.out.println(md.getTypeAccess().lookupType());
-
 
 				if(md.getTypeAccess().lookupType().isTypestateClassDeclType() || sessionParameter == true) {
 					ClassDecl c = ((ClassDecl) getQualifiedType());
 					GraphNode tmp = md.typestate.current;
 //					md.typestate.current = new EndNode();
+					boolean addTypestate = TypestateVar.addTypestate;	//TODO better implementation here
+					TypestateVar.addTypestate = true;			//TODO better implementation here
 					Set<TypestateVar> typestateEnvironment = c.getFieldGraph(t.current/*.normalise()*/);
-
-					//TODO check if return is consistent.
-					//TODO the typestateEnvironment should contain information about the return type.
-					//TODO make the typestateEnvironment contain information about the return type.
+					TypestateVar.addTypestate = addTypestate;		//TODO better implementation here
 
 					md.typestate.current = tmp;
 					md.getGraph();
 
-					for(TypestateVar vdt: typestateEnvironment) {
-//vdt.current.printPaths();
+					// check if return is consistent.
+					for(TypestateVar vdt: typestateEnvironment)
 						if(vdt.current.isReturnPlugged())
-							System.out.println("Cannot infer return type for method call: " + this);
-					}
+							md.addSemanticError("Cannot infer return type for method call.");
 
 				}
 				if (t != null)

@@ -14,6 +14,9 @@ aspect TypestateTypingEnvironment {
 		private ArrayList<GraphNode> errorGraph;
 		private ArrayList<ASTNode> errorExpr;
 
+		//TODO better implementation for this.
+		public static boolean addTypestate = false;
+
 		TypestateVar() {
 			current = new EndNode();
 
@@ -42,6 +45,9 @@ aspect TypestateTypingEnvironment {
 //				bd.returnGraph.add(current);
 //				bd.returnExpr.add(e);
 //				bd.returnTypestate.add(this);
+			}
+			//TODO better implementation here
+			else if(addTypestate == false && !current.isPlugged()){
 			}
 //			else if(current.isPlugged()) {
 //				bd.pluggedGraph.add(current);
