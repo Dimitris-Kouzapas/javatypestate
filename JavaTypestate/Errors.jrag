@@ -62,6 +62,13 @@ aspect Errors {
 		}
 	}
 
+	//TODO so far we handle TypestateInfo as TypestateWarning --> It should be warningAndInfo together
+	public class TypestateInfo extends TypestateError {
+		public TypestateInfo(String msg, String file, int start, int end) {
+			super(msg, file, start, end, "Info");
+		}
+	}
+
 	public class TypestateWarning extends TypestateError {
 		public TypestateWarning(String msg, String file, int start, int end) {
 			super(msg, file, start, end, "Warning");
@@ -107,7 +114,11 @@ aspect Errors {
 
 	public void Program.printErrors() {
 		for(TypestateError te: errors)
-			te.print(errorStream);
+			te.print(errorStream());
+	}
+
+	protected void ASTNode.addInfo(String infoMsg) {
+		addError(new TypestateInfo(infoMsg, null, start, end));
 	}
 
 	protected void ASTNode.addWarning(String warningMsg) {
@@ -122,7 +133,7 @@ aspect Errors {
 		CompilationUnit u = (CompilationUnit) getCompilationUnitAncestor();
 		e.setFileName(u.getFilePath());
 		u.errors.add(e);
-		if(e instanceof TypestateWarning)
+		if(e instanceof TypestateWarning || e instanceof TypestateInfo)
 			u.numWarnings++;
 	}
 
@@ -135,5 +146,4 @@ aspect Errors {
 			return errors;
 		}
 	}
-
 }

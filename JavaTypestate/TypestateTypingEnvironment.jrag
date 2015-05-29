@@ -116,6 +116,11 @@ aspect TypestateTypingEnvironment {
 					}
 //					startExpr.get(i).addSemanticError(errorMessage);
 				}
+				
+				if(startExpr.get(i).getProgramAncestor().printInference() == true)
+					//TODO have a proper format for the n.stringState() string
+					startExpr.get(i).addInfo(n.stringState());
+					//n.printState(getProgramAncestor().outStream());
 			}
 		}
 	}

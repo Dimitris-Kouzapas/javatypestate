@@ -441,10 +441,14 @@ aspect GraphNode {
 			return stream;
 		}
 
-		protected void printState() {
+		protected void printState(PrintStream out) {
+			out.println(stringState());
+		}
+
+		protected String stringState() {
 			count = 1;
 			TypestateStream stream = printState(new HashSet<GraphNode>(), new HashMap<GraphNode, Integer>(), new TypestateStream());
-			System.out.println(stream.toString());
+			return stream.toString();
 		}
 
 		/***********************************************************/

@@ -8,9 +8,18 @@ aspect Compilation {
 	JavaParser Program.parser;
 	protected String CompilationUnit.filePath;
 
-	private boolean Program.verbose;
+	private boolean Program.verbose = false;
 	public void Program.setVerbose() {
 		verbose = true;
+	}
+
+	private boolean Program.printInference = false;
+	public void Program.setPrintInference() {
+		printInference = true;
+	}
+
+	public boolean Program.printInference() {
+		return printInference;
 	}
 
 	private PrintStream Program.outStream = System.out;
@@ -22,6 +31,14 @@ aspect Compilation {
 
 	public void Program.setErrorStream(PrintStream s) {
 		errorStream = s;
+	}
+
+	public PrintStream Program.outStream() {
+		return outStream;
+	}
+
+	public PrintStream Program.errorStream() {
+		return errorStream;
 	}
 
 	protected String CompilationUnit.getFilePath() {
@@ -63,7 +80,7 @@ aspect Compilation {
 		}
 
 		if(verbose)
-			outStream.println("Loading file " + path);
+			outStream().println("Loading file " + path);
 
 		u.filePath = path;
 		addCompilationUnit(u);
@@ -96,11 +113,11 @@ aspect Compilation {
 		for(int i = 0; i < args.length; i++)
 			if(new File(args[i]).exists())
 				if(!args[i].endsWith(fileSuffix()))
-					errorStream.println("File " + args[i] + " should have suffix: " + fileSuffix());
+					errorStream().println("File " + args[i] + " should have suffix: " + fileSuffix());
 				else
 					compile(args[i]);
 			else
-				errorStream.println("File " + args[i] + " not found.");
+				errorStream().println("File " + args[i] + " not found.");
 
 		collect();
 		return !hasErrors();
@@ -124,7 +141,6 @@ aspect Compilation {
 		}
 
 		private void printUnits() {
-
 			for(int i = 0; i < getNumCompilationUnit(); i++) {
 				getCompilationUnit(i).Rewrite(System.out);
 				if(getCompilationUnit(i).getTypeDecl().isEnumDeclType())

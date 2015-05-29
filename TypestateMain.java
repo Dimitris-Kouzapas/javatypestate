@@ -14,6 +14,7 @@ class TypestateMain {
 	private boolean printErrors = true;
 	private boolean semantic = false;
 	private boolean verbose = false;
+	private boolean printInference = false;
 
 	private final int DEFAULT = 0x111;
 	private final int TYPESTATE = 0x01;
@@ -89,6 +90,10 @@ class TypestateMain {
 				setMode(TYPESTATE);
 			else if(args[i].equals("-Java14") || args[i].equals("-java14") || args[i].equals("-j"))
 				setMode(JAVA14);
+			else if(args[i].equals("-printInference") || args[i].equals("-pi")) {
+				printInference = true;
+				tc.setPrintInference();
+			}
 			else
 				files.add(args[i]);
 		}
@@ -120,11 +125,13 @@ class TypestateMain {
 		System.out.println("\tPerform only typechecking.");
 		System.out.print("-Java14 -java14 -j:");
 		System.out.println("\t\tPerform only java1.4 checking.");
-		System.out.println("Note if you put both of the above flags you get both checks.");
+		System.out.println("Note if you put both of the above flags you get both Typestate and Java checks.");
 		System.out.println();
 		System.out.print("-Semantic -semantic -s:");
 		System.out.println("\t\tPerform only typecheck. No java files are created.");
 		System.out.print("-Verbose -verbose -v:");
 		System.out.println("\t\tPrint the steps the typestate typechecker does.");
+		System.out.print("-printInference -i:");
+		System.out.println("\t\tPrints all the infered types.");
 	}
 }
