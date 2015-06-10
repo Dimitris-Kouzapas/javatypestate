@@ -15,7 +15,8 @@ aspect javaASTFunctionality {
 
 	/*	CompilationUnit								*/
 	// The next two atrributes are defined for consistency of the ast classes definition.
-	eq CompilationUnit.getImportDecl(int i).getClassDeclAncestor() = null;
+	eq Program.getCompilationUnit().getClassDeclAncestor() = null;
+//	eq CompilationUnit.getImportDecl(int i).getClassDeclAncestor() = null;
 	eq CompilationUnit.getTypeDecl().getSwitchStmtAncestor() = null;
 
 	/*	TypeDecl								*/
@@ -106,6 +107,8 @@ aspect javaASTFunctionality {
 //	inh ConstructorDecl MethodAccess.getConstructorDeclAncestor();
 //	eq ConstructorDecl.getBlock().getConstructorDeclAncestor() = this;
 
+
+/*
 	syn lazy Set<MethodDecl> MethodAccess.selfSuccessors() = getTarget() != null ? getTarget().selfSuccessors() : new HashSet<MethodDecl>(); 
 	syn Set<MethodDecl> MethodAccess.reachable() circular [new HashSet<MethodDecl>()];
 
@@ -120,7 +123,7 @@ aspect javaASTFunctionality {
 	}
 
 	syn lazy boolean MethodAccess.isRecursiveCall() = reachable().contains(getMethodDeclAncestor());
-
+*/
 
 
 	syn lazy MethodDecl MethodAccess.getTarget() = lookupMethod(getQualifiedType());

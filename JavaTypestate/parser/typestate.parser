@@ -3,7 +3,7 @@ TypeDecl type_declaration		=
 					;
 
 TypestateDecl typestate_declaration	=
-					TYPESTATE IDENTIFIER.id LBRACE SESSION IDENTIFIER EQ typestate.t WHERE state_name_list.tnl RBRACE
+					TYPESTATE IDENTIFIER.id LBRACE IDENTIFIER EQ typestate.t state_name_list.tnl RBRACE
 					{:
 						InitState is = new InitState(IDENTIFIER, t);
 						is.setStart(IDENTIFIER.getStart());
@@ -11,7 +11,7 @@ TypestateDecl typestate_declaration	=
 						return new TypestateDecl(new Modifiers(), id, new List(), is, tnl);
 					:}
 					|	
-					TYPESTATE IDENTIFIER.id LBRACE SESSION IDENTIFIER EQ typestate.t RBRACE
+					TYPESTATE IDENTIFIER.id LBRACE FROM IDENTIFIER EQ typestate.t RBRACE
 					{:
 						InitState is = new InitState(IDENTIFIER, t);
 						is.setStart(IDENTIFIER.getStart());

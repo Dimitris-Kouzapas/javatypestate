@@ -52,8 +52,10 @@
   "while"                        { return sym(Terminals.WHILE); }
 
   "typestate"                    { return sym(Terminals.TYPESTATE); }
-  "session"                      { return sym(Terminals.SESSION); }
-  "where"                        { return sym(Terminals.WHERE); }
+/*  "start"                        { return sym(Terminals.START); }*/
+/*  "from"                         { return sym(Terminals.FROM); }*/
+/*  "session"                      { return sym(Terminals.SESSION); }*/
+/*  "where"                        { return sym(Terminals.WHERE); }*/
   "end"                          { return sym(Terminals.END); }
 
   "enum"                         { return sym(Terminals.ENUM); }

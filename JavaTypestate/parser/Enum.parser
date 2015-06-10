@@ -6,9 +6,9 @@ TypeDecl type_declaration		=
 					;
 
 EnumDecl enum_declaration		=
-						ENUM IDENTIFIER.i enum_body.e
+						modifiers.m? ENUM IDENTIFIER.id interfaces.i? enum_body.e
 						{:
-							return new EnumDecl(new Modifiers(), i, e);	//TODO erase Modifiers
+							return new EnumDecl(new Modifiers(m), id, i, e);	//TODO erase Modifiers
 						:}
 					;
 

@@ -2,7 +2,8 @@ aspect LookupVariable {
 	//NameDecl
 	inh NameDecl ParseName.lookupVariable(String var);
 	syn lazy NameDecl ParseName.lookupVariable() = lookupVariable(getID());
-	eq CompilationUnit.getImportDecl(int i).lookupVariable(String var) = null;
+//	eq CompilationUnit.getImportDecl(int i).lookupVariable(String var) = null;
+	eq Program.getCompilationUnit().lookupVariable(String var) = null;
 
 	syn lazy NameDecl ParseName.lookupVariable(TypeDecl t) = t != null ? t.lookupVariable(getID()) : null;
 

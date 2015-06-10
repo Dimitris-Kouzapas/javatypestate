@@ -220,6 +220,7 @@ aspect Rewrite {
 		stream.print(getLITERAL());
 	}
 
+	//TODO the getLiteral() returns a string that may have special characters \newline \tab etc. Print them as \n \t etc
 	protected void StringLiteral.Rewrite(TypestateStream stream) {
 		stream.print("\"" + getLITERAL() + "\"");
 	}

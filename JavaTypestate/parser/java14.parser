@@ -184,7 +184,7 @@ ClassDecl class_declaration	=
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), new List(), b);
 					:}
 */
-				|	modifiers.m? CLASS IDENTIFIER /*super.s?*/ interfaces.i? class_body.b 
+					modifiers.m? CLASS IDENTIFIER /*super.s?*/ interfaces.i? class_body.b 
 					{:
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), i, b);
 					:}

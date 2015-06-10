@@ -1,5 +1,4 @@
 aspect Enum {
-
 	EnumDecl ClassDecl.enumDecl = null;
 
 	rewrite EnumDecl {
@@ -171,7 +170,13 @@ aspect Enum {
 				new Opt(block))
 		);
 
-		return new ClassDecl(new Modifiers(), getID(), new Opt(), new List(), classBody);
+		/*
+			<getModifiers()> class <getID()> getInterfaces() {
+				classBody
+			}
+		*/
+
+		return new ClassDecl(getModifiers(), getID(), new Opt(), getImplementsListNoTransform(), classBody);
 	}
 
 	coll Set<String> EnumDecl.getEnumLabels() [new HashSet<String>()] with add root EnumDecl;
