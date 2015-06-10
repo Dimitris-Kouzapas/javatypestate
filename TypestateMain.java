@@ -131,7 +131,7 @@ class TypestateMain {
 		System.out.println("\t\tPerform only typecheck. No java files are created.");
 		System.out.print("-Verbose -verbose -v:");
 		System.out.println("\t\tPrint the steps the typestate typechecker does.");
-		System.out.print("-printInference -i:");
+		System.out.print("-printInference -pi:");
 		System.out.println("\t\tPrints all the infered types.");
 	}
 }
