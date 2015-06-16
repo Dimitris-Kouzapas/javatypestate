@@ -1,0 +1,45 @@
+In SellerMain.ses we commented out the call of
+seller.sendPriceToBuyer1 on line 32.
+
+The error message we expect is that seller.receiveLabelFromBuyer2 is
+called when seller.sendPriceToBuyer1 should be called.
+
+The error message we get is that seller.sendPriceToBuyer1 is called
+when seller.receiveTitleFromBuyer1 should be called.
+
+This could be explained by the fact that method calls are analysed in
+reverse order. We think it's important to produce error messages that
+correspond to analysing the method calls forwards.
+
+
+
+The file positions seem to be reported correctly.
+
+
+"Missmatch" should be "mismatch".
+
+
+There are two categories of error:
+
+1. Calling a method that is not allowed at the current point in the
+typestate specification.
+
+2. Failing to complete the typestate specification.
+
+Both errors seem to be producing the same form of error message, but
+we think that maybe there should be different error messages. However,
+if error reporting is done forwards, probably this error message would
+become clearer.
+
+
+
+If we remove the first method call, then the error message refers to
+Init Node, which we think is an extra node used in your graph
+representation. If error reporting is done forwards, then what we
+would like to see for this error is the set of methods that could be
+called, and the method that has been called. If this is a point in the
+typestate specification that corresponds to a named state, then it
+would be useful to report the name of the state.
+
+
+
