@@ -1,12 +1,10 @@
-package demos.Final_demos.SMTP;
+package demos.SMTP;
 
 //type <java> "java.lang.String" from "rt.jar" as String;
 typestate SProtocol {
-	session
 	State0 = {
 		void send_220StringToC(String): State1
 	}
-	where
 	State1 = {
 		Choice1 receive_Choice1LabelFromC():
 		<EHLO: State2, QUIT: State39>
