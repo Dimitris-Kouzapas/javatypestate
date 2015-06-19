@@ -1,10 +1,12 @@
-package demos.SMTP;
+package demos.Final_demos.SMTP;
 
 //type <java> "java.lang.String" from "rt.jar" as String;
 typestate CProtocol {
+	
 	State0 = {
 		String receive_220StringFromS(): State1
 	}
+	
 	State1 = {
 		Choice1 send_Choice1LabelToS(String):
 		<EHLO: State2, QUIT: State39>

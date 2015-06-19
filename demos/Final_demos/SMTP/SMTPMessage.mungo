@@ -1,4 +1,4 @@
-package demos.SMTP;
+package demos.Final_demos.SMTP;
 
 
 public class SMTPMessage {

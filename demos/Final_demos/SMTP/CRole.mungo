@@ -1,4 +1,4 @@
-package demos.SMTP;
+package demos.Final_demos.SMTP;
 
 import java.io.BufferedReader;
 import java.io.IOException;
