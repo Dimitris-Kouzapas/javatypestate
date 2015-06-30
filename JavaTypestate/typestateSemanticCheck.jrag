@@ -3,7 +3,7 @@ import java.util.*;
 aspect typestateSemanticCheck {
 
 //	protected void TypestateDecl.semanticCheck() {
-//		createTypestate().normalise().printState();
+//		createTypestate().normalise().printPaths();
 //	}
 
 	protected void State.semanticCheck() {
@@ -72,7 +72,7 @@ aspect typestateSemanticCheck {
 			for(int j = i + 1; j < getNumTypestateMethod(); j++) {
 				TypestateMethod tm2 = getTypestateMethod(j);
 				if(tm1.signature().equals(tm2.signature()))
-					addSemanticError("Duplicate method signature: " + tm1.signature() + ".");
+					addSemanticError("Duplicate method signature in the prefix of a set Sta: " + tm1.signature() + ".");
 			}
 		}
 	}

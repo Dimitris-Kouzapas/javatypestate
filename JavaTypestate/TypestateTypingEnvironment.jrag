@@ -14,6 +14,9 @@ aspect TypestateTypingEnvironment {
 		private ArrayList<GraphNode> errorGraph;
 		private ArrayList<ASTNode> errorExpr;
 
+		//TODO better implementation for this.
+		public static boolean addTypestate = false;
+
 		TypestateVar() {
 			current = new EndNode();
 
@@ -36,17 +39,21 @@ aspect TypestateTypingEnvironment {
 			resetCurrent();
 		}
 
-		protected void addTypestate(Expr e, BodyDecl bd) {
+		protected void addTypestate(Expr e/*, BodyDecl bd*/) {
+//			if(current.isReturned()) {
 			if(current.isReturned()) {
-				bd.returnGraph.add(current);
-				bd.returnExpr.add(e);
-				bd.returnTypestate.add(this);
+//				bd.returnGraph.add(current);
+//				bd.returnExpr.add(e);
+//				bd.returnTypestate.add(this);
 			}
-			else if(current.isPlugged()) {
-				bd.pluggedGraph.add(current);
-				bd.pluggedExpr.add(e);
-				bd.pluggedTypestate.add(this);
+			//TODO better implementation here
+			else if(addTypestate == false && !current.isPlugged()){
 			}
+//			else if(current.isPlugged()) {
+//				bd.pluggedGraph.add(current);
+//				bd.pluggedExpr.add(e);
+//				bd.pluggedTypestate.add(this);
+//			}
 			else {
 				startGraph.add(current);
 				startExpr.add(e);
@@ -60,7 +67,7 @@ aspect TypestateTypingEnvironment {
 				addErrorGraph(e);
 		}
 
-		protected void checkError(ASTNode e, BodyDecl bd) {
+/*		protected void checkError(ASTNode e, BodyDecl bd) {
 			int c = current.onlyEndNodes();
 			//has more than EndNodes/LoopNodes
 			if(c == -1)
@@ -69,11 +76,19 @@ aspect TypestateTypingEnvironment {
 			else if(c == 0)
 				addTypestate((Expr) e, bd);
 		}
-
+*/
 		protected void connectGraph(BodyDecl bd) {
 		}
 
+
+		protected void resetConnectionGraph(BodyDecl bd) {
+		}
+
 		protected GraphNode getConnectionGraph(BodyDecl bd) {
+			return null;
+		}
+
+		protected GraphNode getPlugGraph(BodyDecl bd) {
 			return null;
 		}
 
@@ -93,13 +108,20 @@ aspect TypestateTypingEnvironment {
 				if(!t.includes(n)) {
 					//TODO Recheck here... Maybe you can engineer this part somehow.
 					for(GraphNode m: t.getErrorNode().next) {
-						t.getErrorNode().getExpr().addSemanticError("Typestate mismatch. Found: " + m.toString() + ". Expected: " + t.getExpectedNode().nextToString() + ".");
+						String filePath = ((CompilationUnit) startExpr.get(i).getCompilationUnitAncestor()).getFilePath();
+						String errorMsg = "Object created at " + filePath + ": " + ASTNode.getLine(startExpr.get(i).getStart());
+						errorMsg += ". Typestate mismatch. Found: " + m.toString() + ". Expected: " + t.getExpectedNode().nextToString() + ".";
+						t.getErrorNode().getExpr().addSemanticError(errorMsg);
 //						m.getExpr().addSemanticError("Typestate mismatch. Found: " + m.toString() + ". Expected: " + t.getExpectedNode().nextToString() + ".");
 					}
 //					startExpr.get(i).addSemanticError(errorMessage);
 				}
+				
+				if(startExpr.get(i).getProgramAncestor().printInference() == true)
+					//TODO have a proper format for the n.stringState() string
+					startExpr.get(i).addInfo(n.stringState());
+					//n.printState(getProgramAncestor().outStream());
 			}
-
 		}
 	}
 
@@ -108,6 +130,11 @@ aspect TypestateTypingEnvironment {
 
 		TypestatePar() {
 			super();
+//			parameterNode = new LoopNode();
+		}
+
+		protected void resetConnectionGraph(BodyDecl bd) {
+			current = new EndNode();
 			parameterNode = new LoopNode();
 		}
 
@@ -122,25 +149,37 @@ aspect TypestateTypingEnvironment {
 
 	class TypestateField extends TypestateVar {
 		private Map<BodyDecl, GraphNode> connectGraph;
+		private Map<BodyDecl, GraphNode> plugGraph;
 
-		TypestateField(Set<BodyDecl> bodyDecls) {
+		TypestateField(/*Set<BodyDecl> bodyDecls*/) {
 			super();
 
 			connectGraph = new HashMap<BodyDecl, GraphNode>();
-			for(BodyDecl bd: bodyDecls)
-				connectGraph.put(bd, new LoopNode());
+			plugGraph = new HashMap<BodyDecl, GraphNode>();
+//			for(BodyDecl bd: bodyDecls)
+//				connectGraph.put(bd, new LoopNode());
 
-			current = new PlugNode(this);
+			current = new EndNode();//new PlugNode(this).addNext(new EndNode());
+		}
+		protected void resetConnectionGraph(BodyDecl bd) {
+			connectGraph.remove(bd);
+			connectGraph.put(bd, new LoopNode());
+			plugGraph.remove(bd);
+			current = new LoopNode().addNext(current);
+			plugGraph.put(bd, current);
 		}
 
 		protected void connectGraph(BodyDecl bd) {
 			connectGraph.get(bd).addNext(current);
-			current = new PlugNode(this);
+//			current = new PlugNode(this).addNext(current);
 		}
 
 		protected GraphNode getConnectionGraph(BodyDecl bd) {
 			return connectGraph.get(bd);
 		}
 
+		protected GraphNode getPlugGraph(BodyDecl bd) {
+			return plugGraph.get(bd);
+		}
 	}
 }
