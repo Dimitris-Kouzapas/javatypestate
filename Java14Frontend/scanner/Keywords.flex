@@ -48,7 +48,7 @@
 /*  "transient"                    { return sym(Terminals.TRANSIENT); }*/
   "try"                          { return sym(Terminals.TRY); }
   "void"                         { return sym(Terminals.VOID); }
-/*  "volatile"                     { return sym(Terminals.VOLATILE); }*/
+  "volatile"                     { return sym(Terminals.VOLATILE); }
   "while"                        { return sym(Terminals.WHILE); }
 
   "typestate"                    { return sym(Terminals.TYPESTATE); }

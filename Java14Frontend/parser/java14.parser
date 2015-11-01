@@ -167,10 +167,10 @@ Modifier modifier		=
 /*				|	ABSTRACT			{: return new Modifier("abstract"); :}
 */				|	FINAL				{: return new Modifier("final"); :}
 /*				|	NATIVE				{: return new Modifier("native"); :}
-				|	SYNCHRONIZED			{: return new Modifier("synchronized"); :}
+				|	SYNCHRONIZED		{: return new Modifier("synchronized"); :}
 				|	TRANSIENT			{: return new Modifier("transient"); :}
-				|	VOLATILE			{: return new Modifier("volatile"); :}
-				|	STRICTFP			{: return new Modifier("strictfp"); :}
+*/				|	VOLATILE			{: return new Modifier("volatile"); :}
+/*				|	STRICTFP			{: return new Modifier("strictfp"); :}
 */				;
 
 ClassDecl class_declaration	=
