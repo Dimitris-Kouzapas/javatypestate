@@ -1,32 +1,32 @@
 TypeDecl type_declaration		=
-						enum_declaration.e
+						mungo_enum_declaration.e
 						{:
 							return e;
 						:}
 					;
 
-EnumDecl enum_declaration		=
-						modifiers.m? ENUM IDENTIFIER.id interfaces.i? enum_body.e
+MungoEnumDecl mungo_enum_declaration		=
+						modifiers.m? ENUMERATION IDENTIFIER.id interfaces.i? mungo_enum_body.e
 						{:
-							return new EnumDecl(new Modifiers(m), id, i, e);	//TODO erase Modifiers
+							return new MungoEnumDecl(new Modifiers(m), id, i, e);	//TODO erase Modifiers
 						:}
 					;
 
-List enum_body			=
-						LBRACE enum_list.e SEMICOLON RBRACE
+List mungo_enum_body			=
+						LBRACE mungo_enum_list.e SEMICOLON RBRACE
 						{:
 							return e;
 						:}
 					;
 
-List enum_list			=
+List mungo_enum_list			=
 						IDENTIFIER.i
 						{:
-							return new List<EnumConstant>().add(new EnumConstant(i));
+							return new List<MungoEnumConstant>().add(new MungoEnumConstant(i));
 						:}
 					|
-						enum_list.l COMMA IDENTIFIER.i
+						mungo_enum_list.l COMMA IDENTIFIER.i
 						{:
-							return l.add(new EnumConstant(i));
+							return l.add(new MungoEnumConstant(i));
 						:}
 					;

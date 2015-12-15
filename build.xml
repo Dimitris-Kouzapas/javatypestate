@@ -1,253 +1,129 @@
-<!--
- Targets for working from terminal window:
-       build (default) - generates java files and compiles them
-       clean           - removes all generated files and class files
- Targets for working from Eclipse:
-       gen             - generates java files
-       genClean        - removes all generated files and their class files
--->
+<project name="javatypestate" default="mungo">
+    <property name="jj.root" location="${basedir}"/>
+    <property file="${jj.root}/build.properties"/>
 
-<!-- Properties -->
+    <description>
+        1. Generate ExtendJ for a target Java version:
 
+        $ ant java4
+        java5
+        java6
+        java7
 
+        2. Build a jar file or documentation based on generated compiler:
 
-	<project name="JavaTypestate" default="build" basedir=".">
+        $ ant jar
+        doc
 
+        -- OR --
 
-	<property name="Typestate" value="JavaTypestate"/>
-	<property name="Frontend" value="Java14Frontend"/>
+        Build a standard release:
 
-<!-- "package" is the directory where generated files will be stored -->
+        $ ant release
 
-	<property name="Typestate.package" value="${Typestate}/AST"/>
-	<property name="Frontend.package" value="${Frontend}/AST"/>
-
-
-<!-- "tools" is the directory where generators and libraries are located. -->
-
-	<property name="tools" value="tools"/>
+    </description>
 
 
+    <target name="extendj" description="generate extendj">
+        <ant antfile="${extendj.dir}/build.xml" target="java8" inheritAll="false"/>
+    </target>
 
-<!-- Ant tasks definitions -->
+    <target name="javatypestate" description="generate javatypestate">
+        <ant antfile="${javatypestate.dir}/build.xml" target="build" inheritAll="false"/>
+    </target>
 
+    <target name="mungo" description="generate mungo">
+        <antcall target="javatypestate"/>
+        <antcall target="extendj"/>
+        <javac srcdir="${src.dir}" destdir="${bin.dir}"
+               includes="TypestateMain.java" />
+    </target>
 
+    <target name="clean"
+            description="remove all generated (java, class, etc.) files">
+        <delete dir="${gen.dir}"/>
+        <delete dir="${genres.dir}"/>
+        <delete dir="${tmp.dir}"/>
+        <delete dir="${bin.dir}"/>
+        <delete dir="${basedir}/doc"/>
+    </target>
 
-	<!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
+    <target name="build-dist" description="build Mungo distribution files"
+            depends="update-version-string,clean">
+        <property file="${res.dir}/Version.properties" prefix="jj"/>
+        <echo message="Building source zip"/>
+        <zip destfile="mungo-${jj.version}.zip">
+            <zipfileset dir="." prefix="Mungo">
+                <include name="README.md"/>
+                <include name="LICENSE"/>
+                <include name="build.xml"/>
+                <include name="ChangeLog"/>
+                <include name="src/frontend/**/*"/>
+                <include name="src/backend/**/*"/>
+                <include name="${res.dir}/**/*"/>
+                <include name="${genres.dir}/**/*"/>
+                <!--<include name="${java4.dir}/**/*"/>-->
+                <!--<include name="${java5.dir}/**/*"/>-->
+                <!--<include name="${java6.dir}/**/*"/>-->
+                <!--<include name="${java7.dir}/**/*"/>-->
+                <include name="${extendj.dir}/**/*"/>
+                <include name="${javatypestate.dir}/**/*"/>
 
-	<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="${tools}/JFlex.jar"/>
+            </zipfileset>
+        </zip>
+        <echo message="Building mungo"/>
+        <antcall target="mungo"/>
+        <antcall target="jar"/>
+    </target>
 
+    <target name="doc" description="generate ReRAG documentation">
+        <mkdir dir="${basedir}/doc"/>
+        <javadoc
+                destdir="${basedir}/doc"
+                docletpath="${tools.dir}/RagDoll.jar"
+                doclet="ragdoll.RagDollDoclet">
+            <classpath>
+                <pathelement location="${bin.dir}"/>
+            </classpath>
+            <arg value="-linksource"/>
+            <packageset dir="${gen.dir}" defaultexcludes="yes">
+                <include name="${ast.dir}"/>
+            </packageset>
+        </javadoc>
+    </target>
 
-	<!-- "beaver" is an ant task class for the parser generator in beaver-ant.jar -->
+    <target name="jar" description="build mungo.jar">
+        <jar destfile="mungo.jar">
+            <manifest>
+                <attribute name="Main-Class" value="TypestateMain"/>
+            </manifest>
+            <fileset dir=".">
+                <include name="LICENSE"/>
+            </fileset>
+            <fileset dir="${bin.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
 
-	<taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="${tools}/beaver-ant.jar"/>
+    <target name="-get-current-version" unless="version">
+        <!-- Get a new version string using git describe if possible. -->
+        <echo message="Updating ExtendJ version string..."/>
+        <exec executable="git" outputproperty="version"
+              failifexecutionfails="false">
+            <arg value="describe"/>
+        </exec>
+        <!-- Ensure the version property is set. -->
+        <property file="${res.dir}/Version.properties"/>
+    </target>
 
-
-	<!-- "jastadd" is an ant task class in jastadd2.jar -->
-
-	<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="${tools}/jastadd2.jar"/>
-
-
-<!-- Targets -->
-
-	<!-- compile sources -->
-
-	<target name="build" depends="gen">
-		<javac
-			debug="true" nowarn="true" srcdir="."
-			includes="${Typestate}/**/*.java, ${Frontend}/**/*.java, **/*.java"
-			excludes="${Typestate}/test/**, ${Frontend}/test/**, test/**, protocol/**, file_example/**, compiler-notes/**"
-			includeantruntime="false"
-			classpath=".:${tools}/junit.jar"
-		/>
-	</target>
-
-
-	<!-- generate compiler source files -->
-
-
-	<target name="gen" depends="scanner,parser">
-		<!-- create AST node types and weave aspect modules -->
-		<jastadd	package="${Typestate.package}" rewrite="true" beaver="true"
-				novisitcheck="true" outdir="${basedir}" debug="true">
-			<fileset dir=".">
-				<include name="${Typestate}/**/*.ast"/>
-				<include name="${Typestate}/**/*.jrag"/>
-				<include name="${Typestate}/**/*.jadd"/>
-			</fileset>
-		</jastadd>
-
-		<jastadd	package="${Frontend.package}" rewrite="true" beaver="true"
-				novisitcheck="true" outdir="${basedir}" debug="true">
-			<fileset dir=".">
-				<include name="${Frontend}/**/*.ast"/>
-				<include name="${Frontend}/**/*.jrag"/>
-				<include name="${Frontend}/**/*.jadd"/>
-			</fileset>
-		</jastadd>
-	</target>
-
-	<target name="scanner">
-		<!-- compose the scanner -->
-		<concat destfile="${Typestate}/scanner/JavaScanner.flex" binary="true" force="false">
-			<filelist dir="${Typestate}/scanner">
-				<file name="preamble.flex"/>
-				<file name="macros.flex"/>
-				<file name="rules_preamble.flex"/>
-				<file name="WhiteSpace.flex"/>
-				<file name="Comments.flex"/>
-				<file name="Keywords.flex"/>
-				<file name="Literals.flex"/>
-				<file name="Separators.flex"/>
-				<file name="Operators.flex"/>
-				<file name="Identifiers.flex"/>
-				<file name="postamble.flex"/>
-			</filelist>
-		</concat>
-
-		<!-- generate the scanner -->
-		<jflex file="${Typestate}/scanner/JavaScanner.flex" outdir="${Typestate}/scanner" nobak="yes"/>
-
-		<!-- compose the scanner -->
-		<concat destfile="${Frontend}/scanner/JavaScanner.flex" binary="true" force="false">
-			<filelist dir="${Frontend}/scanner">
-				<file name="preamble.flex"/>
-				<file name="macros.flex"/>
-				<file name="rules_preamble.flex"/>
-				<file name="WhiteSpace.flex"/>
-				<file name="Comments.flex"/>
-				<file name="Keywords.flex"/>
-				<file name="Literals.flex"/>
-				<file name="Separators.flex"/>
-				<file name="Operators.flex"/>
-				<file name="Identifiers.flex"/>
-				<file name="postamble.flex"/>
-			</filelist>
-		</concat>
-		<!-- generate the scanner -->
-		<jflex file="${Frontend}/scanner/JavaScanner.flex" outdir="${Frontend}/scanner" nobak="yes"/>
-	</target>
-
-
-	<target name="parser">
-		<!-- generate the parser phase 1, create a full .lalr specification from fragments -->
-		<concat destfile="${Typestate}/parser/JavaParser.all" binary="true" force="false">
-			<filelist dir="${Typestate}">
-				<file name="parser/preamble.parser"/>
-				<file name="parser/java14.parser"/>
-				<file name="parser/errorrecovery.parser"/>
-				<file name="parser/typestate.parser"/>
-				<file name="parser/Enum.parser"/>
-			</filelist>
-		</concat>
-		<!-- generate the parser phase 2, translating .lalr to .beaver -->
-		<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main" fork="true">
-			<arg line="${Typestate}/parser/JavaParser.all ${Typestate}/parser/JavaParser.beaver"/>
-		</java>
-  		<!-- generate the parser phase 3, translating .beaver to .java -->
-		<beaver file="${Typestate}/parser/JavaParser.beaver" terminalNames="yes" compress="no" useSwitch="yes"/>
-
-		<!-- generate the parser phase 1, create a full .lalr specification from fragments -->
-		<concat destfile="${Frontend}/parser/JavaParser.all" binary="true" force="false">
-			<filelist dir="${Frontend}">
-				<file name="parser/preamble.parser"/>
-				<file name="parser/java14.parser"/>
-				<file name="parser/errorrecovery.parser"/>
-				<file name="parser/Enum.parser"/> 
-			</filelist>
-		</concat>
-		<!-- generate the parser phase 2, translating .lalr to .beaver -->
-		<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main" fork="true">
-			<arg line="${Frontend}/parser/JavaParser.all ${Frontend}/parser/JavaParser.beaver"/>
-		</java>
-  		<!-- generate the parser phase 3, translating .beaver to .java -->
-		<beaver file="${Frontend}/parser/JavaParser.beaver" terminalNames="yes" compress="no" useSwitch="yes"/>
-	</target>
-
-	<!-- remove generated source files and .class files -->
-	<target name="clean" depends="cleanGen">
-		<!-- delete all .class files recursively -->
-		<delete>
-			<fileset dir="." includes="${Typestate}/**/*.class"/>
-		</delete>
-		<!-- <delete file="JavaPrettyPrinter.jar"/> -->
-		<delete file="${Typestate}/JavaChecker.jar"/>
-		<!-- <delete file="Java1.4Frontend-src.jar"/> -->
-		<delete file="TypestateMain.class"/>
-
-		<delete>
-			<fileset dir="beaver" includes="*.class"/>
-		</delete>
-
-		<delete>
-			<fileset dir="." includes="${Frontend}/**/*.class"/>
-		</delete>
-	</target>
-
-	<!-- remove generated source files -->
-	<target name="cleanGen">
-		<delete dir="${Typestate.package}"/>
-		<delete dir="${Frontend.package}"/>
-		<delete>
-			<fileset dir="${Typestate}/scanner" includes="JavaScanner.flex"/>
-			<fileset dir="${Typestate}/scanner" includes="JavaScanner.java"/>
-			<fileset dir="${Typestate}/parser" includes="JavaParser.java"/>
-			<fileset dir="${Typestate}/parser" includes="JavaParser.beaver"/>
-			<fileset dir="${Typestate}/parser" includes="JavaParser.all"/>
-
-			<fileset dir="${Frontend}/scanner" includes="JavaScanner.flex"/>
-			<fileset dir="${Frontend}/scanner" includes="JavaScanner.java"/>
-			<fileset dir="${Frontend}/parser" includes="JavaParser.java"/>
-			<fileset dir="${Frontend}/parser" includes="JavaParser.beaver"/>
-			<fileset dir="${Frontend}/parser" includes="JavaParser.all"/>
-		</delete>
-	</target>
-
-	<!-- build binaries -->
-	<target name="jar" depends="build">
-		<jar destfile="JavaChecker.jar" basedir="." includes="${Typestate}/**/*.class" excludes="${Typestate}/test/**">
-			<manifest>
-				<attribute name="Main-Class" value="JavaChecker"/>
-			</manifest>
-		</jar>
-		<jar destfile="JavaPrettyPrinter.jar" basedir="." includes="${Typestate}/**/*.class" excludes="${Typestate}/test/**">
-			<manifest>
-				<attribute name="Main-Class" value="JavaPrettyPrinter"/>
-			</manifest>
-		</jar>
-	</target>
-
-	<!-- build a source distribution -->
-	<target name="source" depends="build">
-		<jar destfile="Java1.4Frontend-src.jar">
-			<fileset dir="..">
-				<!-- include frontend source file -->
-				<include name="Java1.4Frontend/JavaPrettyPrinter.java"/>
-				<include name="Java1.4Frontend/JavaChecker.java"/>
-				<include name="Java1.4Frontend/**/*.ast"/>
-				<include name="Java1.4Frontend/**/*.jrag"/>
-				<include name="Java1.4Frontend/**/*.jadd"/>
-				<!-- include parser and scanner -->
-				<include name="Java1.4Frontend/beaver/**/*.java"/>
-				<include name="Java1.4Frontend/scanner/*.flex"/>
-				<exclude name="Java1.4Frontend/scanner/JavaScanner.flex"/>
-				<include name="Java1.4Frontend/scanner/Unicode.java"/>
-				<include name="Java1.4Frontend/parser/*.parser"/>
-     				<!-- include tools and buildfile used to build the front-end -->
-				<include name="Java1.4Frontend/tools/*.jar"/>
-				<include name="Java1.4Frontend/build.xml"/>
-				<!-- include readme and licences -->
-				<include name="Java1.4Frontend/README"/>
-				<include name="Java1.4Frontend/licences/BSD"/>
-				<include name="Java1.4Frontend/licences/CPL"/>
-				<include name="Java1.4Frontend/licences/GPL"/>
-				<include name="Java1.4Frontend/licences/LICENSE"/>
-			</fileset>
-			<manifest>
-			</manifest>
-		</jar>
-	</target>
+    <target name="update-version-string" depends="-get-current-version">
+        <!-- Store the new  version string in the generated version property file. -->
+        <echo message="version=${version}"/>
+        <mkdir dir="${genres.dir}"/>
+        <propertyfile file="${genres.dir}/Version.properties">
+            <entry key="version" value="${version}"/>
+        </propertyfile>
+    </target>
 
 </project>
-
-

@@ -3,5 +3,6 @@ To install the javatypestate
 0) go to your desired directory:	cd my/path/directory
 1) Download the code:			git clone https://github.com/Dimitris-Kouzapas/javatypestate
 2) build the project:			ant
-3) run the typechecker:			mungo [OPTIONS] [FILENAME]
-4) alternative running:			java TypestateMain [OPTIONS] [FILENAME]
+3) build the jar                ant jar
+4) run the typechecker:			java -jar mungo.jar [OPTIONS] [FILENAME]
+                                e.g. java -jar mungo.jar demos/Traversal/Run.mungo

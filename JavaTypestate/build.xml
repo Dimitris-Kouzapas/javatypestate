@@ -6,159 +6,154 @@
        gen             - generates java files
        genClean        - removes all generated files and their class files
 -->
-<project name="Java1.4Frontend" default="build" basedir=".">
+<project name="JavaTypestate" default="build">
+    <property name="jj.root" location="${basedir}/.."/>
+    <property file="${jj.root}/build.properties"/>
+    <!-- "package" is the directory where generated files will be stored -->
+    <property name="package" value="JavaTypestate.AST"/>
 
-<!-- "package" is the directory where generated files will be stored -->
-<property name="package" value="JavaTypestate/AST"/>
+    <!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
+    <taskdef name="jflex" classname="JFlex.anttask.JFlexTask"
+             classpath="${tools.dir}/JFlex.jar"/>
+    <!-- "beaver" is an ant task class for the parser generator in beaver-ant.jar -->
+    <taskdef name="beaver" classname="beaver.comp.run.AntTask"
+             classpath="${tools.dir}/beaver-ant.jar"/>
+    <!-- jastadd task -->
+    <taskdef name="jastadd" classname="org.jastadd.JastAddTask"
+             classpath="${tools.dir}/jastadd2.jar"/>
 
-<property name="outdir" value=".."/>
+    <!-- compile sources -->
+    <target name="build" depends="gen">
+        <mkdir dir="${bin.dir}"/>
+        <javac debug="true" nowarn="true" srcdir="${gen.dir}" includes="**/*.java"
+               excludes="test/**"
+               includeantruntime="false"
+               destdir="${bin.dir}"
+               classpath=".:${tools.dir}/junit.jar:${tools.dir}/beaver-ant.jar"/>
+    </target>
 
-<!-- "tools" is the directory where generators and libraries are located. -->
-<property name="tools" value="tools"/>
+    <!-- generate compiler source files -->
+    <target name="gen" depends="scanner,parser">
+        <!-- create AST node types and weave aspect modules -->
+        <jastadd package="${package}" rewrite="true" beaver="true"
+                 visitCheck="false" outdir="${gen.dir}" debug="true">
+            <fileset dir=".">
+                <include name="**/*.ast"/>
+                <include name="**/*.jrag"/>
+                <include name="**/*.jadd"/>
+            </fileset>
+        </jastadd>
+    </target>
 
-<!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
-<taskdef name="jflex" classname="JFlex.anttask.JFlexTask"
-  classpath="${tools}/JFlex.jar"/>
-<!-- "beaver" is an ant task class for the parser generator in beaver-ant.jar -->
-<taskdef name="beaver" classname="beaver.comp.run.AntTask"
-  classpath="${tools}/beaver-ant.jar"/>
-<!-- "jastadd" is an ant task class in jastadd2.jar -->
-<taskdef name="jastadd" classname="jastadd.JastAddTask"
-  classpath="${tools}/jastadd2.jar"/>
+    <target name="scanner">
+        <!-- compose the scanner -->
+        <concat destfile="${gen.dir}/JavaTypestate/scanner/JavaScanner.flex" binary="true" force="false">
+            <filelist dir="scanner">
+                <file name="preamble.flex"/>
+                <file name="macros.flex"/>
+                <file name="rules_preamble.flex"/>
+                <file name="WhiteSpace.flex"/>
+                <file name="Comments.flex"/>
+                <file name="Keywords.flex"/>
+                <file name="Literals.flex"/>
+                <file name="Separators.flex"/>
+                <file name="Operators.flex"/>
+                <file name="Identifiers.flex"/>
+                <file name="postamble.flex"/>
+            </filelist>
+        </concat>
+        <concat destfile="${gen.dir}/JavaTypestate/scanner/Unicode.java" binary="true" force="false">
+            <filelist dir="scanner">
+                <file name="Unicode.java"/>
+            </filelist>
 
-<!-- compile sources -->
-<target name="build" depends="gen">
-  <javac debug="true" nowarn="true" srcdir="." includes="**/*.java"
-    excludes="test/**" 
-    includeantruntime="false"
-    classpath=".:${tools}/junit.jar"/>
-</target>
+        </concat>
+        <!-- generate the scanner -->
+        <jflex file="${gen.dir}/JavaTypestate/scanner/JavaScanner.flex" outdir="${gen.dir}/JavaTypestate/scanner" nobak="yes"/>
+    </target>
 
-<!-- generate compiler source files -->
-<target name="gen" depends="scanner,parser">
-  <!-- create AST node types and weave aspect modules -->
-  <jastadd package="${package}" rewrite="true" beaver="true"
-    novisitcheck="true" outdir="${outdir}" debug="true">
-    <fileset dir=".">
-      <include name="**/*.ast"/>
-      <include name="**/*.jrag"/>
-      <include name="**/*.jadd"/>
-    </fileset>
-  </jastadd>
-</target>
+    <target name="parser">
+        <!-- generate the parser phase 1, create a full .lalr specification from
+             fragments -->
+        <concat destfile="${gen.dir}/JavaTypestate/parser/JavaParser.all" binary="true" force="false">
+            <filelist dir=".">
+                <file name="parser/preamble.parser"/>
+                <file name="parser/java14.parser"/>
+                <file name="parser/errorrecovery.parser"/>
+                <file name="parser/typestate.parser"/>
+                <file name="parser/enum.parser"/>
 
-<target name="scanner">
-  <!-- compose the scanner -->
-  <concat destfile="scanner/JavaScanner.flex" binary="true" force="false">
-    <filelist dir="scanner">
-      <file name="preamble.flex"/>
-      <file name="macros.flex"/>
-      <file name="rules_preamble.flex"/>
-      <file name="WhiteSpace.flex"/>
-      <file name="Comments.flex"/>
-      <file name="Keywords.flex"/>
-      <file name="Literals.flex"/>
-      <file name="Separators.flex"/>
-      <file name="Operators.flex"/>
-      <file name="Identifiers.flex"/>
-      <file name="postamble.flex"/>
-    </filelist>
-  </concat>
-  <!-- generate the scanner -->
-  <jflex file="scanner/JavaScanner.flex" outdir="scanner" nobak="yes"/>
-</target>
+            </filelist>
+        </concat>
+        <!-- generate the parser phase 2, translating .lalr to .beaver -->
+        <java classpath="${tools.dir}/JastAddParser.jar:${tools.dir}/beaver-rt.jar"
+              classname="Main" fork="true">
+            <arg line="${gen.dir}/JavaTypestate/parser/JavaParser.all ${gen.dir}/JavaTypestate/parser/JavaParser.beaver"/>
+        </java>
+        <!-- generate the parser phase 3, translating .beaver to .java -->
+        <beaver file="${gen.dir}/JavaTypestate/parser/JavaParser.beaver" terminalNames="yes" compress="no"
+                useSwitch="yes"/>
+    </target>
 
-<target name="parser">
-  <!-- generate the parser phase 1, create a full .lalr specification from
-       fragments -->
-  <concat destfile="parser/JavaParser.all" binary="true" force="false">
-    <filelist dir=".">
-      <file name="parser/preamble.parser"/>
-      <file name="parser/java14.parser"/>
-      <file name="parser/errorrecovery.parser"/>
-      <file name="parser/typestate.parser"/>
-    </filelist>
-  </concat>
-  <!-- generate the parser phase 2, translating .lalr to .beaver -->
-  <java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar"
-    classname="Main" fork="true">
-    <arg line="parser/JavaParser.all parser/JavaParser.beaver"/>
-  </java>
-  <!-- generate the parser phase 3, translating .beaver to .java -->
-  <beaver file="parser/JavaParser.beaver" terminalNames="yes" compress="no"
-    useSwitch="yes"/>
-</target>
+    <!-- remove generated source files and .class files -->
+    <target name="clean" depends="cleanGen">
+        <delete dir="${bin.dir}"/>
 
-<!-- remove generated source files and .class files -->
-<target name="clean" depends="cleanGen">
-  <!-- delete all .class files recursively -->
-  <delete>
-    <fileset dir="." includes="**/*.class"/>
-  </delete>
-  <delete file="JavaPrettyPrinter.jar"/>
-  <delete file="JavaChecker.jar"/>
-  <delete file="Java1.4Frontend-src.jar"/>
-</target>
+    </target>
 
-<!-- remove generated source files -->
-<target name="cleanGen">
-  <delete dir="${outdir}/${package}"/>
-  <delete>
-    <fileset dir="scanner" includes="JavaScanner.flex"/>
-    <fileset dir="scanner" includes="JavaScanner.java"/>
-    <fileset dir="parser" includes="JavaParser.java"/>
-    <fileset dir="parser" includes="JavaParser.beaver"/>
-    <fileset dir="parser" includes="JavaParser.all"/>
-  </delete>
+    <!-- remove generated source files -->
+    <target name="cleanGen">
+        <delete dir="${gen.dir}/JavaTypestate/AST"/>
+        <delete dir="${gen.dir}/JavaTypestate/parser"/>
+        <delete dir="${gen.dir}/JavaTypestate/scanner"/>
+    </target>
 
-</target>
+    <!-- build binaries -->
+    <target name="jar" depends="build">
+        <jar destfile="JavaChecker.jar" basedir="." includes="**/*.class"
+             excludes="test/**">
+            <manifest>
+                <attribute name="Main-Class" value="JavaChecker"/>
+            </manifest>
+        </jar>
+        <jar destfile="JavaPrettyPrinter.jar" basedir="." includes="**/*.class"
+             excludes="test/**">
+            <manifest>
+                <attribute name="Main-Class" value="JavaPrettyPrinter"/>
+            </manifest>
+        </jar>
+    </target>
 
-<!-- build binaries -->
-<target name="jar" depends="build">
-  <jar destfile="JavaChecker.jar" basedir="." includes="**/*.class"
-    excludes="test/**">
-    <manifest>
-      <attribute name="Main-Class" value="JavaChecker"/>
-    </manifest>
-  </jar>
-  <jar destfile="JavaPrettyPrinter.jar" basedir="." includes="**/*.class"
-    excludes="test/**">
-    <manifest>
-      <attribute name="Main-Class" value="JavaPrettyPrinter"/>
-    </manifest>
-  </jar>
-</target>
-
-<!-- build a source distribution -->
-<target name="source" depends="build">
-  <jar destfile="Java1.4Frontend-src.jar">
-    <fileset dir="..">
-      <!-- include frontend source file -->
-      <include name="Java1.4Frontend/JavaPrettyPrinter.java"/>
-      <include name="Java1.4Frontend/JavaChecker.java"/>
-      <include name="Java1.4Frontend/**/*.ast"/>
-      <include name="Java1.4Frontend/**/*.jrag"/>
-      <include name="Java1.4Frontend/**/*.jadd"/>
-      <!-- include parser and scanner -->
-      <include name="Java1.4Frontend/beaver/**/*.java"/>
-      <include name="Java1.4Frontend/scanner/*.flex"/>
-      <exclude name="Java1.4Frontend/scanner/JavaScanner.flex"/>
-      <include name="Java1.4Frontend/scanner/Unicode.java"/>
-      <include name="Java1.4Frontend/parser/*.parser"/>
-      <!-- include tools and buildfile used to build the front-end -->
-      <include name="Java1.4Frontend/tools/*.jar"/>
-      <include name="Java1.4Frontend/build.xml"/>
-      <!-- include readme and licences -->
-      <include name="Java1.4Frontend/README"/>
-      <include name="Java1.4Frontend/licences/BSD"/>
-      <include name="Java1.4Frontend/licences/CPL"/>
-      <include name="Java1.4Frontend/licences/GPL"/>
-      <include name="Java1.4Frontend/licences/LICENSE"/>
-    </fileset>
-    <manifest>
-    </manifest>
-  </jar>
-</target>
+    <!-- build a source distribution -->
+    <target name="source" depends="build">
+        <jar destfile="Java1.4Frontend-src.jar">
+            <fileset dir="..">
+                <!-- include frontend source file -->
+                <include name="Java1.4Frontend/JavaPrettyPrinter.java"/>
+                <include name="Java1.4Frontend/JavaChecker.java"/>
+                <include name="Java1.4Frontend/**/*.ast"/>
+                <include name="Java1.4Frontend/**/*.jrag"/>
+                <include name="Java1.4Frontend/**/*.jadd"/>
+                <!-- include parser and scanner -->
+                <include name="Java1.4Frontend/beaver/**/*.java"/>
+                <include name="Java1.4Frontend/scanner/*.flex"/>
+                <exclude name="Java1.4Frontend/scanner/JavaScanner.flex"/>
+                <include name="Java1.4Frontend/scanner/Unicode.java"/>
+                <include name="Java1.4Frontend/parser/*.parser"/>
+                <!-- include tools and buildfile used to build the front-end -->
+                <include name="Java1.4Frontend/tools/*.jar"/>
+                <include name="Java1.4Frontend/build.xml"/>
+                <!-- include readme and licences -->
+                <include name="Java1.4Frontend/README"/>
+                <include name="Java1.4Frontend/licences/BSD"/>
+                <include name="Java1.4Frontend/licences/CPL"/>
+                <include name="Java1.4Frontend/licences/GPL"/>
+                <include name="Java1.4Frontend/licences/LICENSE"/>
+            </fileset>
+            <manifest>
+            </manifest>
+        </jar>
+    </target>
 
 </project>
 
