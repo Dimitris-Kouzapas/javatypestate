@@ -106,16 +106,22 @@ aspect TypestateTypingEnvironment {
 //				n.printPaths();
 //				System.out.println("------------------------");
 				if(!t.includes(n)) {
-					//TODO Recheck here... Maybe you can engineer this part somehow.
-					for(GraphNode m: t.getErrorNode().next) {
-						String filePath = ((CompilationUnit) startExpr.get(i).getCompilationUnitAncestor()).getFilePath();
-						String errorMsg = "Object created at " + filePath + ": " + ASTNode.getLine(startExpr.get(i).getStart());
-						errorMsg += ". Typestate mismatch. Found: " + m.toString() + ". Expected: " + t.getExpectedNode().nextToString() + ".";
-						t.getErrorNode().getExpr().addSemanticError(errorMsg);
-//						m.getExpr().addSemanticError("Typestate mismatch. Found: " + m.toString() + ". Expected: " + t.getExpectedNode().nextToString() + ".");
-					}
-//					startExpr.get(i).addSemanticError(errorMessage);
+					String filePath = ((CompilationUnit) startExpr.get(i).getCompilationUnitAncestor()).getFilePath();
+					String errorMsg = "Object created at " + filePath + ": " + ASTNode.getLine(startExpr.get(i).getStart());
+					errorMsg += ". Typestate mismatch. Found: " + t.getErrorNode().nextToString() + ". Expected: " + t.getExpectedNode().nextToString() + ".";
+					t.getErrorNode().getExpr().addSemanticError(errorMsg);
 				}
+//				{
+//					//TODO Recheck here... Maybe you can engineer this part somehow.
+//					for(GraphNode m: t.getErrorNode().next) {
+//						String filePath = ((CompilationUnit) startExpr.get(i).getCompilationUnitAncestor()).getFilePath();
+//						String errorMsg = "Object created at " + filePath + ": " + ASTNode.getLine(startExpr.get(i).getStart());
+//						errorMsg += ". Typestate mismatch. Found: " + m.toString() + ". Expected: " + t.getExpectedNode().nextToString() + ".";
+//						t.getErrorNode().getExpr().addSemanticError(errorMsg);
+////						m.getExpr().addSemanticError("Typestate mismatch. Found: " + m.toString() + ". Expected: " + t.getExpectedNode().nextToString() + ".");
+//					}
+////					startExpr.get(i).addSemanticError(errorMessage);
+//				}
 				
 				if(startExpr.get(i).getProgramAncestor().printInference() == true)
 					//TODO have a proper format for the n.stringState() string
