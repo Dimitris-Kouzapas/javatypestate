@@ -1,15 +1,15 @@
 aspect Enum {
-	EnumDecl ClassDecl.enumDecl = null;
+	MungoEnumDecl ClassDecl.MungoEnumDecl = null;
 
-	rewrite EnumDecl {
+	rewrite MungoEnumDecl {
 		to ClassDecl {
 			ClassDecl c = toClassDecl();
-			c.enumDecl = this;
+			c.MungoEnumDecl = this;
 			return c;
 		}
 	}
 	
-	syn lazy ClassDecl EnumDecl.toClassDecl() {
+	syn lazy ClassDecl MungoEnumDecl.toClassDecl() {
 		List<BodyDecl> classBody = new List<BodyDecl>();
 
 		Modifiers modifiers = new Modifiers(
@@ -19,10 +19,11 @@ aspect Enum {
 				add(new Modifier("final"))
 		);
 
-		List<VariableDecl> variableList = new List<VariableDecl>();
+		List<VariableDecl> variableList;// = new List<VariableDecl>();
 
 		for(int i = 0; i < getNumBodyDecl(); i++) {
-			EnumConstant e = (EnumConstant) getBodyDecl(i);
+			variableList = new List<VariableDecl>();
+			MungoEnumConstant e = (MungoEnumConstant) getBodyDecl(i);
 			IntegerLiteral iliteral = new IntegerLiteral("" + (i + 1));
 			iliteral.setStart(e.getStart());
 			iliteral.setEnd(e.getEnd());
@@ -33,13 +34,16 @@ aspect Enum {
 					new Opt(iliteral)
 				)
 			);
+			classBody.add(
+            	new FieldDecl(modifiers, new PrimitiveTypeAccess("int"), variableList)
+            );
 		}
 		/* Add enumerations
 			private static final int A = 1, B = 2, ....;
 		*/
-		classBody.add(
-			new FieldDecl(modifiers, new PrimitiveTypeAccess("int"), variableList)
-		);
+//		classBody.add(
+//			new FieldDecl(modifiers, new PrimitiveTypeAccess("int"), variableList)
+//		);
 
 		/* field declaration
 			private final int enum;
@@ -63,6 +67,7 @@ aspect Enum {
 				enumValue = e;
 			}
 		*/
+
 		modifiers = new Modifiers(
 			new List<Modifier>().
 				add(new Modifier("public"))
@@ -112,7 +117,7 @@ aspect Enum {
 		);
 
 		for(int i = 0; i < getNumBodyDecl(); i++) {
-			EnumConstant e = (EnumConstant) getBodyDecl(i);
+			MungoEnumConstant e = (MungoEnumConstant) getBodyDecl(i);
 			MethodAccess m = new MethodAccess("equals", new List().add(new StringLiteral(e.getEnumID())));
 			Expr ex = new ParseName("enumString").qualifiesAccess(m);
 			Expr assignment = new AssignSimpleExpr(new ParseName("tmp"), new ParseName(e.getEnumID()));
@@ -179,10 +184,10 @@ aspect Enum {
 		return new ClassDecl(getModifiers(), getID(), new Opt(), getImplementsListNoTransform(), classBody);
 	}
 
-	coll Set<String> EnumDecl.getEnumLabels() [new HashSet<String>()] with add root EnumDecl;
-	EnumConstant contributes getEnumID() to EnumDecl.getEnumLabels() for getEnumDeclAncestor();
+	coll Set<String> MungoEnumDecl.getEnumLabels() [new HashSet<String>()] with add root MungoEnumDecl;
+	MungoEnumConstant contributes getEnumID() to MungoEnumDecl.getEnumLabels() for getMungoEnumDeclAncestor();
 
-	syn lazy Set<String> EnumDecl.getEnums() {
+	syn lazy Set<String> MungoEnumDecl.getEnums() {
 		Set<String> s = new HashSet<String>();
 		for(String l : getEnumLabels())
 			s.add(getID() + "." + l);
@@ -190,7 +195,7 @@ aspect Enum {
 		return s;
 	}
 
-	inh EnumDecl EnumConstant.getEnumDeclAncestor();
-	eq EnumDecl.getBodyDecl(int i).getEnumDeclAncestor() = this;
-	eq TypeDecl.getBodyDecl(int i).getEnumDeclAncestor() = null;
+	inh MungoEnumDecl MungoEnumConstant.getMungoEnumDeclAncestor();
+	eq MungoEnumDecl.getBodyDecl(int i).getMungoEnumDeclAncestor() = this;
+	eq TypeDecl.getBodyDecl(int i).getMungoEnumDeclAncestor() = null;
 }

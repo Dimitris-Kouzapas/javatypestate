@@ -126,8 +126,8 @@ aspect JavaSemanticCheck {
 	}
 
 	protected void ClassInstanceExpr.semanticCheck() {
-		if(getAccess().lookupType().isEnumDeclType()) {
-			EnumDecl e = getAccess().lookupType().getEnumDecl();
+		if(getAccess().lookupType().isMungoEnumDeclType()) {
+			MungoEnumDecl e = getAccess().lookupType().getMungoEnumDecl();
 			if(!e.getEnums().contains(getArg(0).toString()) && !(getArg(0) instanceof StringLiteral && e.getEnums().contains(e.getID() + "." + ((StringLiteral) getArg(0)).getLITERAL()  )))
 				addSemanticError("Argument for enumeration instance creation should have type: " + e.getID() + ".");
 		}
@@ -136,8 +136,8 @@ aspect JavaSemanticCheck {
 	protected void SwitchStmt.semanticCheck() {
 		if(getExpr().isAccess()) {
 			Access a = ((Access)getExpr()).getLastAccess();
-			if (a.getQualifiedType().isEnumDeclType()) {
-				EnumDecl e = a.getQualifiedType().getEnumDecl();
+			if (a.getQualifiedType().isMungoEnumDeclType()) {
+				MungoEnumDecl e = a.getQualifiedType().getMungoEnumDecl();
 				for(String s : e.getEnums())
 					if(!getCaseLabels().contains(s))
 						addSemanticError("Enumeration type " + s + " should be a switch case.");

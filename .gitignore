@@ -1,7 +1,32 @@
-beaver/
-bin/
-Java14Frontend/
+# build
+/build/
+/bin/
+/ant-bin/
+/src/gen/
+/src/gen-res/
+/src/tmp/
+/doc/
+/jastaddj-*.zip
+/jastaddj*.jar
+/fileset.tmp
 JavaTypestate/AST/
 JavaTypestate/scanner/JavaScanner*
 JavaTypestate/parser/JavaParser*
-*.class
+
+# eclipse
+/.classpath
+/.project
+/.settings/
+
+# vim
+*.swp
+
+# temporary files
+/tmp
+/*.jar
+
+# intelliJ
+/.idea/
+/*.iml
+
+

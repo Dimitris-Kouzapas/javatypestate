@@ -1,5 +1,5 @@
-EnumDecl : TypeDecl		::=	Modifiers <ID:String> Implements:Access* BodyDecl*;
+MungoEnumDecl : TypeDecl		::=	Modifiers <ID:String> Implements:Access* BodyDecl*;
 
-EnumConstant : BodyDecl		::=	<EnumID: String>;
+MungoEnumConstant : BodyDecl		::=	<EnumID: String>;
 
 

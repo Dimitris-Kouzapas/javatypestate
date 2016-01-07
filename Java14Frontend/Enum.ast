@@ -1,5 +1,0 @@
-EnumDecl : TypeDecl		::=	Modifiers <ID:String> Implements:Access* BodyDecl*;
-
-EnumConstant : BodyDecl		::=	<EnumID: String>;
-
-
