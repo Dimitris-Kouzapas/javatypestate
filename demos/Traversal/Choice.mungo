@@ -1,4 +1,4 @@
-package Traversal;
+package demos.Traversal;
 
 enum Choice implements java.io.Serializable {
 	DATA, NO_D, END;

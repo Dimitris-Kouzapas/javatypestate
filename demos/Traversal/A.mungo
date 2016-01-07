@@ -1,4 +1,4 @@
-package Traversal;
+package demos.Traversal;
 
 class A implements Runnable {
 	int Bport, Cport;
