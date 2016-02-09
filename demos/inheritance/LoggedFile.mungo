@@ -1,6 +1,6 @@
 package demos.inheritance;
 
-public class LoggedFile /*extends A*/ typestate LoggedFileProtocol {
+public class LoggedFile /*extends File*/ typestate LoggedFileProtocol {
     private LogService logging;
 
     public LoggedFile () {
