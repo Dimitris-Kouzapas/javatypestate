@@ -1,13 +1,24 @@
 package demos.inheritance;
 
-public class B /*extends A*/ typestate BProtocol {
-    public void f () {
-//        super.f();
+public class LoggedFile /*extends A*/ typestate LoggedFileProtocol {
+    private Log log;
+
+    public LoggedFile () {
     }
 
-    public void g () {
+    public void open () {
+//        super.open();
     }
 
-    public void h () {
+    public byte read () {
+//        byte ch = super.read();
+//        return ch;
+       return 0;
+    }
+
+    public void close () {
+    }
+
+    public void clearLog () {
     }
 }

@@ -1,12 +1,13 @@
 package demos.inheritance;
 
-typestate BProtocol {
+typestate LoggedFileProtocol {
     Init = {
-        void f (): Final
+        void open (): Open
     }
 
-    Final = {
-       void g (): end,
-       void h (): Init
+    Open = {
+       byte read (): Open,
+       void close (): end,
+       void clearLog (): Open
     }
 }

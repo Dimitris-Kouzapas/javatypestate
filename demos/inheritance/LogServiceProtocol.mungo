@@ -1,0 +1,13 @@
+package demos.inheritance;
+
+typestate LogServiceProtocol {
+   Init = {
+      void start (): Running
+   }
+
+   Running = {
+      void log (String): Running,
+      void clear (): Running,
+      void stop (): end
+   }
+}
