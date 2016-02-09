@@ -5,12 +5,14 @@ public class LoggedFile /*extends A*/ typestate LoggedFileProtocol {
 
     public LoggedFile () {
         logging = new LogService();
-        logging.start();
     }
 
+    // It should be an error to call super.open() before logging.start(), because
+    // super.open() will call my override of read(), which will write to the log.
     public void open () {
-        logging.log("Opening file");
 //      super.open();
+        logging.start();
+        logging.log("Opening file");
     }
 
     public byte read () {

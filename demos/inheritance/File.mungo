@@ -7,9 +7,10 @@ public class File typestate FileProtocol {
         h = new FileHandle();
     }
 
+    // Calls read() internally, which may be overridden.
     public void open () {
         h.acquire();
-        byte header = read(); // let's say every file starts with a header byte
+        byte header = read(); // suppose every file starts with a header byte
     }
 
     public byte read () {
