@@ -19,6 +19,6 @@ other than from a subclass.
   _overridden_ version of `read` in `LoggedFile`, which must be taken
   into account when checking the `logging` typestate field of
   `LoggedFile`.
-* `LoggedFile.open` calls `super.open` _before_ `logging.start`. This
-  should be a compile-time error, because `log` will end up being
-  called, via `read`, on an unstarted logging service.
+* In particular, `LoggedFile.open` calls `super.open` _before_
+  `logging.start`. This should be a compile-time error, because `log`
+  will end up being called, via `read`, on an unstarted logging service.
