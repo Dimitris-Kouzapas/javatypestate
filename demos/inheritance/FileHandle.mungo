@@ -1,0 +1,4 @@
+package demos.inheritance;
+
+public class FileHandle /*typestate FileHandleProtocol*/ {
+}

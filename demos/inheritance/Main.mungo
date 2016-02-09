@@ -1,0 +1,9 @@
+package demos.inheritance;
+
+class Main {
+    public static void main () {
+        A a = new A();
+        a.f();
+        a.g();
+    }
+}

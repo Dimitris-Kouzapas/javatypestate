@@ -1,0 +1,16 @@
+package demos.inheritance;
+
+public class File typestate FileProtocol {
+    protected FileHandle h;
+
+    public void open () {
+        byte header = read(); // let's say every file starts with a header byte
+    }
+
+    public byte read () {
+        return 0;
+    }
+
+    public void close () {
+    }
+}

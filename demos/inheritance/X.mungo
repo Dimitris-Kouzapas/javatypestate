@@ -1,4 +1,0 @@
-package demos.inheritance;
-
-public class X /*typestate XProtocol*/ {
-}
