@@ -1,15 +1,20 @@
 # Mungo inheritance example
 
 This illustrates several of the features of inheritance that we will
-need to support in Mungo and the interaction with typestate.
-
-
+need to support in Mungo, and the potential interaction with typestate.
+The `extends` is currently commented out as it is not yet supported.
+Also, typestate fields must currently must be `private`; these will need
+to be redeclared as `protected` when this is permitted. We will make it
+an error to access a `protected` field other than from a subclass.
 
 ## Notes
 
-* `extends` is currently commented out as not supported
-* Typestate fields currently must be `private`, but will need to be
-  `protected`. We will make it an error to access a `protected' field
-  other than from a subclass.
 * `LoggedFile` extends `File`
-* `LogService` and `FileHandle` are
+* The purpose of `LogService` and `FileHandle` is to serve as the type
+  of fields whose typestate must be checked as part of checking the
+  containing class.
+* `File.open` makes a self call to `read`. This will call the
+  _overridden_ version of `read` in `LoggedFile`, which must be taken
+  into account when checking the `logging` typestate field of
+  `LoggedFile`.
+* `LoggedFile.
