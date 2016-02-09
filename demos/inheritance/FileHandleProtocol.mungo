@@ -1,0 +1,11 @@
+package demos.inheritance;
+
+typestate FileHandleProtocol {
+    Init = {
+       void acquire (): Acquired
+    }
+
+    Acquired = {
+       void release (): end
+    }
+}
