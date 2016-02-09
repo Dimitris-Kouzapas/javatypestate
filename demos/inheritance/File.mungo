@@ -1,7 +1,11 @@
 package demos.inheritance;
 
 public class File typestate FileProtocol {
-    protected FileHandle h;
+    private FileHandle h;
+
+    public File () {
+        h = new FileHandle();
+    }
 
     public void open () {
         h.acquire();
@@ -13,5 +17,6 @@ public class File typestate FileProtocol {
     }
 
     public void close () {
+        h.release();
     }
 }
