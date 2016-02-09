@@ -4,6 +4,7 @@ public class File typestate FileProtocol {
     protected FileHandle h;
 
     public void open () {
+        h.acquire();
         byte header = read(); // let's say every file starts with a header byte
     }
 
