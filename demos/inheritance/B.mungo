@@ -1,10 +1,13 @@
 package demos.inheritance;
 
-public class B /*extends A*/ {
+public class B /*extends A*/ typestate BProtocol {
     public void f () {
 //        super.f();
     }
 
     public void g () {
+    }
+
+    public void h () {
     }
 }

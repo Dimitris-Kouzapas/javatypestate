@@ -1,0 +1,12 @@
+package demos.inheritance;
+
+typestate BProtocol {
+    Init = {
+        void f (): Final
+    }
+
+    Final = {
+       void g (): end,
+       void h (): Init
+    }
+}

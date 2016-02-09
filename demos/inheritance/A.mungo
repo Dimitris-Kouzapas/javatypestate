@@ -1,6 +1,6 @@
 package demos.inheritance;
 
-public class A {
+public class A typestate AProtocol {
     protected X x;
 
     public void f () {

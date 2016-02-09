@@ -1,0 +1,11 @@
+package demos.inheritance;
+
+typestate AProtocol {
+    Init = {
+        void f (): Final
+    }
+
+    Final = {
+       void g (): end
+    }
+}
