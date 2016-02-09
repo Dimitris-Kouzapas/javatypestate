@@ -1,0 +1,10 @@
+package demos.inheritance;
+
+public class B extends A {
+    public f () {
+        super.f();
+    }
+
+    public g () {
+    }
+}

@@ -1,0 +1,12 @@
+package demos.inheritance;
+
+public class A {
+    protected X x;
+
+    public void f () {
+        this.g();
+    }
+
+    public void g () {
+    }
+}
