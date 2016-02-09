@@ -1,24 +1,31 @@
 package demos.inheritance;
 
 public class LoggedFile /*extends A*/ typestate LoggedFileProtocol {
-    private Log log;
+    private LogService logging;
 
     public LoggedFile () {
+        logging = new LogService();
+        logging.start();
     }
 
     public void open () {
-//        super.open();
+        logging.log("Opening file");
+//      super.open();
     }
 
     public byte read () {
-//        byte ch = super.read();
-//        return ch;
-       return 0;
+        byte ch = 0;
+//      ch = super.read();
+        logging.log("Reading " + ch);
+        return ch;
     }
 
     public void close () {
+        logging.log("Closing file");
+        logging.stop();
     }
 
     public void clearLog () {
+        logging.clear();
     }
 }
