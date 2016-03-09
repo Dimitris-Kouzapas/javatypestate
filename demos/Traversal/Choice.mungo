@@ -1,5 +1,9 @@
 package demos.Traversal;
 
-enumeration Choice implements java.io.Serializable {
-	DATA, NO_D, END;
+public enum Choice implements java.io.Serializable {
+	DATA, NO_D, END
+
+//	public Choice getEnum(){
+//		return this;
+//	}
 }

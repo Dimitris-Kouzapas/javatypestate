@@ -16,8 +16,8 @@ class File typestate FileProtocol {
 
 	Status open() {
 		if(reader.open())
-			return new Status(Status.OK);
-		return new Status(Status.ERROR);
+			return Status.OK;
+		return Status.ERROR;
 	}
 
 	void close() {
@@ -26,8 +26,8 @@ class File typestate FileProtocol {
 
 	BooleanEnum hasNext() {
 		if(reader.ready())
-			return new BooleanEnum(BooleanEnum.TRUE);
-		return new BooleanEnum(BooleanEnum.FALSE);
+			return BooleanEnum.TRUE;
+		return BooleanEnum.FALSE;
 	}
 
 	void read() {
@@ -46,21 +46,21 @@ class File typestate FileProtocol {
 	}
 
 	public static void processFile(File myFile) {
-		switch(myFile.open().getEnum()) {
-			case Status.OK:
+		switch(myFile.open()) {
+			case OK:
 				loop:
 				while(true) {
-					switch(myFile.hasNext().getEnum()) {
-						case BooleanEnum.TRUE:
+					switch(myFile.hasNext()) {
+						case TRUE:
 							myFile.read();
 							break;
-						case BooleanEnum.FALSE:
+						case FALSE:
 							break loop;
 					}
 				}
 				myFile.close();
 				break;
-			case Status.ERROR:
+			case ERROR:
 				System.out.println("File <file.txt> not found!");
 				break;
 		}

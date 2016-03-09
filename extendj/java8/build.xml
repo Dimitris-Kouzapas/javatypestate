@@ -144,9 +144,6 @@
 				<exclude name="CatchClause.ast"/>
 				<exclude name="Literals.ast"/>
 			</fileset>
-            <fileset dir="${javatypestate.dir}">
-                <include name="Enum.ast"/>
-            </fileset>
 
             <fileset dir="${java8.dir}/frontend">
 				<include name="Variable.jadd"/>
@@ -300,9 +297,7 @@
 				<file name="Java1.4.parser"/>
 				<file name="ErrorRecovery.parser"/>
 			</filelist>
-			<fileset dir="${javatypestate.dir}/parser">
-				<include name="enum.parser"/>
-			</fileset>
+
 			<fileset dir="${java5.dir}/parser">
 				<include name="*.parser"/>
             </fileset>

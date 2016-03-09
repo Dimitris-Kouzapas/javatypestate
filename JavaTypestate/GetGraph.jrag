@@ -642,7 +642,7 @@ aspect GetGraph {
 		//TODO consider a link type for enumDecl variables
 		if(getExpr().isAccess()) {
 			Access a = ((Access) getExpr()).getLastAccess();
-			if(a.getQualifiedType().isMungoEnumDeclType())
+			if(a.getQualifiedType().isEnumDeclType())
 				t = a.getQualifiedAccess() != null ?
 				a.getQualifiedAccess().getQualifiedTypestateVar() :
 				null;

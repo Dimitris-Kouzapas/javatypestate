@@ -20,27 +20,27 @@ class ARole typestate AProtocol {
 	}
 
 	void DATAToB() {
-		b.send(new Choice(Choice.DATA));
+		b.send(Choice.DATA);
 	}
 
 	void DATAToC() {
-		c.send(new Choice(Choice.DATA));
+		c.send(Choice.DATA);
 	}
 
 	void NO_DToB() {
-		b.send(new Choice(Choice.NO_D));
+		b.send(Choice.NO_D);
 	}
 
 	void NO_DToC() {
-		c.send(new Choice(Choice.NO_D));
+		c.send(Choice.NO_D);
 	}
 
 	void ENDToB() {
-		b.send(new Choice(Choice.END));
+		b.send(Choice.END);
 	}
 
 	void ENDToC() {
-		c.send(new Choice(Choice.END));
+		c.send(Choice.END);
 	}
 
 	void nodeToB(Node n) {

@@ -19,27 +19,27 @@ class CRole typestate CProtocol {
 	}
 
 	void DATAToA() {
-		a.send(new Choice(Choice.DATA));
+		a.send(Choice.DATA);
 	}
 
 	void DATAToB() {
-		b.send(new Choice(Choice.DATA));
+		b.send(Choice.DATA);
 	}
 
 	void NO_DToA() {
-		a.send(new Choice(Choice.NO_D));
+		a.send(Choice.NO_D);
 	}
 
 	void NO_DToB() {
-		b.send(new Choice(Choice.NO_D));
+		b.send(Choice.NO_D);
 	}
 
 	void ENDToA() {
-		a.send(new Choice(Choice.END));
+		a.send(Choice.END);
 	}
 
 	void ENDToB() {
-		b.send(new Choice(Choice.END));
+		b.send(Choice.END);
 	}
 
 	void nodeToA(Node n) {

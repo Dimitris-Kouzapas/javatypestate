@@ -1,4 +1,4 @@
 package demos.file_example;
-enumeration BooleanEnum {
+enum BooleanEnum {
 	TRUE, FALSE;
 }

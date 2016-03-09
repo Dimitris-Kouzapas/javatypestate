@@ -54,12 +54,12 @@ aspect typestateSemanticCheck {
 		TypeDecl t;
 		if(getTypestate() instanceof TypestateSwitch) {
 			t = getTType().getAccess().lookupType();
-			if(!t.isMungoEnumDeclType())
+			if(!t.isEnumDeclType())
 				addSemanticError("Method " + signature() + " should return an enumeration type.");
 			else {
-				for(String s : t.getMungoEnumDecl().getEnumLabels()) {
+				for(String s : t.getEnumDecl().getEnumLabels()) {
 					if(!((TypestateSwitch) getTypestate()).getLabels().contains(s))
-						addSemanticError("Label " + s + " defined for the enumeration type " + t.getMungoEnumDecl().getID() + " is not defined as a switch label.");
+						addSemanticError("Label " + s + " defined for the enumeration type " + t.getEnumDecl().getID() + " is not defined as a switch label.");
 				}
 			}
 

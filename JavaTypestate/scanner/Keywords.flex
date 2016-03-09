@@ -58,7 +58,9 @@
 /*  "where"                        { return sym(Terminals.WHERE); }*/
   "end"                          { return sym(Terminals.END); }
 
-  "enumeration"                         { return sym(Terminals.ENUMERATION); }
+//  "enumeration"                         { return sym(Terminals.ENUMERATION); }
+  "enum"                         { return sym(Terminals.ENUM); }
+
 
 }
 
