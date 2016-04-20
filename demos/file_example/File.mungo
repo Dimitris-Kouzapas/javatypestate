@@ -48,14 +48,16 @@ class File typestate FileProtocol {
 	public static void processFile(File myFile) {
 		switch(myFile.open().getEnum()) {
 			case Status.OK:
-				loop:
-				while(true) {
-					switch(myFile.hasNext().getEnum()) {
-						case BooleanEnum.TRUE:
-							myFile.read();
-							break;
-						case BooleanEnum.FALSE:
-							break loop;
+				if(true) {
+					loop:
+					while(true) {
+						switch(myFile.hasNext().getEnum()) {
+							case BooleanEnum.TRUE:
+								myFile.read();
+								break;
+							case BooleanEnum.FALSE:
+								break loop;
+						}
 					}
 				}
 				myFile.close();
