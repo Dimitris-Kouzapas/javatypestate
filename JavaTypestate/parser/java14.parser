@@ -175,7 +175,7 @@ Modifier modifier		=
 */				;
 
 ClassDecl class_declaration	=
-/*					modifiers.m? CLASS IDENTIFIER typestate_type.t class_body.b 
+/*					modifiers.m? CLASS IDENTIFIER typestate_type.t class_body.b
 					{:
 						return new TypestateClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), new List(), b, t);
 					:}
@@ -192,7 +192,7 @@ ClassDecl class_declaration	=
 					{:
 						return new TypestateClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), i, b, t);
 					:}
-/*				|	modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b 
+/*				|	modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b
 					{:
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, s, i, new ParseName(""), b);
 					:}

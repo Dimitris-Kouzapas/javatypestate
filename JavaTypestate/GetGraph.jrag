@@ -1,93 +1,93 @@
 aspect GetGraph {
 
-	//Attributes for handling recursion using break, continue and labels
+		//Attributes for handling recursion using break, continue and labels
 
-	inh Stmt ContinueStmt.getTargetStmt(String label);
-	inh Stmt BreakStmt.getTargetStmt(String label);
-	inh Stmt LabeledStmt.getTargetStmt(String label);
+		inh Stmt ContinueStmt.getTargetStmt(String label);
+		inh Stmt BreakStmt.getTargetStmt(String label);
+		inh Stmt LabeledStmt.getTargetStmt(String label);
 
-	eq LabeledStmt.getStmt().getTargetStmt(String label) = getLabel().equals(label) ? this : getTargetStmt(label);
+		eq LabeledStmt.getStmt().getTargetStmt(String label) = getLabel().equals(label) ? this : getTargetStmt(label);
 
-	inh Stmt ContinueStmt.getTargetStmt();
-	inh Stmt BreakStmt.getTargetStmt();
-	eq WhileStmt.getStmt().getTargetStmt() = this;
-	eq ForStmt.getStmt().getTargetStmt() = this;
-	eq DoStmt.getStmt().getTargetStmt() = this;
-	eq SwitchStmt.getBlock().getTargetStmt() = this;
+		inh Stmt ContinueStmt.getTargetStmt();
+		inh Stmt BreakStmt.getTargetStmt();
+		eq WhileStmt.getStmt().getTargetStmt() = this;
+		eq ForStmt.getStmt().getTargetStmt() = this;
+		eq DoStmt.getStmt().getTargetStmt() = this;
+		eq SwitchStmt.getBlock().getTargetStmt() = this;
 
-	eq TypeDecl.getBodyDecl(int i).getTargetStmt(String label) = null;
-	eq TypeDecl.getBodyDecl(int i).getTargetStmt() = null;
+		eq TypeDecl.getBodyDecl(int i).getTargetStmt(String label) = null;
+		eq TypeDecl.getBodyDecl(int i).getTargetStmt() = null;
 
 /*****************************************************************************************************/
-	//TODO implement
-	syn lazy TypestateVar Expr.getTypestateVar();
+		//TODO implement
+		syn lazy TypestateVar Expr.getTypestateVar();
 
-	//Not used
-	eq AmbiguousAccess.getTypestateVar() = null;
-	eq VarAccess.getTypestateVar() = null;
-	eq SuperAccess.getTypestateVar() = null;
-	eq PackageOrTypeAccess.getTypestateVar() = null;
-	eq PackageAccess.getTypestateVar() = null;
+		//Not used
+		eq AmbiguousAccess.getTypestateVar() = null;
+		eq VarAccess.getTypestateVar() = null;
+		eq SuperAccess.getTypestateVar() = null;
+		eq PackageOrTypeAccess.getTypestateVar() = null;
+		eq PackageAccess.getTypestateVar() = null;
 
-	eq Binary.getTypestateVar() = null;				//Binary results in PrimitiveType
-	eq Unary.getTypestateVar() = null;				//Unary results in PrimitiveTypes
-	eq Literal.getTypestateVar() = null;				//Literals are also non typestate
-	eq InstanceOfExpr.getTypestateVar() = null;			//Boolean type
-	eq ClassInstanceExpr.getTypestateVar() = null;			//ClassInstanceoOfExpr should give null
-	eq CastExpr.getTypestateVar() = getExpr().getTypestateVar();	//expect CastExpr not to have typestate type
-	eq ArrayInit.getTypestateVar() = null;				//Typestate types are not arrays
-	eq ArrayCreationExpr.getTypestateVar() = null;			//Typestate types are not arrays
-	eq ParExpr.getTypestateVar() = getExpr().getTypestateVar();
-	eq AssignExpr.getTypestateVar() = getDest().getTypestateVar();	//TODO is this ok?
+		eq Binary.getTypestateVar() = null;				//Binary results in PrimitiveType
+		eq Unary.getTypestateVar() = null;				//Unary results in PrimitiveTypes
+		eq Literal.getTypestateVar() = null;				//Literals are also non typestate
+		eq InstanceOfExpr.getTypestateVar() = null;			//Boolean type
+		eq ClassInstanceExpr.getTypestateVar() = null;			//ClassInstanceoOfExpr should give null
+		eq CastExpr.getTypestateVar() = getExpr().getTypestateVar();	//expect CastExpr not to have typestate type
+		eq ArrayInit.getTypestateVar() = null;				//Typestate types are not arrays
+		eq ArrayCreationExpr.getTypestateVar() = null;			//Typestate types are not arrays
+		eq ParExpr.getTypestateVar() = getExpr().getTypestateVar();
+		eq AssignExpr.getTypestateVar() = getDest().getTypestateVar();	//TODO is this ok?
 
-	eq ConditionalExpr.getTypestateVar() = null;			//TODO This is actually a problem... Maybe need to be dealt
-									//TODO as a case when assignment takes place.
+		eq ConditionalExpr.getTypestateVar() = null;			//TODO This is actually a problem... Maybe need to be dealt
+		//TODO as a case when assignment takes place.
 
-	eq ConstructorAccess.getTypestateVar() = null;
-	eq TypeAccess.getTypestateVar() = null;				//Expected to be null
-	eq ClassAccess.getTypestateVar() = null;
+		eq ConstructorAccess.getTypestateVar() = null;
+		eq TypeAccess.getTypestateVar() = null;				//Expected to be null
+		eq ClassAccess.getTypestateVar() = null;
 
-	eq AbstractDot.getTypestateVar() = getRight().getTypestateVar();
+		eq AbstractDot.getTypestateVar() = getRight().getTypestateVar();
 
-	eq ThisAccess.getTypestateVar() {
+		eq ThisAccess.getTypestateVar() {
 		if(isAbstractDotParent())				//Qualified "this" is not supposed to be used as a right child of the Dot
-									//because we do not have internal classes
-			return null;
+		//because we do not have internal classes
+		return null;
 		return null;						//TODO the case with code like Obj o = this; ??. Avoid this case ??
-	}
+		}
 
-	eq ArrayAccess.getTypestateVar() = null;			//Typestate types are not arrays
-	eq MethodAccess.getTypestateVar() = getType().isTypestateClassDeclType() ?  getTarget().typestate : null;	//TODO is that it?
+		eq ArrayAccess.getTypestateVar() = null;			//Typestate types are not arrays
+		eq MethodAccess.getTypestateVar() = getType().isTypestateClassDeclType() ?  getTarget().typestate : null;	//TODO is that it?
 
-	eq ParseName.getTypestateVar() {
+		eq ParseName.getTypestateVar() {
 		if(!getType().isTypestateClassDeclType())
-			return null;
+		return null;
 		if(getQualifiedAccess() != null)
-			return lookupVariable(getQualifiedType()).getTypestateVar();
+		return lookupVariable(getQualifiedType()).getTypestateVar();
 		return lookupVariable().getTypestateVar();
-	}
+		}
 
-	syn lazy TypestateVar Access.getQualifiedTypestateVar() =
-		getQualifiedAccess() != null ? 
+		syn lazy TypestateVar Access.getQualifiedTypestateVar() =
+		getQualifiedAccess() != null ?
 		getQualifiedAccess().getLeft().getTypestateVar() :
 		null;							//TODO this means that the caller object is this
 
 
 /*****************************************************************************************************/
 
-	syn lazy boolean MethodAccess.isThisAccess() {
+		syn lazy boolean MethodAccess.isThisAccess() {
 		if(getQualifiedAccess() == null)
-			return true;
+		return true;
 
 		//TODO find a way for no instanceof
 		if(getQualifiedAccess().getLeft() instanceof ThisAccess)
-			return true;
+		return true;
 
 		return false;
-	}
+		}
 
 /*****************************************************************************************************/
-	// This section of the code is used to plug graphs along different method calls
+// This section of the code is used to plug graphs along different method calls
 
 //	protected ArrayList<GraphNode> BodyDecl.pluggedGraph = new ArrayList<GraphNode>();
 //	protected ArrayList<ASTNode> BodyDecl.pluggedExpr = new ArrayList<ASTNode>();
@@ -171,54 +171,54 @@ aspect GetGraph {
 /*****************************************************************************************************/
 
 
-	protected TypestateVar VariableDecl.typestate = null;
-	protected TypestateVar ParameterDeclaration.typestate = null;
-	protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it is a typestate method
+protected TypestateVar VariableDecl.typestate = null;
+protected TypestateVar ParameterDeclaration.typestate = null;
+protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it is a typestate method
 
-	syn lazy Set<VariableDecl> ClassDecl.getTypestateFields() {
+		syn lazy Set<VariableDecl> ClassDecl.getTypestateFields() {
 		Set<VariableDecl> s = new HashSet<VariableDecl>();
 		for(VariableDecl vd: getFieldDecls())
-			if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
-				s.add(vd);
+		if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
+		s.add(vd);
 		return s;
-	}
+		}
 
-	syn lazy boolean ClassDecl.getGraph() {
+		syn lazy boolean ClassDecl.getGraph() {
 
 //		for(VariableDecl vd : getTypestateFields())
 //			if(vd.typestate == null)
 //				vd.typestate = new TypestateField(/*getMethods()*/);
 
 		if(isTypestateClassDeclType()) {
-			TypestateClassDecl cd = (TypestateClassDecl) this;
-			if(cd.existsTypestateDecl()) {
-				GraphNode r = cd.getTypestateDecl().createTypestate().normalise();
-				TypestateVar.addTypestate = true; //TODO better implementation here
-				getFieldGraph(r);
+		TypestateClassDecl cd = (TypestateClassDecl) this;
+		if(cd.existsTypestateDecl()) {
+		GraphNode r = cd.getTypestateDecl().createTypestate().normalise();
+		TypestateVar.addTypestate = true; //TODO better implementation here
+		getFieldGraph(r);
 //				cd.getFieldGraph(r, new HashMap<GraphNode, Map<VariableDecl, GraphNode>>());
 
-				for(ConstructorDecl c: getConstructorDecls())
-					c.getGraph();
+		for(ConstructorDecl c: getConstructorDecls())
+		c.getGraph();
 
-				if(getConstructorDecls().isEmpty())
-					for(VariableDecl vd: getTypestateFields())
-						if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
-							vd.typestate.checkError(vd/*, getBodyDeclAncestor()*/);
-			}
+		if(getConstructorDecls().isEmpty())
+		for(VariableDecl vd: getTypestateFields())
+		if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
+		vd.typestate.checkError(vd/*, getBodyDeclAncestor()*/);
+		}
 		}
 
 		TypestateVar.addTypestate = true; //TODO better implementation here
 		for(MethodDecl md: getMethodDecls())
-			if(md.isGraph() == false)
-				md.getGraph();
+		if(md.isGraph() == false)
+		md.getGraph();
 
 		return true;
-	}
+		}
 
-	syn Set<TypestateVar> ClassDecl.getFieldGraph(GraphNode r) {
+		syn Set<TypestateVar> ClassDecl.getFieldGraph(GraphNode r) {
 		for(VariableDecl vd : getTypestateFields())
-			if(vd.typestate == null)
-				vd.typestate = new TypestateField(/*getMethods()*/);
+		if(vd.typestate == null)
+		vd.typestate = new TypestateField(/*getMethods()*/);
 
 		getFieldGraph(r, new HashMap<GraphNode, Map<VariableDecl, GraphNode>>());
 
@@ -231,27 +231,27 @@ aspect GetGraph {
 		Set<TypestateVar> env = new HashSet<TypestateVar>();
 
 		for(VariableDecl vd : getTypestateFields())
-			env.add(vd.typestate);
+		env.add(vd.typestate);
 
 		return env;
-	}
+		}
 
-	syn boolean ClassDecl.getFieldGraph(GraphNode r, Map<GraphNode, Map<VariableDecl, GraphNode>> visited) {
+		syn boolean ClassDecl.getFieldGraph(GraphNode r, Map<GraphNode, Map<VariableDecl, GraphNode>> visited) {
 		//Check for recursion
 		if(visited.get(r) != null) {
-			for(VariableDecl vd: getTypestateFields())
-				vd.typestate.current = visited.get(r).get(vd);
+		for(VariableDecl vd: getTypestateFields())
+		vd.typestate.current = visited.get(r).get(vd);
 //			return true;
 		}
 		else {
-			Map<VariableDecl, GraphNode> s = new HashMap<VariableDecl, GraphNode>();
-			visited.put(r, s);
+		Map<VariableDecl, GraphNode> s = new HashMap<VariableDecl, GraphNode>();
+		visited.put(r, s);
 
-			if(r instanceof EndNode) {
-				for(VariableDecl vd: getTypestateFields())
-					vd.typestate.current = new EndNode();
-				return true;
-			}
+		if(r instanceof EndNode) {
+		for(VariableDecl vd: getTypestateFields())
+		vd.typestate.current = new EndNode();
+		return true;
+		}
 
 //			if(r.next.isEmpty()) {
 //				for(VariableDecl vd: getTypestateFields()) {
@@ -260,73 +260,73 @@ aspect GetGraph {
 //				return true;
 //			}
 
-			for(VariableDecl vd: getTypestateFields())
-				s.put(vd, new LoopNode());
+		for(VariableDecl vd: getTypestateFields())
+		s.put(vd, new LoopNode());
 
-			GraphNode []tmp = new GraphNode[getTypestateFields().size()];
+		GraphNode []tmp = new GraphNode[getTypestateFields().size()];
 
-			int i = 0;
-			for(VariableDecl vd: getTypestateFields())
-				tmp[i++] = vd.typestate.current;
+		int i = 0;
+		for(VariableDecl vd: getTypestateFields())
+		tmp[i++] = vd.typestate.current;
 
-			for(GraphNode n: r.next) {
-				getFieldGraph(n, visited);
-				i = 0;
-				for(VariableDecl vd: getTypestateFields()) {
-					s.get(vd).addNext(vd.typestate.current);
-					vd.typestate.current = tmp[i++];
-				}
-			}
+		for(GraphNode n: r.next) {
+		getFieldGraph(n, visited);
+		i = 0;
+		for(VariableDecl vd: getTypestateFields()) {
+		s.get(vd).addNext(vd.typestate.current);
+		vd.typestate.current = tmp[i++];
+		}
+		}
 
-			for(VariableDecl vd: getTypestateFields())
-				vd.typestate.current = s.get(vd);
+		for(VariableDecl vd: getTypestateFields())
+		vd.typestate.current = s.get(vd);
 		}
 
 		MethodDecl md = null;
 		if(r.getId() != null && r.getParameters() != null)
-			md = lookupMethod(r.getId(), r.getParameters());
+		md = lookupMethod(r.getId(), r.getParameters());
 
 		if(md != null) {
-			md.typestate.current = new ReturnNode();	//TODO if the return type is typestate type
-			md.getGraph();
+		md.typestate.current = new ReturnNode();	//TODO if the return type is typestate type
+		md.getGraph();
 		}
 
 //		visited.remove(r);
 		return true;
-	}
+		}
 
 /*****************************************************************************************************/
 
 
-	//TODO another file
-	inh ClassDecl BodyDecl.getClassDeclAncestor();
-	syn lazy Set<VariableDecl> BodyDecl.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
+		//TODO another file
+		inh ClassDecl BodyDecl.getClassDeclAncestor();
+		syn lazy Set<VariableDecl> BodyDecl.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
 
-	//TODO we do not need BodyDecl.getMethods() anymore
+		//TODO we do not need BodyDecl.getMethods() anymore
 //	syn Set<BodyDecl> BodyDecl.getMethods() = getClassDeclAncestor().getMethods();
 
 //	coll Set<BodyDecl> ClassDecl.getMethods() [new HashSet<BodyDecl>()] with add root ClassDecl;
 //	ConstructorDecl contributes this to ClassDecl.getMethods() for getClassDeclAncestor();
 //	MethodDecl contributes this to ClassDecl.getMethods() for getClassDeclAncestor();
 
-	inh ClassDecl ConstructorDecl.getClassDeclAncestor();
+		inh ClassDecl ConstructorDecl.getClassDeclAncestor();
 
-	protected boolean BodyDecl.isGraph = false;
-	protected boolean BodyDecl.isGraph() {
+protected boolean BodyDecl.isGraph = false;
+protected boolean BodyDecl.isGraph() {
 		return isGraph;
-	}
+		}
 
-	protected boolean BodyDecl.isRec = false;
-	protected boolean BodyDecl.isRec() {
+protected boolean BodyDecl.isRec = false;
+protected boolean BodyDecl.isRec() {
 		return isRec;
-	}
+		}
 
-	protected int BodyDecl.checkGraphCounter = 0;
-	protected int BodyDecl.getGraphCounter() {
+protected int BodyDecl.checkGraphCounter = 0;
+protected int BodyDecl.getGraphCounter() {
 		return checkGraphCounter;
-	}
+		}
 
-	syn boolean MethodDecl.getGraph() {
+		syn boolean MethodDecl.getGraph() {
 		isGraph = true;
 		isRec = true;
 
@@ -340,55 +340,55 @@ aspect GetGraph {
 		for(VariableDecl vd : getTypestateFields()) {
 //			if(vd.typestate == null)
 //				vd.typestate = new TypestateField(getMethods());
-			vd.typestate.resetConnectionGraph(this);
-			env.add(vd.typestate);
+		vd.typestate.resetConnectionGraph(this);
+		env.add(vd.typestate);
 		}
 
 		for(int i = 0; i < getNumParameter(); i++)
-			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				if(getParameter(i).typestate == null)
-					getParameter(i).typestate = new TypestatePar();
+		if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
+		if(getParameter(i).typestate == null)
+		getParameter(i).typestate = new TypestatePar();
 
-				getParameter(i).typestate.resetConnectionGraph(null);
-				env.add(getParameter(i).typestate);
-			}
+		getParameter(i).typestate.resetConnectionGraph(null);
+		env.add(getParameter(i).typestate);
+		}
 
 		getBlock().getGraph(env);
 
 		for(int i = 0; i < getNumParameter(); i++)
-			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				getParameter(i).typestate.connectGraph(null);
-				env.remove(getParameter(i).typestate);
-			}
+		if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
+		getParameter(i).typestate.connectGraph(null);
+		env.remove(getParameter(i).typestate);
+		}
 
 		for(TypestateVar tv : env)
-			tv.connectGraph(this);
+		tv.connectGraph(this);
 
 		isRec = false;
 		checkGraphCounter++;
 		return true;
-	}
+		}
 
-	syn GraphNode MethodDecl.getParameterTypestate(int i) {
+		syn GraphNode MethodDecl.getParameterTypestate(int i) {
 		if(getParameter(i).typestate == null)
-			getParameter(i).typestate = new TypestatePar();
+		getParameter(i).typestate = new TypestatePar();
 		return getParameter(i).typestate.getConnectionGraph(null);
-	}
+		}
 
 /*****************************************************************************************************/
 
-	coll Set<ConstructorDecl> ConstructorDecl.ConstructorSuccessors() [new HashSet<ConstructorDecl>()] with add root ConstructorDecl;
+		coll Set<ConstructorDecl> ConstructorDecl.ConstructorSuccessors() [new HashSet<ConstructorDecl>()] with add root ConstructorDecl;
 
-	ConstructorAccess contributes getTarget() when getTarget() != null to
-	ConstructorDecl.ConstructorSuccessors() for getConstructorDeclAncestor();
+		ConstructorAccess contributes getTarget() when getTarget() != null to
+		ConstructorDecl.ConstructorSuccessors() for getConstructorDeclAncestor();
 
-	inh ConstructorDecl ConstructorAccess.getConstructorDeclAncestor();
-	eq ConstructorDecl.getConstructorInvocation().getConstructorDeclAncestor() = this;
+		inh ConstructorDecl ConstructorAccess.getConstructorDeclAncestor();
+		eq ConstructorDecl.getConstructorInvocation().getConstructorDeclAncestor() = this;
 //	eq CompilationUnit.getImportDecl().getConstructorDeclAncestor() = null;
-	eq Program.getCompilationUnit().getConstructorDeclAncestor() = null;
+		eq Program.getCompilationUnit().getConstructorDeclAncestor() = null;
 
-	//TODO Fix this method as MethodDecl.getGraph()
-	syn boolean ConstructorDecl.getGraph() {
+		//TODO Fix this method as MethodDecl.getGraph()
+		syn boolean ConstructorDecl.getGraph() {
 		isGraph = true;
 		isRec = true;
 
@@ -401,52 +401,52 @@ aspect GetGraph {
 		for(VariableDecl vd : getTypestateFields()) {
 //			if(vd.typestate == null)
 //				vd.typestate = new TypestateField(/*getMethods()*/);
-			vd.typestate.resetConnectionGraph(this);
-			env.add(vd.typestate);
+		vd.typestate.resetConnectionGraph(this);
+		env.add(vd.typestate);
 		}
 
 		for(int i = 0; i < getNumParameter(); i++)
-			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				if(getParameter(i).typestate == null)
-					getParameter(i).typestate = new TypestatePar();
+		if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
+		if(getParameter(i).typestate == null)
+		getParameter(i).typestate = new TypestatePar();
 
-				getParameter(i).typestate.resetConnectionGraph(null);
-				env.add(getParameter(i).typestate);
-			}
+		getParameter(i).typestate.resetConnectionGraph(null);
+		env.add(getParameter(i).typestate);
+		}
 
 		getBlock().getGraph(env);
 		if(hasConstructorInvocation())
-			getConstructorInvocation().getGraph(env);
+		getConstructorInvocation().getGraph(env);
 
 		for(int i = 0; i < getNumParameter(); i++)
-			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				getParameter(i).typestate.connectGraph(null);
-				env.remove(getParameter(i).typestate);
-			}
+		if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
+		getParameter(i).typestate.connectGraph(null);
+		env.remove(getParameter(i).typestate);
+		}
 
 		for(TypestateVar tv : env)
-			tv.connectGraph(this);
+		tv.connectGraph(this);
 
 		for(VariableDecl vd: getTypestateFields())
-			if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
-				vd.typestate.checkError(vd/*, getBodyDeclAncestor()*/);
+		if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
+		vd.typestate.checkError(vd/*, getBodyDeclAncestor()*/);
 
 		isRec = false;
 		checkGraphCounter++;
 		return true;
-	}
+		}
 
-	syn GraphNode ConstructorDecl.getParameterTypestate(int i) {
+		syn GraphNode ConstructorDecl.getParameterTypestate(int i) {
 		if(getParameter(i).typestate == null)
-			getParameter(i).typestate = new TypestatePar();
+		getParameter(i).typestate = new TypestatePar();
 		return getParameter(i).typestate.getConnectionGraph(null);
-	}
+		}
 
 /*****************************************************************************************************/
 
-	//Note: the next case of code is not a valid java statement (for type checking the ClassInstance expression)
-	//	if(cond)
-	//		TypestateVariable v = new TypestateVariable().m1().m2().m3();	
+		//Note: the next case of code is not a valid java statement (for type checking the ClassInstance expression)
+		//	if(cond)
+		//		TypestateVariable v = new TypestateVariable().m1().m2().m3();
 
 //	eq Program.getCompilationUnit(int i).getBodyDeclAncestor() = null;
 //	eq MethodDecl.getBlock().getBodyDeclAncestor() = this;
@@ -455,596 +455,604 @@ aspect GetGraph {
 //	inh BodyDecl Stmt.getBodyDeclAncestor();
 //	inh BodyDecl VariableDecl.getBodyDeclAncestor();
 
-	syn boolean Stmt.getGraph(Set<TypestateVar> env);
+		syn boolean Stmt.getGraph(Set<TypestateVar> env);
 
-	//TODO bug. Does not add variables declared in switch statements.
-	eq Block.getGraph(Set<TypestateVar> env) {
+		//TODO bug. Does not add variables declared in switch statements.
+		eq Block.getGraph(Set<TypestateVar> env) {
 		for(VariableDecl v: getVariableDecls())
-			if(v.getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				if(v.typestate == null)
-					v.typestate = new TypestateVar();
-				env.add(v.typestate/* = new TypestateVar()*/);
-			}
+		if(v.getTypeAccess().lookupType().isTypestateClassDeclType()) {
+		if(v.typestate == null)
+		v.typestate = new TypestateVar();
+		env.add(v.typestate/* = new TypestateVar()*/);
+		}
 
 		for(int i = getNumStmt() - 1; i >= 0; i--)
-			getStmt(i).getGraph(env);
+		getStmt(i).getGraph(env);
 
 		for(VariableDecl v: getVariableDecls())
-			if(v.getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				v.typestate.checkError(v/*, getBodyDeclAncestor()*/);
-				env.remove(v.typestate);
-			}
+		if(v.getTypeAccess().lookupType().isTypestateClassDeclType()) {
+		v.typestate.checkError(v/*, getBodyDeclAncestor()*/);
+		env.remove(v.typestate);
+		}
 		return true;
-	}
+		}
 
-	//Not used stmts
-	eq VariableDeclaration.getGraph(Set<TypestateVar> env) = false;
-	eq SynchronizedStmt.getGraph(Set<TypestateVar> env) = false;
-	eq LocalClassDeclStmt.getGraph(Set<TypestateVar> env) = false;
+		//Not used stmts
+		eq VariableDeclaration.getGraph(Set<TypestateVar> env) = false;
+		eq SynchronizedStmt.getGraph(Set<TypestateVar> env) = false;
+		eq LocalClassDeclStmt.getGraph(Set<TypestateVar> env) = false;
 
-	//No typestate stmts
-	eq ConstCase.getGraph(Set<TypestateVar> env) = true;
-	eq DefaultCase.getGraph(Set<TypestateVar> env) = true;
-	eq EmptyStmt.getGraph(Set<TypestateVar> env) = true;
+		//No typestate stmts
+		eq ConstCase.getGraph(Set<TypestateVar> env) = true;
+		eq DefaultCase.getGraph(Set<TypestateVar> env) = true;
+		eq EmptyStmt.getGraph(Set<TypestateVar> env) = true;
 
-	eq TryStmt.getGraph(Set<TypestateVar> env) {
+		eq TryStmt.getGraph(Set<TypestateVar> env) {
 		if(hasFinally())
-			getFinally().getGraph(env);
+		getFinally().getGraph(env);
 
 		getBlock().getGraph(env);
 		return true;
-	}
+		}
 
-	//TODO throw
-	eq ThrowStmt.getGraph(Set<TypestateVar> env) = true;
+		//TODO throw
+		eq ThrowStmt.getGraph(Set<TypestateVar> env) = true;
 
-	eq AssertStmt.getGraph(Set<TypestateVar> env) = getfirst().getGraph(env);
-	eq ExprStmt.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
+		eq AssertStmt.getGraph(Set<TypestateVar> env) = getfirst().getGraph(env);
+		eq ExprStmt.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
 
-	eq LabeledStmt.getGraph(Set<TypestateVar> env) {
+		eq LabeledStmt.getGraph(Set<TypestateVar> env) {
 		for(TypestateVar v : env) {
-			v.start.put(this, new LoopNode());
-			v.end.put(this, v.current);
+		v.start.put(this, new LoopNode());
+		v.end.put(this, v.current);
 		}
 		getStmt().getGraph(env);
 		for(TypestateVar v: env) {
-			GraphNode n = v.start.remove(this);
-			v.current = n.addNext(v.current);
-			v.end.remove(this);
+		GraphNode n = v.start.remove(this);
+		v.current = n.addNext(v.current);
+		v.end.remove(this);
 		}
 
 		return true;
-	}
+		}
 
-	eq ContinueStmt.getGraph(Set<TypestateVar> env) {
+		eq ContinueStmt.getGraph(Set<TypestateVar> env) {
 		Stmt target = getLabel().equals("") ? getTargetStmt() : getTargetStmt(getLabel());
 		for(TypestateVar v: env)
-			v.current = v.start.get(target);
+		v.current = v.start.get(target);
 
 		return true;
-	}
+		}
 
-	eq BreakStmt.getGraph(Set<TypestateVar> env) {
+		eq BreakStmt.getGraph(Set<TypestateVar> env) {
 		Stmt target = getLabel().equals("") ? getTargetStmt() : getTargetStmt(getLabel());
 		for(TypestateVar v: env)
-			v.current = v.end.get(target);
+		v.current = v.end.get(target);
 
 		return true;
-	}
+		}
 
-	eq IfStmt.getGraph(Set<TypestateVar> env) {
+		eq IfStmt.getGraph(Set<TypestateVar> env) {
 		for(TypestateVar v: env) {
-			v.start.put(this, new LoopNode());
-			v.end.put(this, v.current);
+		v.start.put(this, new LoopNode());
+		v.end.put(this, v.current);
 		}
 
 		getThen().getGraph(env);
 
 		for(TypestateVar v: env) {
-			GraphNode s = v.start.get(this);
-			s.addNext(v.current);
-			v.current = v.end.remove(this);
+		GraphNode s = v.start.get(this);
+		s.addNext(v.current);
+		v.current = v.end.remove(this);
 		}
 
-		if(hasElse()) 
-			getElse().getGraph(env);
+		if(hasElse())
+		getElse().getGraph(env);
 
 		for(TypestateVar v: env) {
-			GraphNode s = v.start.remove(this);
-			v.current = s.addNext(v.current);
+		GraphNode s = v.start.remove(this);
+		v.current = s.addNext(v.current);
 		}
 
 		getCondition().getGraph(env);
 
 		return true;
-	}
+		}
 
-	eq WhileStmt.getGraph(Set<TypestateVar> env) {
+		eq WhileStmt.getGraph(Set<TypestateVar> env) {
 		for(TypestateVar v : env) {
-			GraphNode n = new LoopNode();
-			v.start.put(this, n);
-			v.current = new LoopNode().addNext(v.current).addNext(n);
-			v.end.put(this, v.current);
+		GraphNode n = new LoopNode();
+		v.start.put(this, n);
+		v.current = new LoopNode().addNext(v.current).addNext(n);
+		v.end.put(this, v.current);
 		}
 
 		getStmt().getGraph(env);
 
 		for(TypestateVar v: env) {
-			GraphNode n = new LoopNode();
-			n.addNext(v.current);
-			n.addNext(v.end.get(this));
-			v.current = n;
+		GraphNode n = new LoopNode();
+		n.addNext(v.current);
+		n.addNext(v.end.get(this));
+		v.current = n;
 		}
 
 		getCondition().getGraph(env);
 
 		for(TypestateVar v: env) {
-			GraphNode s = v.start.remove(this);
-			v.current = s.addNext(v.current);
+		GraphNode s = v.start.remove(this);
+		v.current = s.addNext(v.current);
 		}
 		return true;
-	}
+		}
 
-	eq DoStmt.getGraph(Set<TypestateVar> env) {
+		eq DoStmt.getGraph(Set<TypestateVar> env) {
 		for(TypestateVar v : env) {
-			GraphNode n = new LoopNode();
-			v.start.put(this, n);
-			v.end.put(this, v.current);
-			v.current = new LoopNode().addNext(v.current).addNext(n);
+		GraphNode n = new LoopNode();
+		v.start.put(this, n);
+		v.end.put(this, v.current);
+		v.current = new LoopNode().addNext(v.current).addNext(n);
 		}
 
 		getCondition().getGraph(env);
 		getStmt().getGraph(env);
 
 		for(TypestateVar v: env) {
-			GraphNode n = v.start.remove(this);
-			n.addNext(v.current);
-			v.current = n;
-			v.end.remove(this);
+		GraphNode n = v.start.remove(this);
+		n.addNext(v.current);
+		v.current = n;
+		v.end.remove(this);
 		}
 
 		return true;
-	}
+		}
 
-	eq ForStmt.getGraph(Set<TypestateVar> env) {
+		eq ForStmt.getGraph(Set<TypestateVar> env) {
 		for(TypestateVar v: env) {
-			GraphNode n = new LoopNode();
-			v.start.put(this, n);
-			v.end.put(this, v.current);
-			v.current = n;
+		GraphNode n = new LoopNode();
+		v.start.put(this, n);
+		v.end.put(this, v.current);
+		v.current = n;
 		}
 
 		for(int i = getNumUpdateStmt() - 1; i >= 0; i--)
-			getUpdateStmt(i).getGraph(env);
+		getUpdateStmt(i).getGraph(env);
 
 		getStmt().getGraph(env);
 
 		for(TypestateVar v: env)
-			v.current = new LoopNode().addNext(v.current).addNext(v.end.remove(this));
+		v.current = new LoopNode().addNext(v.current).addNext(v.end.remove(this));
 
 		if(hasCondition())
-			getCondition().getGraph(env);
+		getCondition().getGraph(env);
 
 		for(int i = getNumInitStmt() - 1; i >= 0; i--)
-			getInitStmt(i).getGraph(env);
+		getInitStmt(i).getGraph(env);
 
 
 		for(TypestateVar v: env)
-			v.current = v.start.remove(this).addNext(v.current);
+		v.current = v.start.remove(this).addNext(v.current);
 
 		return true;
-	}
+		}
 
-	eq SwitchStmt.getGraph(Set<TypestateVar> env) {
+		eq SwitchStmt.getGraph(Set<TypestateVar> env) {
 		Block b = getBlock();
 
 		TypestateVar t = null;
 		//TODO consider a link type for enumDecl variables
+		//TODO do we consider the case where qualified access is not a linear object -> I think yes
 		if(getExpr().isAccess()) {
-			Access a = ((Access) getExpr()).getLastAccess();
-			if(a.getQualifiedType().isMungoEnumDeclType())
-				t = a.getQualifiedAccess() != null ?
-				a.getQualifiedAccess().getQualifiedTypestateVar() :
-				null;
+		Access a = ((Access) getExpr()).getLastAccess();
+		if(a.getType().isEnumDeclType())
+		t = a.getQualifiedAccess() != null ?
+		a.getQualifiedTypestateVar() :
+		null;
 		}
+//		if(getExpr().isAccess()) {
+//			Access a = ((Access) getExpr()).getLastAccess();
+//			if(a.getQualifiedType().isEnumDeclType())
+//				t = a.getQualifiedAccess() != null ?
+//					a.getQualifiedAccess().getQualifiedTypestateVar() :
+//					null;
+//		}
 
 		for(TypestateVar v : env) {
-			if(t == null || !t.equals(v))
-				v.start.put(this, new LoopNode());
-			else
-				v.start.put(this, new SwitchNode(this));
-			v.end.put(this, v.current);
+		if(t == null || !t.equals(v))
+		v.start.put(this, new LoopNode());
+		else
+		v.start.put(this, new SwitchNode(this));
+		v.end.put(this, v.current);
 		}
 		boolean c = false;
 		ArrayList<String> count = new ArrayList<String>();
 		ArrayList<Stmt> caseList = new ArrayList<Stmt>();
 
 		for(int i = b.getNumStmt() - 1; i >= 0; i--) {
-			if(b.getStmt(i) instanceof ConstCase) {
-				c = true;
-				//TODO might not need the isAccess check and the else branch
-				if(((ConstCase)b.getStmt(i)).getValue().isAccess())
-					count.add(((Access)((ConstCase)b.getStmt(i)).getValue()).getLastAccess().toString());
-				else
-					count.add(((ConstCase)b.getStmt(i)).getValue().toString());
+		if(b.getStmt(i) instanceof ConstCase) {
+		c = true;
+		//TODO might not need the isAccess check and the else branch
+		if(((ConstCase)b.getStmt(i)).getValue().isAccess())
+		count.add(((Access)((ConstCase)b.getStmt(i)).getValue()).getLastAccess().toString());
+		else
+		count.add(((ConstCase)b.getStmt(i)).getValue().toString());
 
-				caseList.add(b.getStmt(i));
-			}
-			else if(b.getStmt(i) instanceof DefaultCase) {
-				c = true;
-				count.add("default");
-				caseList.add(b.getStmt(i));
-			}
-			else {
-				if(c == true)
-					for(TypestateVar v: env) {
-						if(t == null || !t.equals(v))
-							v.start.get(this).addNext(v.current);
-						else {
-							for(int j = 0; j < count.size(); j++) {
-								SwitchCase sc = new SwitchCase(count.get(j), caseList.get(j));
-								sc.addNext(v.current);
-								v.start.get(this).addNext(sc);
-							}
-							count.clear();
-							caseList.clear();
-						}
-					}
+		caseList.add(b.getStmt(i));
+		}
+		else if(b.getStmt(i) instanceof DefaultCase) {
+		c = true;
+		count.add("default");
+		caseList.add(b.getStmt(i));
+		}
+		else {
+		if(c == true)
+		for(TypestateVar v: env) {
+		if(t == null || !t.equals(v))
+		v.start.get(this).addNext(v.current);
+		else {
+		for(int j = 0; j < count.size(); j++) {
+		SwitchCase sc = new SwitchCase(count.get(j), caseList.get(j));
+		sc.addNext(v.current);
+		v.start.get(this).addNext(sc);
+		}
+		count.clear();
+		caseList.clear();
+		}
+		}
 
-				c = false;
-				b.getStmt(i).getGraph(env);
-			}
+		c = false;
+		b.getStmt(i).getGraph(env);
+		}
 		}
 
 		if(c == true)
-			for(TypestateVar v: env) {
-				if(t == null || !t.equals(v))
-					v.start.get(this).addNext(v.current);
-				else {
-					for(int j = 0; j < count.size(); j++) {
-						SwitchCase sc = new SwitchCase(count.get(j), caseList.get(j));
-						sc.addNext(v.current);
-						v.start.get(this).addNext(sc);
-					}
-					count.clear();
-					caseList.clear();
-				}
-			}
+		for(TypestateVar v: env) {
+		if(t == null || !t.equals(v))
+		v.start.get(this).addNext(v.current);
+		else {
+		for(int j = 0; j < count.size(); j++) {
+		SwitchCase sc = new SwitchCase(count.get(j), caseList.get(j));
+		sc.addNext(v.current);
+		v.start.get(this).addNext(sc);
+		}
+		count.clear();
+		caseList.clear();
+		}
+		}
 
 		for(TypestateVar v : env) {
-			v.current = v.start.remove(this);
-			GraphNode e = v.end.remove(this);
-			if (!v.current.hasNext())
-				v.current.addNext(e);
+		v.current = v.start.remove(this);
+		GraphNode e = v.end.remove(this);
+		if (!v.current.hasNext())
+		v.current.addNext(e);
 		}
 
 		getExpr().getGraph(env);
 
 		return true;
-	}
+		}
 
-	//TODO another file
-	inh MethodDecl Stmt.getMethodDeclAncestor();
+		//TODO another file
+		inh MethodDecl Stmt.getMethodDeclAncestor();
 
-	//TODO implement me
-	eq ReturnStmt.getGraph(Set<TypestateVar> env) {
+		//TODO implement me
+		eq ReturnStmt.getGraph(Set<TypestateVar> env) {
 		if(!hasResult())
-			return true;
+		return true;
 
 		TypestateVar t = getResult().getTypestateVar();
 		if(t != null)
-			if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType()) {
-				t.checkError(getResult()/*, getBodyDeclAncestor()*/);
+		if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType()) {
+		t.checkError(getResult()/*, getBodyDeclAncestor()*/);
 //				t.current = new ReturnNode(getMethodDeclAncestor().typestate);
-				t.current = new ReturnPlug().addNext(getMethodDeclAncestor().typestate.current);
-			}
+		t.current = new ReturnPlug().addNext(getMethodDeclAncestor().typestate.current);
+		}
 
 		getResult().getGraph(env);
 
 		return true;
-	}
+		}
 
-	eq VarDeclStmt.getGraph(Set<TypestateVar> env) {
+		eq VarDeclStmt.getGraph(Set<TypestateVar> env) {
 		for(int i = getNumVariableDecl() - 1; i >= 0; i--)
-			getVariableDecl(i).getGraph(env);
+		getVariableDecl(i).getGraph(env);
 		return true;
-	}
+		}
 
-	//TODO implement me
-	syn boolean VariableDecl.getGraph(Set<TypestateVar> env) {
+		//TODO implement me
+		syn boolean VariableDecl.getGraph(Set<TypestateVar> env) {
 		boolean isTypestate = getTypeAccess().lookupType().isTypestateClassDeclType();
 
 		if(isTypestate)
-			env.remove(typestate);
+		env.remove(typestate);
 
 		if(!hasInit())
-			return true;
+		return true;
 
 		TypestateVar t;
 		if(isTypestate) {
-			if(getInit() instanceof ClassInstanceExpr) {
-				typestate.current = new InitNode(getInit()).addNext(typestate.current);
-				typestate.addTypestate(getInit()/*, getBodyDeclAncestor()*/);
-			}
-			else if((t = getInit().getTypestateVar()) != null) {
-				t.checkError(getInit()/*, getBodyDeclAncestor()*/);
-				t.current = typestate.current;
-				//Typestate should be reset
-				typestate.resetCurrent();
-			}
+		if(getInit() instanceof ClassInstanceExpr) {
+		typestate.current = new InitNode(getInit()).addNext(typestate.current);
+		typestate.addTypestate(getInit()/*, getBodyDeclAncestor()*/);
+		}
+		else if((t = getInit().getTypestateVar()) != null) {
+		t.checkError(getInit()/*, getBodyDeclAncestor()*/);
+		t.current = typestate.current;
+		//Typestate should be reset
+		typestate.resetCurrent();
+		}
 		}
 
 		getInit().getGraph(env);
 
 		return true;
-	}
+		}
 
 /********************************************************************************************/
-	syn boolean Expr.getGraph(Set<TypestateVar> env);
+		syn boolean Expr.getGraph(Set<TypestateVar> env);
 
-	//Not used
-	eq AmbiguousAccess.getGraph(Set<TypestateVar> env) = false;
-	eq VarAccess.getGraph(Set<TypestateVar> env) = false;
-	eq SuperAccess.getGraph(Set<TypestateVar> env) = false;
-	eq PackageOrTypeAccess.getGraph(Set<TypestateVar> env) = false;
-	eq PackageAccess.getGraph(Set<TypestateVar> env) = false;
+		//Not used
+		eq AmbiguousAccess.getGraph(Set<TypestateVar> env) = false;
+		eq VarAccess.getGraph(Set<TypestateVar> env) = false;
+		eq SuperAccess.getGraph(Set<TypestateVar> env) = false;
+		eq PackageOrTypeAccess.getGraph(Set<TypestateVar> env) = false;
+		eq PackageAccess.getGraph(Set<TypestateVar> env) = false;
 
-	//TODO implement me
-	eq AssignExpr.getGraph(Set<TypestateVar> env) {
+		//TODO implement me
+		eq AssignExpr.getGraph(Set<TypestateVar> env) {
 		getDest().getGraph(env);
 		TypestateVar d = getDest().getTypestateVar();
 		TypestateVar s;
 		if(d != null) {
-			if(getSource() instanceof ClassInstanceExpr) {
-				d.current = new InitNode(getSource()).addNext(d.current);
-				d.addTypestate(getSource()/*, getBodyDeclAncestor()*/);
-			}
-			else if((s = getSource().getTypestateVar()) != null) {
-				s.checkError(getSource()/*, getBodyDeclAncestor()*/);
-				s.current = d.current;
-				d.resetCurrent();
-			}
+		if(getSource() instanceof ClassInstanceExpr) {
+		d.current = new InitNode(getSource()).addNext(d.current);
+		d.addTypestate(getSource()/*, getBodyDeclAncestor()*/);
+		}
+		else if((s = getSource().getTypestateVar()) != null) {
+		s.checkError(getSource()/*, getBodyDeclAncestor()*/);
+		s.current = d.current;
+		d.resetCurrent();
+		}
 		}
 		getSource().getGraph(env);
 		return true;
-	}
+		}
 
-	eq Literal.getGraph(Set<TypestateVar> env) = false;
+		eq Literal.getGraph(Set<TypestateVar> env) = false;
 
-	eq Binary.getGraph(Set<TypestateVar> env) {
+		eq Binary.getGraph(Set<TypestateVar> env) {
 		getRightOperand().getGraph(env);
 		getLeftOperand().getGraph(env);
 		return true;
-	}
+		}
 
-	eq LogicalExpr.getGraph(Set<TypestateVar> env) {
+		eq LogicalExpr.getGraph(Set<TypestateVar> env) {
 		for(TypestateVar v : env)
-			v.end.put(this, v.current);
+		v.end.put(this, v.current);
 
 		getRightOperand().getGraph(env);
 
 		for(TypestateVar v: env)
-			v.current = new LoopNode().addNext(v.current).addNext(v.end.remove(this));
+		v.current = new LoopNode().addNext(v.current).addNext(v.end.remove(this));
 
 		getLeftOperand().getGraph(env);
 
 		return true;
-	}
+		}
 
-	eq ParExpr.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
+		eq ParExpr.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
 
-	eq ConditionalExpr.getGraph(Set<TypestateVar> env) {
+		eq ConditionalExpr.getGraph(Set<TypestateVar> env) {
 		for(TypestateVar v : env)
-			v.end.put(this, v.current);
+		v.end.put(this, v.current);
 
 		getTrueExpr().getGraph(env);
 
 		for(TypestateVar v: env) {
-			v.start.put(this, new LoopNode().addNext(v.current));
-			v.current = v.end.remove(this);
+		v.start.put(this, new LoopNode().addNext(v.current));
+		v.current = v.end.remove(this);
 		}
 
 		getFalseExpr().getGraph(env);
 
 		for(TypestateVar v: env)
-			v.current = v.start.remove(this).addNext(v.current);
+		v.current = v.start.remove(this).addNext(v.current);
 
 		getCondition().getGraph(env);
 
 		return true;
-	}
+		}
 
-	eq InstanceOfExpr.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
+		eq InstanceOfExpr.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
 
-	eq CastExpr.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
-	eq Unary.getGraph(Set<TypestateVar> env) = getOperand().getGraph(env);
+		eq CastExpr.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
+		eq Unary.getGraph(Set<TypestateVar> env) = getOperand().getGraph(env);
 
-	eq ArrayInit.getGraph(Set<TypestateVar> env) {
+		eq ArrayInit.getGraph(Set<TypestateVar> env) {
 		for(int i = getNumInit() - 1; i >= 0; i--)
-			getInit(i).getGraph(env);
+		getInit(i).getGraph(env);
 		return true;
-	}
+		}
 
-	eq ArrayCreationExpr.getGraph(Set<TypestateVar> env) {
+		eq ArrayCreationExpr.getGraph(Set<TypestateVar> env) {
 		if(hasArrayInit())
-			getArrayInit().getGraph(env);
+		getArrayInit().getGraph(env);
 		return true;
-	}
+		}
 
-	eq ParseName.getGraph(Set<TypestateVar> env) = true;
-	eq ThisAccess.getGraph(Set<TypestateVar> env) = true;
-	eq TypeAccess.getGraph(Set<TypestateVar> env) = true;
-	eq ClassAccess.getGraph(Set<TypestateVar> env) = true;
-	//Used when array access is qualified
-	eq ArrayAccess.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
-	eq ArrayTypeAccess.getGraph(Set<TypestateVar> env) = getAccess().getGraph(env);
-	eq ArrayTypeWithSizeAccess.getGraph(Set<TypestateVar> env) {
+		eq ParseName.getGraph(Set<TypestateVar> env) = true;
+		eq ThisAccess.getGraph(Set<TypestateVar> env) = true;
+		eq TypeAccess.getGraph(Set<TypestateVar> env) = true;
+		eq ClassAccess.getGraph(Set<TypestateVar> env) = true;
+		//Used when array access is qualified
+		eq ArrayAccess.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
+		eq ArrayTypeAccess.getGraph(Set<TypestateVar> env) = getAccess().getGraph(env);
+		eq ArrayTypeWithSizeAccess.getGraph(Set<TypestateVar> env) {
 		getAccess().getGraph(env);
 		getExpr().getGraph(env);
 		return true;
-	}
+		}
 
-	eq AbstractDot.getGraph(Set<TypestateVar> env) {
+		eq AbstractDot.getGraph(Set<TypestateVar> env) {
 		getRight().getGraph(env);
 		getLeft().getGraph(env);
 		return true;
-	}
+		}
 
-	//TODO another file
-	syn lazy Set<VariableDecl> ConstructorAccess.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
+		//TODO another file
+		syn lazy Set<VariableDecl> ConstructorAccess.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
 
-	//TODO Fix the this call
-	//TODO can you have recursive constructor call? If yes -> put a recursion clause
-	eq ConstructorAccess.getGraph(Set<TypestateVar> env) {
+		//TODO Fix the this call
+		//TODO can you have recursive constructor call? If yes -> put a recursion clause
+		eq ConstructorAccess.getGraph(Set<TypestateVar> env) {
 		ConstructorDecl cd = getTarget();
 
 		if(cd != null) {
-			GraphNode[] parameters = new GraphNode[cd.getNumParameter()];
-			for(int i = cd.getNumParameter() - 1; i >=0; i--)
-				if(cd.getParameter(i).typestate != null)
-					parameters[i] = cd.getParameterTypestate(i);//.plugGraph();
+		GraphNode[] parameters = new GraphNode[cd.getNumParameter()];
+		for(int i = cd.getNumParameter() - 1; i >=0; i--)
+		if(cd.getParameter(i).typestate != null)
+		parameters[i] = cd.getParameterTypestate(i);//.plugGraph();
 
 //			cd.plugMethodGraph();
-			cd.getGraph();
-			for(VariableDecl vd: getTypestateFields())
-				vd.typestate.current = vd.typestate.getConnectionGraph(cd);//.plugGraph();		//plug only (no clone)
+		cd.getGraph();
+		for(VariableDecl vd: getTypestateFields())
+		vd.typestate.current = vd.typestate.getConnectionGraph(cd);//.plugGraph();		//plug only (no clone)
 
-			for(int i = cd.getNumParameter() - 1; i >= 0; i--) {
-				TypestateVar dest = cd.getParameter(i).typestate;
-				TypestateVar source;
-				if(dest != null) {
-					if(getArg(i) instanceof ClassInstanceExpr) {
-						dest.current = new InitNode(getArg(i)).addNext(parameters[i]);
-						dest.addTypestate(getArg(i)/*, getBodyDeclAncestor()*/);
-					}
-					else if((source = getArg(i).getTypestateVar()) != null) {
-						source.checkError(getArg(i)/*, getBodyDeclAncestor()*/);
-						source.current = parameters[i];
-					}
-				}
+		for(int i = cd.getNumParameter() - 1; i >= 0; i--) {
+		TypestateVar dest = cd.getParameter(i).typestate;
+		TypestateVar source;
+		if(dest != null) {
+		if(getArg(i) instanceof ClassInstanceExpr) {
+		dest.current = new InitNode(getArg(i)).addNext(parameters[i]);
+		dest.addTypestate(getArg(i)/*, getBodyDeclAncestor()*/);
+		}
+		else if((source = getArg(i).getTypestateVar()) != null) {
+		source.checkError(getArg(i)/*, getBodyDeclAncestor()*/);
+		source.current = parameters[i];
+		}
+		}
 
-			}
+		}
 		}
 
 
 		for(int i = getNumArg() - 1; i >= 0; i--)
-			getArg(i).getGraph(env);
+		getArg(i).getGraph(env);
 
 		return true;
-	}
+		}
 
-	//TODO implement me
-	eq MethodAccess.getGraph(Set<TypestateVar> env) {
+		//TODO implement me
+		eq MethodAccess.getGraph(Set<TypestateVar> env) {
 		MethodDecl md = getTarget();
 
 		if(md != null) {
-			GraphNode[] parameters = new GraphNode[md.getNumParameter()];
+		GraphNode[] parameters = new GraphNode[md.getNumParameter()];
 
-			if(isThisAccess()) {
-				if(md.isRec() == true) {								//Condition checks for recursion
-					for(int i = md.getNumParameter() - 1; i >=0; i--)
-						if(md.getParameter(i).typestate != null)
-							parameters[i] = md.getParameterTypestate(i);
+		if(isThisAccess()) {
+		if(md.isRec() == true) {								//Condition checks for recursion
+		for(int i = md.getNumParameter() - 1; i >=0; i--)
+		if(md.getParameter(i).typestate != null)
+		parameters[i] = md.getParameterTypestate(i);
 
-					//Plugs the fields
-					for(VariableDecl vd : getTypestateFields())
-						vd.typestate.getPlugGraph(md).addNext(vd.typestate.current);
+		//Plugs the fields
+		for(VariableDecl vd : getTypestateFields())
+		vd.typestate.getPlugGraph(md).addNext(vd.typestate.current);
 
-					for(VariableDecl vd : getTypestateFields())
-						vd.typestate.current = vd.typestate.getConnectionGraph(md);
+		for(VariableDecl vd : getTypestateFields())
+		vd.typestate.current = vd.typestate.getConnectionGraph(md);
 
-					//TODO check if you can infer recursive typestate
+		//TODO check if you can infer recursive typestate
 //					md.typestate.current = md.typestate.current.clonePlugGraph();
 
-					//TODO better implementation here
-					Boolean sessionParameter = false;
-					for(int i = md.getNumParameter() - 1; i >=0; i--)
-						if(md.getParameter(i).typestate != null) {
-							sessionParameter = true;
-							break;
-						}
-					if(md.getTypeAccess().lookupType().isTypestateClassDeclType() || sessionParameter == true)
-						md.addSemanticError("Cannot infer return type for recursive method call.");
+		//TODO better implementation here
+		Boolean sessionParameter = false;
+		for(int i = md.getNumParameter() - 1; i >=0; i--)
+		if(md.getParameter(i).typestate != null) {
+		sessionParameter = true;
+		break;
+		}
+		if(md.getTypeAccess().lookupType().isTypestateClassDeclType() || sessionParameter == true)
+		md.addSemanticError("Cannot infer return type for recursive method call.");
 
-				}
-				else {
-					md.getGraph();
-					for(int i = md.getNumParameter() - 1; i >=0; i--)
-						if(md.getParameter(i).typestate != null)
-							parameters[i] = md.getParameterTypestate(i);
+		}
+		else {
+		md.getGraph();
+		for(int i = md.getNumParameter() - 1; i >=0; i--)
+		if(md.getParameter(i).typestate != null)
+		parameters[i] = md.getParameterTypestate(i);
 
-					for(VariableDecl vd: getTypestateFields())
-						vd.typestate.current = vd.typestate.getConnectionGraph(md);
-				}
-			}
-			else if(getQualifiedType().isTypestateClassDeclType()) {
-				TypestateVar t = getQualifiedTypestateVar();
+		for(VariableDecl vd: getTypestateFields())
+		vd.typestate.current = vd.typestate.getConnectionGraph(md);
+		}
+		}
+		else if(getQualifiedType().isTypestateClassDeclType()) {
+		TypestateVar t = getQualifiedTypestateVar();
 
-				//TODO better implementation here
-				//only call c.getFieldGraph when return type or parameter type is a session typestate.
-				Boolean sessionParameter = false;
-				for(int i = md.getNumParameter() - 1; i >=0; i--)
-					if(md.getParameter(i).typestate != null) {
-						sessionParameter = true;
-						break;
-					}
+		//TODO better implementation here
+		//only call c.getFieldGraph when return type or parameter type is a session typestate.
+		Boolean sessionParameter = false;
+		for(int i = md.getNumParameter() - 1; i >=0; i--)
+		if(md.getParameter(i).typestate != null) {
+		sessionParameter = true;
+		break;
+		}
 
-				//when md is in the typestate methods
-				if(md.isTypestateMethod()) {
-					if(md.getTypeAccess().lookupType().isTypestateClassDeclType() || sessionParameter == true) {
-						ClassDecl c = ((ClassDecl) getQualifiedType());
-						GraphNode tmp = md.typestate.current;
-	//					md.typestate.current = new EndNode();
-						boolean addTypestate = TypestateVar.addTypestate;	//TODO better implementation here
-						TypestateVar.addTypestate = true;			//TODO better implementation here
-						Set<TypestateVar> typestateEnvironment = c.getFieldGraph(t.current/*.normalise()*/);
-						TypestateVar.addTypestate = addTypestate;		//TODO better implementation here
+		//when md is in the typestate methods
+		if(md.isTypestateMethod()) {
+		if(md.getTypeAccess().lookupType().isTypestateClassDeclType() || sessionParameter == true) {
+		ClassDecl c = ((ClassDecl) getQualifiedType());
+		GraphNode tmp = md.typestate.current;
+		//					md.typestate.current = new EndNode();
+		boolean addTypestate = TypestateVar.addTypestate;	//TODO better implementation here
+		TypestateVar.addTypestate = true;			//TODO better implementation here
+		Set<TypestateVar> typestateEnvironment = c.getFieldGraph(t.current/*.normalise()*/);
+		TypestateVar.addTypestate = addTypestate;		//TODO better implementation here
 
-						md.typestate.current = tmp;
-						md.getGraph();
+		md.typestate.current = tmp;
+		md.getGraph();
 
-						// check if return is consistent.
-						for(TypestateVar vdt: typestateEnvironment)
-							if(vdt.current.isReturnPlugged())
-								md.addSemanticError("Cannot infer return type for method call.");
+		// check if return is consistent.
+		for(TypestateVar vdt: typestateEnvironment)
+		if(vdt.current.isReturnPlugged())
+		md.addSemanticError("Cannot infer return type for method call.");
 
-					}
+		}
 
-					if (t != null)
-						t.current = new MethodNode(lookupMethod(getQualifiedType()).getTypeAccess(), getID(), getParameterTypes(), this).addNext(t.current);
-				}
+		if (t != null)
+		t.current = new MethodNode(lookupMethod(getQualifiedType()).getTypeAccess(), getID(), getParameterTypes(), this).addNext(t.current);
+		}
 
 
-				for(int i = md.getNumParameter() - 1; i >=0; i--)
-					if(md.getParameter(i).typestate != null)
-						parameters[i] = md.getParameterTypestate(i);//.plugGraph();
-			}
+		for(int i = md.getNumParameter() - 1; i >=0; i--)
+		if(md.getParameter(i).typestate != null)
+		parameters[i] = md.getParameterTypestate(i);//.plugGraph();
+		}
 
-			for(int i = md.getNumParameter() - 1; i >= 0; i--) {
-				TypestateVar dest = md.getParameter(i).typestate;
-				TypestateVar source;
-				if(dest != null) {
-					if(getArg(i) instanceof ClassInstanceExpr) {
-						dest.current = new InitNode(getArg(i)).addNext(parameters[i]);
-						dest.addTypestate(getArg(i)/*, getBodyDeclAncestor()*/);
-					}
-					else if((source = getArg(i).getTypestateVar()) != null) {
-						source.checkError(getArg(i)/*, getBodyDeclAncestor()*/);
-						source.current = parameters[i];
-					}
-				}
+		for(int i = md.getNumParameter() - 1; i >= 0; i--) {
+		TypestateVar dest = md.getParameter(i).typestate;
+		TypestateVar source;
+		if(dest != null) {
+		if(getArg(i) instanceof ClassInstanceExpr) {
+		dest.current = new InitNode(getArg(i)).addNext(parameters[i]);
+		dest.addTypestate(getArg(i)/*, getBodyDeclAncestor()*/);
+		}
+		else if((source = getArg(i).getTypestateVar()) != null) {
+		source.checkError(getArg(i)/*, getBodyDeclAncestor()*/);
+		source.current = parameters[i];
+		}
+		}
 
-			}
+		}
 
-			md.typestate.current = new EndNode();
+		md.typestate.current = new EndNode();
 		}
 
 		for(int i = getNumArg() - 1; i >= 0; i--)
-			getArg(i).getGraph(env);
+		getArg(i).getGraph(env);
 
 		return true;
-	}
+		}
 
-	eq ClassInstanceExpr.getGraph(Set<TypestateVar> env) = true;
+		eq ClassInstanceExpr.getGraph(Set<TypestateVar> env) = true;
 
-}
+		}

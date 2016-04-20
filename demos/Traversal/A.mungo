@@ -47,25 +47,25 @@ class A implements Runnable {
 					a.NO_DToC();
 				}
 
-				switch(a.choiceFromB().getEnum()) {
-					case Choice.DATA:
+				switch(a.choiceFromB()) {
+					case DATA:
 						queue[head++] = a.nodeFromB(); //put in a stack
 						break;
-					case Choice.NO_D:
+					case NO_D:
 						break;
-					case Choice.END:
+					case END:
 						bflag = true;
 						//set a flag
 						break;
 				}
 
-				switch(a.choiceFromC().getEnum()) {
-					case Choice.DATA:
+				switch(a.choiceFromC()) {
+					case DATA:
 						queue[head++] = a.nodeFromC(); //put in a stack
 						break;
-					case Choice.NO_D:
+					case NO_D:
 						break;
-					case Choice.END:
+					case END:
 						cflag = true;
 						//set a flag
 						break;

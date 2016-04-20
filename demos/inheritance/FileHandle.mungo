@@ -1,0 +1,9 @@
+package demos.inheritance;
+
+public class FileHandle typestate FileHandleProtocol {
+    void acquire () {
+    }
+
+    void release () {
+    }
+}

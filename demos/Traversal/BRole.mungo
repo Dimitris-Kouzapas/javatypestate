@@ -27,27 +27,27 @@ class BRole typestate BProtocol {
 	}
 
 	void DATAToA() {
-		a.send(new Choice(Choice.DATA));
+		a.send(Choice.DATA);
 	}
 
 	void DATAToC() {
-		c.send(new Choice(Choice.DATA));
+		c.send(Choice.DATA);
 	}
 
 	void NO_DToA() {
-		a.send(new Choice(Choice.NO_D));
+		a.send(Choice.NO_D);
 	}
 
 	void NO_DToC() {
-		c.send(new Choice(Choice.NO_D));
+		c.send(Choice.NO_D);
 	}
 
 	void ENDToA() {
-		a.send(new Choice(Choice.END));
+		a.send(Choice.END);
 	}
 
 	void ENDToC() {
-		c.send(new Choice(Choice.END));
+		c.send(Choice.END);
 	}
 
 	void nodeToA(Node n) {

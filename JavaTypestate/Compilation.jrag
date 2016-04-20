@@ -143,8 +143,8 @@ aspect Compilation {
 		private void printUnits() {
 			for(int i = 0; i < getNumCompilationUnit(); i++) {
 				getCompilationUnit(i).Rewrite(System.out);
-				if(getCompilationUnit(i).getTypeDecl().isMungoEnumDeclType())
-					((ClassDecl) getCompilationUnit(i).getTypeDecl()).getMungoEnumDecl().Rewrite(System.out);
+				if(getCompilationUnit(i).getTypeDecl().isEnumDeclType())
+					((ClassDecl) getCompilationUnit(i).getTypeDecl()).getEnumDecl().Rewrite(System.out);
 			}
 
 		}

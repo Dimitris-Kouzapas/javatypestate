@@ -16,23 +16,23 @@ class C implements Runnable {
 		int head = 0; int tail = 0;
 
 		loop: do {
-			switch(c.choiceFromA().getEnum()) {
-				case Choice.DATA:
+			switch(c.choiceFromA()) {
+				case DATA:
 					queue[head++] = c.nodeFromA(); //put in the queue
 					break;
-				case Choice.NO_D:
+				case NO_D:
 					break;
-				case Choice.END:
+				case END:
 					break loop;
 			}
 
-			switch(c.choiceFromB().getEnum()) {
-				case Choice.DATA:
+			switch(c.choiceFromB()) {
+				case DATA:
 					queue[head++] = c.nodeFromB(); //put in the queue
 					break;
-				case Choice.NO_D:
+				case NO_D:
 					break;
-				case Choice.END:
+				case END:
 					//set a flag
 					break;
 			}

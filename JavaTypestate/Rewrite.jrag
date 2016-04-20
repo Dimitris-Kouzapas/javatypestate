@@ -700,7 +700,7 @@ aspect Rewrite {
 	/*                         Enum                             */
 	/************************************************************/
 
-	protected void MungoEnumDecl.Rewrite(TypestateStream stream) {
+	protected void EnumDecl.Rewrite(TypestateStream stream) {
 		stream.println("enum " + getID() + " {");
 		stream.pushIndent();
 		for(int i = 0; i < getNumBodyDecl(); i++) {
@@ -714,8 +714,9 @@ aspect Rewrite {
 		stream.println("}");
 	}
 
-	protected void MungoEnumConstant.Rewrite(TypestateStream stream) {
-		stream.print(getEnumID());
+	protected void EnumConstant.Rewrite(TypestateStream stream) {
+
+		 stream.print(getID());
 	}
 
 	/************************************************************/

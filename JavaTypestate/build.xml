@@ -38,8 +38,10 @@
         <jastadd package="${package}" rewrite="true" beaver="true"
                  visitCheck="false" outdir="${gen.dir}" debug="true">
             <fileset dir=".">
-                <include name="**/*.ast"/>
+                <include name="grammar/*.ast"/>
+                <!--<exclude name="grammar/Enum.ast"/>-->
                 <include name="**/*.jrag"/>
+                <!--<exclude name="**/Enum.jrag"/>-->
                 <include name="**/*.jadd"/>
             </fileset>
         </jastadd>
@@ -81,7 +83,7 @@
                 <file name="parser/java14.parser"/>
                 <file name="parser/errorrecovery.parser"/>
                 <file name="parser/typestate.parser"/>
-                <file name="parser/enum.parser"/>
+                <file name="parser/Enums.parser"/>
 
             </filelist>
         </concat>
@@ -120,37 +122,6 @@
              excludes="test/**">
             <manifest>
                 <attribute name="Main-Class" value="JavaPrettyPrinter"/>
-            </manifest>
-        </jar>
-    </target>
-
-    <!-- build a source distribution -->
-    <target name="source" depends="build">
-        <jar destfile="Java1.4Frontend-src.jar">
-            <fileset dir="..">
-                <!-- include frontend source file -->
-                <include name="Java1.4Frontend/JavaPrettyPrinter.java"/>
-                <include name="Java1.4Frontend/JavaChecker.java"/>
-                <include name="Java1.4Frontend/**/*.ast"/>
-                <include name="Java1.4Frontend/**/*.jrag"/>
-                <include name="Java1.4Frontend/**/*.jadd"/>
-                <!-- include parser and scanner -->
-                <include name="Java1.4Frontend/beaver/**/*.java"/>
-                <include name="Java1.4Frontend/scanner/*.flex"/>
-                <exclude name="Java1.4Frontend/scanner/JavaScanner.flex"/>
-                <include name="Java1.4Frontend/scanner/Unicode.java"/>
-                <include name="Java1.4Frontend/parser/*.parser"/>
-                <!-- include tools and buildfile used to build the front-end -->
-                <include name="Java1.4Frontend/tools/*.jar"/>
-                <include name="Java1.4Frontend/build.xml"/>
-                <!-- include readme and licences -->
-                <include name="Java1.4Frontend/README"/>
-                <include name="Java1.4Frontend/licences/BSD"/>
-                <include name="Java1.4Frontend/licences/CPL"/>
-                <include name="Java1.4Frontend/licences/GPL"/>
-                <include name="Java1.4Frontend/licences/LICENSE"/>
-            </fileset>
-            <manifest>
             </manifest>
         </jar>
     </target>

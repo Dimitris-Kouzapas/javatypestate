@@ -24,12 +24,12 @@ aspect javaASTFunctionality {
 	/*	TypeDecl								*/
 	syn lazy boolean TypeDecl.isTypestateDeclType() = false;
 	syn lazy boolean TypeDecl.isClassDeclType() = false;
-	syn lazy boolean TypeDecl.isMungoEnumDeclType() = false;
+	syn lazy boolean TypeDecl.isEnumDeclType() = false;
 	syn lazy boolean TypeDecl.isTypestateClassDeclType() = false;
 
 	syn lazy TypestateDecl TypeDecl.getTypestateDecl() = null;
 	syn lazy ClassDecl TypeDecl.getClassDecl() = null;
-	syn lazy MungoEnumDecl TypeDecl.getMungoEnumDecl() = null;
+	syn lazy EnumDecl TypeDecl.getEnumDecl() = null;
 	syn lazy TypestateClassDecl TypeDecl.getTypestateClassDecl() = null;
 
 	eq TypeDecl.getBodyDecl(int i).getClassDeclAncestor() = null;
@@ -38,16 +38,16 @@ aspect javaASTFunctionality {
 	eq TypestateDecl.isTypestateDeclType() = true;
 	eq TypestateDecl.getTypestateDecl() = this;
 
-	/*	MungoEnumDecl								*/
-	eq MungoEnumDecl.isMungoEnumDeclType() = true;
-	eq MungoEnumDecl.getMungoEnumDecl() = this;
+	/*	EnumDecl								*/
+	eq EnumDecl.isEnumDeclType() = true;
+	eq EnumDecl.getEnumDecl() = this;
 
 	/*	ClassDecl								*/
 	eq ClassDecl.isClassDeclType() = true;
 	eq ClassDecl.getClassDecl() = this;
 
-	eq ClassDecl.isMungoEnumDeclType() = getMungoEnumDecl() != null;
-	eq ClassDecl.getMungoEnumDecl() = MungoEnumDecl;
+//	eq ClassDecl.isEnumDeclType() = getEnumDecl() != null;
+//	eq ClassDecl.getEnumDecl() = EnumDecl;
 
 	eq ClassDecl.getBodyDecl(int i).getClassDeclAncestor() = this;
 

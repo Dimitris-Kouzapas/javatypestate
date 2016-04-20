@@ -52,7 +52,5 @@
 /* Mungo stuff
 */
   "typestate"       { return sym(Terminals.TYPESTATE); }
-  "enumeration"     { return sym(Terminals.ENUMERATION); }
-
 }
 

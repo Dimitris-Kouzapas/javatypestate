@@ -1,0 +1,15 @@
+package demos.inheritance;
+
+public class LogService typestate LogServiceProtocol {
+   void start () {
+   }
+
+   void log (String str) {
+   }
+
+   void clear () {
+   }
+
+   void stop () {
+   }
+}
