@@ -16,7 +16,7 @@
   "do"                           { return sym(Terminals.DO); }
   "double"                       { return sym(Terminals.DOUBLE); }
   "else"                         { return sym(Terminals.ELSE); }
-/*  "extends"                      { return sym(Terminals.EXTENDS); }*/
+  "extends"                      { return sym(Terminals.EXTENDS); }
   "final"                        { return sym(Terminals.FINAL); }
   "finally"                      { return sym(Terminals.FINALLY); }
   "float"                        { return sym(Terminals.FLOAT); }

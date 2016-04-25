@@ -148,10 +148,6 @@ TypeDecl type_declaration	=
 					{:
 						return new EmptyType(new Modifiers(), "EmptyType", new Opt(), new List());
 					:}
-				|	typestate_declaration.t
-					{:
-						return t; //new EmptyType(new Modifiers(), "EmptyType", new Opt(), new List());
-					:}
 */				;
 
 
@@ -184,9 +180,9 @@ ClassDecl class_declaration	=
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), new List(), b);
 					:}
 */
-					modifiers.m? CLASS IDENTIFIER /*super.s?*/ interfaces.i? class_body.b 
+					modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b 
 					{:
-						return new ClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), i, b);
+						return new ClassDecl(new Modifiers(m), IDENTIFIER, s, i, b);
 					:}
 				|	modifiers.m? CLASS IDENTIFIER /*super.s?*/ interfaces.i? typestate_type.t class_body.b 
 					{:
@@ -198,10 +194,10 @@ ClassDecl class_declaration	=
 					:}
 */				;
 
-/*Opt super			=
+Opt super			=
 					EXTENDS class_type.c		{: return new Opt(c); :}
 				;
-*/
+
 List interfaces			=
 					IMPLEMENTS interface_type_list.i	{: return i; :}
 				;
@@ -373,7 +369,7 @@ ExprStmt explicit_constructor_invocation
 						return new ExprStmt(c);
 					:}
 
-/*				|	SUPER LPAREN argument_list.l? RPAREN SEMICOLON 
+				|	SUPER LPAREN argument_list.l? RPAREN SEMICOLON 
 					{:
 						SuperConstructorAccess c = new SuperConstructorAccess("super", l);
 							c.setStart(SUPER.getStart());
@@ -396,7 +392,7 @@ ExprStmt explicit_constructor_invocation
 							c.setEnd(RPAREN.getEnd());
 						return new ExprStmt(n.qualifiesAccess(c));
 					:}
-*/				;
+				;
 /*
 InterfaceDecl interface_declaration
 				=
