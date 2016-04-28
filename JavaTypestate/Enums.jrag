@@ -1,39 +1,37 @@
 aspect Enums{
 
-        coll Set<String>EnumDecl.getEnumLabels()[new HashSet<String>()]with add root EnumDecl;
-        EnumConstant contributes getID()to EnumDecl.getEnumLabels()for getEnumDeclAncestor();
+	coll Set<String>EnumDecl.getEnumLabels()[new HashSet<String>()]with add root EnumDecl;
+	EnumConstant contributes getID()to EnumDecl.getEnumLabels()for getEnumDeclAncestor();
 
-//	syn lazy Set<String> EnumDecl.getEnums() {
-//		Set<String> s = new HashSet<String>();
-//		for(String l : getEnumLabels())
-//			s.add(getID() + "." + l);
-//
-//		return s;
-// 	}
-
-
-        inh EnumDecl EnumConstant.getEnumDeclAncestor();
-        eq EnumDecl.getBodyDecl(int i).getEnumDeclAncestor()=this;
-        eq TypeDecl.getBodyDecl(int i).getEnumDeclAncestor()=null;
+	//	syn lazy Set<String> EnumDecl.getEnums() {
+	//		Set<String> s = new HashSet<String>();
+	//		for(String l : getEnumLabels())
+	//			s.add(getID() + "." + l);
+	//
+	//		return s;
+	// 	}
 
 
-private static Opt<TypeDecl> EnumConstant.createOptAnonymousDecl(List<BodyDecl> bds) {
-        if (bds.getNumChildNoTransform() == 0) {
-        return new Opt<TypeDecl>();
-        }
+	inh EnumDecl EnumConstant.getEnumDeclAncestor();
+	eq EnumDecl.getBodyDecl(int i).getEnumDeclAncestor()=this;
+	eq TypeDecl.getBodyDecl(int i).getEnumDeclAncestor()=null;
 
-        return
-        new Opt<TypeDecl>(
-        new AnonymousDecl(
-        new Modifiers(),
-        "Anonymous",
-        bds
-        )
-        );
-        }
 
-public EnumConstant.EnumConstant(Modifiers mods, String name, List<Expr> args, List<BodyDecl> bds) {
-        this(mods, name, args, new Opt<Expr>(new EnumInstanceExpr(createOptAnonymousDecl(bds))));
-        }
+	private static Opt<TypeDecl> EnumConstant.createOptAnonymousDecl(List<BodyDecl> bds) {
+		if (bds.getNumChildNoTransform() == 0) {
+			return new Opt<TypeDecl>();
+		}
 
-        }
+		return new Opt<TypeDecl>(	new AnonymousDecl(
+										new Modifiers(),
+										"Anonymous",
+										bds
+									)
+								);
+	}
+
+	public EnumConstant.EnumConstant(Modifiers mods, String name, List<Expr> args, List<BodyDecl> bds) {
+		this(mods, name, args, new Opt<Expr>(new EnumInstanceExpr(createOptAnonymousDecl(bds))));
+	}
+
+}

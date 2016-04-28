@@ -2,11 +2,14 @@ aspect JavaSemanticCheck {
 
 protected void ClassDecl.semanticCheck() {
 	if(hasSuperClassAccess()) {
+		System.out.println(getID());
 		Access a = getSuperClassAccess();
 		if (a.lookupType().isTypestateClassDeclType())
 			addSemanticError("Class " + this.getID() + " cannot extend a class with a typestate.");
 	}
 }
+
+protected void EnumDecl.semanticCheck() {}
 
 //TODO check for no linear expressions in the throw and try stmts??
 
