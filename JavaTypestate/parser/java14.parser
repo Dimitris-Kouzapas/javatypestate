@@ -850,7 +850,7 @@ List dims			=
 
 Access field_access		=
 					primary.p DOT simple_name.id		{: return p.qualifiesAccess(id); :}
-/*				|	SUPER DOT simple_name.id 
+				|	SUPER DOT simple_name.id 
 					{:
 						SuperAccess s = new SuperAccess("super");
 							s.setStart(SUPER.getStart());
@@ -864,7 +864,7 @@ Access field_access		=
 							s.setEnd(SUPER.getEnd());
 						return n.qualifiesAccess(s).qualifiesAccess(id);
 					:}
-*/				;
+				;
 
 Access method_invocation	=
 					name.n LPAREN argument_list.l? RPAREN
@@ -900,7 +900,7 @@ Access method_invocation	=
 						*/
 						return p.qualifiesAccess(m);
 					:}
-/*				|	SUPER DOT IDENTIFIER LPAREN argument_list.l? RPAREN
+				|	SUPER DOT IDENTIFIER LPAREN argument_list.l? RPAREN
 					{:
 						SuperAccess s = new SuperAccess("super");
 							s.setStart(SUPER.getStart());
@@ -920,7 +920,7 @@ Access method_invocation	=
 							m.setEnd(RPAREN.getEnd());
 						return n.qualifiesAccess(s).qualifiesAccess(m);
 					:}
-*/				;
+				;
 
 Access array_access		=
 					name.n LBRACK expression.e RBRACK

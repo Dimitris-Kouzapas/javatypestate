@@ -39,7 +39,7 @@
   "short"                        { return sym(Terminals.SHORT); }
   "static"                       { return sym(Terminals.STATIC); }
 /*  "strictfp"                     { return sym(Terminals.STRICTFP); }*/
-/*  "super"                        { return sym(Terminals.SUPER); }*/
+  "super"                        { return sym(Terminals.SUPER); }
   "switch"                       { return sym(Terminals.SWITCH); }
 /*  "synchronized"                 { return sym(Terminals.SYNCHRONIZED); }*/
   "this"                         { return sym(Terminals.THIS); }
