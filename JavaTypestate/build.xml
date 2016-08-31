@@ -39,10 +39,8 @@
                  visitCheck="false" outdir="${gen.dir}" debug="true">
             <fileset dir=".">
                 <include name="grammar/*.ast"/>
-                <!--<exclude name="grammar/Enum.ast"/>-->
-                <include name="**/*.jrag"/>
-                <!--<exclude name="**/Enum.jrag"/>-->
-                <include name="**/*.jadd"/>
+                <include name="frontend/*.jrag"/>
+                <include name="frontend/*.jadd"/>
             </fileset>
         </jastadd>
     </target>
@@ -81,9 +79,10 @@
             <filelist dir=".">
                 <file name="parser/Preamble.parser"/>
                 <file name="parser/Java14.parser"/>
-                <file name="parser/Errorrecovery.parser"/>
+                <file name="parser/ErrorRecovery.parser"/>
                 <file name="parser/Typestate.parser"/>
                 <file name="parser/Enums.parser"/>
+                <!--<file name="parser/Annotations.parser"/>-->
 
             </filelist>
         </concat>
