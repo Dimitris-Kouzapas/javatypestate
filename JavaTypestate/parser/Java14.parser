@@ -143,8 +143,8 @@ ImportDecl type_import_on_demand_declaration
 
 TypeDecl type_declaration	=
 					class_declaration.c		{: return c; :}
-/*				|	interface_declaration.i		{: return i; :}
-				|	SEMICOLON
+				|	interface_declaration.i		{: return i; :}
+/*				|	SEMICOLON
 					{:
 						return new EmptyType(new Modifiers(), "EmptyType", new Opt(), new List());
 					:}
@@ -393,7 +393,7 @@ ExprStmt explicit_constructor_invocation
 						return new ExprStmt(n.qualifiesAccess(c));
 					:}
 				;
-/*
+
 InterfaceDecl interface_declaration
 				=
 					modifiers.m? INTERFACE IDENTIFIER extends_interfaces.i? interface_body.b
@@ -435,7 +435,7 @@ BodyDecl abstract_method_declaration
 				=
 					method_header.m SEMICOLON			{: return m; :}
 				;
-*/
+
 ArrayInit array_initializer	=
 					LBRACE variable_initializers.v? COMMA? RBRACE	{: return new ArrayInit(v); :}
 				;
@@ -754,7 +754,7 @@ Expr class_instance_creation_expression
 						*/
 						return n.qualifiesAccess(e);
 					:}
-/*				|	NEW class_or_interface_type.t LPAREN argument_list.l? RPAREN subclass_body.b 
+/*				|	NEW class_or_interface_type.t LPAREN argument_list.l? RPAREN subclass_body.b
 					{:
 						return new ClassInstanceExpr(t, l, b);
 					:}

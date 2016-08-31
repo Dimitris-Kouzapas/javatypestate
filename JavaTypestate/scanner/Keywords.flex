@@ -27,7 +27,7 @@
   "import"                       { return sym(Terminals.IMPORT); }
   "instanceof"                   { return sym(Terminals.INSTANCEOF); }
   "int"                          { return sym(Terminals.INT); }
-/*  "interface"                    { return sym(Terminals.INTERFACE); }*/
+  "interface"                    { return sym(Terminals.INTERFACE); }
   "long"                         { return sym(Terminals.LONG); }
 /*  "native"                       { return sym(Terminals.NATIVE); }*/
   "new"                          { return sym(Terminals.NEW); }
