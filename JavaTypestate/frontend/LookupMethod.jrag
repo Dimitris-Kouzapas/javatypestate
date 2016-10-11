@@ -33,8 +33,8 @@ aspect LookupMethod {
 		ArrayList<MethodDecl> a = lookupMethodTargets(method, parameters);
 
 		//For possible future work
-		if((a.size() == 0) && hasSuperClassAccess())
-			return getSuperClassAccess().lookupType().lookupMethod(method, parameters);
+		if((a.size() == 0) && hasSuperClass())
+			return getSuperClass().lookupType().lookupMethod(method, parameters);
 
 		return (a.size() == 1) ? a.get(0) : null;
 	}
