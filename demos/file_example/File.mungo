@@ -30,7 +30,11 @@ class File {
 			return BooleanEnum.TRUE;
 		return BooleanEnum.FALSE;
 	}
-
+//	@SuppressWarning("unchecked")//working
+//	@SuppressWarnings("unchecked")//not working
+	@SuppressWarnings({"unchecked", "deprecation"})
+//	@Override //working
+	//@Deprecated //working
 	void read() {
 		readBuffer[i++] = reader.read();
 	}

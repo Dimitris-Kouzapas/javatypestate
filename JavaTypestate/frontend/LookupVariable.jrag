@@ -56,8 +56,8 @@ aspect LookupVariable {
 			if(vd.getID().equals(var))
 				return vd.toNameDecl();
 		//for possible future work
-		if(hasSuperClassAccess())
-			return getSuperClassAccess().lookupType().lookupVariable(var);
+		if(hasSuperClass())
+			return getSuperClass().lookupType().lookupVariable(var);
 		return null;
 	}
 
