@@ -1,0 +1,116 @@
+aspect Generics{
+
+        eq ParTypeAccess.getType() {
+        TypeDecl typeDecl = genericDecl();
+        if (typeDecl instanceof GenericTypeDecl) {
+        // Use signature in lookup for types that are used in extends and implements clauses.
+//        if (unqualifiedScope().inExtendsOrImplements()) {
+//        return ((GenericTypeDecl) typeDecl).lookupParTypeDecl(this);
+//        }
+        ArrayList<TypeDecl> args = new ArrayList<TypeDecl>();
+        for (int i = 0; i < getNumTypeArgument(); i++) {
+        args.add(getTypeArgument(i).getType());
+        }
+        return ((GenericTypeDecl) typeDecl).lookupParTypeDecl(args);
+        }
+        return typeDecl;
+        }
+
+
+//        eq Wildcard.getType() = typeWildcard();
+//        eq Wildcard.getType() = null;
+////        eq WildcardExtends.getType() = lookupWildcardExtends(getAccess().getType());
+////        eq WildcardSuper.getType() = lookupWildcardSuper(getAccess().getType());
+//        eq WildcardExtends.getType() = null;
+//        eq WildcardSuper.getType() = null;
+
+        eq ParTypeAccess.getType(TypeDecl t) = null;
+//        eq Wildcard.getType(TypeDecl t) = null;
+//        eq WildcardExtends.getType(TypeDecl t) = null;
+//        eq WildcardSuper.getType(TypeDecl t) = null;
+
+
+//        inh TypeDecl Wildcard.typeWildcard();
+
+//        syn nta TypeDecl WildcardsCompilationUnit.typeWildcard() =
+//        new WildcardType(
+//        new Modifiers(new List().add(new Modifier("public"))),
+//        "?",
+//        new List());
+
+//        inh TypeDecl TypeDecl.typeWildcard();
+
+
+        syn TypeDecl ParTypeAccess.genericDecl() = getTypeAccess().getType();
+
+//        inh TypeDecl WildcardSuper.lookupWildcardSuper(TypeDecl typeDecl);
+//        syn nta TypeDecl WildcardsCompilationUnit.lookupWildcardExtends(TypeDecl bound) = null;
+//        new WildcardExtendsType(
+//        new Modifiers(new List().add(new Modifier("public"))),
+//        "? extends " + bound.name(),//fullName(),
+//        new List(),
+//        new Opt());/*bound.createBoundAccess());*/
+
+//        eq Program.getChild().lookupWildcardExtends(TypeDecl typeDecl) = null;
+        //wildcards().lookupWildcardExtends(typeDecl);
+
+//        inh TypeDecl TypeDecl.lookupWildcardExtends(TypeDecl typeDecl);
+
+//        syn TypeDecl TypeDecl.asWildcardExtends() = lookupWildcardExtends(this);
+
+/*  syn nta TypeDecl WildcardsCompilationUnit.lookupWildcardSuper(TypeDecl bound) =
+      new WildcardSuperType(
+          new Modifiers(new List().add(new Modifier("public"))),
+          "? super " + bound.fullName(),
+          new List(),
+          bound.createBoundAccess());
+*/
+        //eq Program.getChild().lookupWildcardSuper(TypeDecl typeDecl) =
+        //  wildcards().lookupWildcardSuper(typeDecl);
+
+//        inh TypeDecl TypeDecl.lookupWildcardSuper(TypeDecl typeDecl);
+
+        eq Program.getChild().inExtendsOrImplements() = false;
+        eq ClassDecl.getSuperClass().inExtendsOrImplements() = true;
+        eq ClassDecl.getImplements(int i).inExtendsOrImplements() = true;
+        eq InterfaceDecl.getSuperInterface().inExtendsOrImplements() = true;
+        inh boolean Expr.inExtendsOrImplements();
+
+
+        eq ParTypeAccess.getGraph(Set<TypestateVar> env) = false;
+//        eq Wildcard.getGraph(Set<TypestateVar> env) = false;
+//        eq WildcardExtends.getGraph(Set<TypestateVar> env) = false;
+//        eq WildcardSuper.getGraph(Set<TypestateVar> env) = false;
+
+        eq ParTypeAccess.getTypestateVar() = null;
+//        eq Wildcard.getTypestateVar() = null;
+//        eq WildcardExtends.getTypestateVar() = null;
+//        eq WildcardSuper.getTypestateVar() = null;
+
+
+interface GenericTypeDecl {
+  syn boolean isGenericType();
+  TypeDecl original();
+  int getNumTypeParameter();
+  TypeVariable getTypeParameter(int index);
+  List<TypeVariable> getTypeParameterList();
+  syn lazy TypeDecl rawType();
+  public String fullName();
+  public String typeName();
+}
+
+
+  /** Transforms the parameter and calls the lookupParTypeDecl attribute for ArrayList arguments. */
+
+  syn lazy TypeDecl GenericTypeDecl.lookupParTypeDecl(ParTypeAccess p) {
+        Collection<TypeDecl> typeArguments = new ArrayList<TypeDecl>();
+        for (int i = 0; i < p.getNumTypeArgument(); i++) {
+        typeArguments.add(p.getTypeArgument(i).type());
+        }
+        return lookupParTypeDecl(typeArguments);
+        }
+
+        syn nta TypeDecl GenericTypeDecl.lookupParTypeDecl(Collection<TypeDecl> typeArgs);
+
+
+        }
