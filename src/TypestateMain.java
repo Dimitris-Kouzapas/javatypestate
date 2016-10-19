@@ -52,10 +52,10 @@ class TypestateMain {
 		return j & t;
 	}
 
-	private void createJavaFiles() {
-		tc.createJavaFiles();
-		;//TODO compile with javac ?? 
-	}
+//	private void createJavaFiles() {
+//		tc.createJavaFiles();
+//		;//TODO compile with javac ?? 
+//	}
 
 	private void setMode(int m) {
 		if(mode == DEFAULT)
@@ -111,7 +111,8 @@ class TypestateMain {
 		TypestateMain m = new TypestateMain();
 		m.processArgs(args);
 		if(m.compile() && !m.semantic)
-			m.createJavaFiles();
+			;
+//			m.createJavaFiles();
 	}
 
 
