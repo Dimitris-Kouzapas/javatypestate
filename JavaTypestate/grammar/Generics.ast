@@ -27,25 +27,26 @@ WildcardType : AbstractWildcardType;
 WildcardExtendsType : AbstractWildcardType ::= Access;
 WildcardSuperType : AbstractWildcardType ::= Access;
 */
-//MethodDeclSubstituted : MethodDecl ::= <Original:MethodDecl>;
-//ConstructorDeclSubstituted : ConstructorDecl ::= <Original:ConstructorDecl>;
-//FieldDeclarationSubstituted : FieldDeclaration ::= <Original:FieldDeclaration>;
-//ParameterDeclarationSubstituted : ParameterDeclaration ::= <Original:ParameterDeclaration>;
-//VariableArityParameterDeclarationSubstituted : VariableArityParameterDeclaration ::= <Original:VariableArityParameterDeclaration>;
+
+MethodDeclSubstituted : MethodDecl ::= <Original:MethodDecl>;
+ConstructorDeclSubstituted : ConstructorDecl ::= <Original:ConstructorDecl>;
+FieldDeclarationSubstituted : FieldDeclaration ::= <Original:FieldDeclaration>;
+ParameterDeclarationSubstituted : ParameterDeclaration ::= <Original:ParameterDeclaration>;
+VariableArityParameterDeclarationSubstituted : VariableArityParameterDeclaration ::= <Original:VariableArityParameterDeclaration>;
 
 // ES: Adding /BodyDecl*/ to types implementing MemberSubstitutor in Generics.jrag
 //ClassDeclSubstituted : ClassDecl ::= <Original:TypeDecl>;
 //InterfaceDeclSubstituted : InterfaceDecl ::= <Original:TypeDecl>;
 //GenericClassDeclSubstituted : GenericClassDecl ::= <Original:TypeDecl>;
 //GenericInterfaceDeclSubstituted : GenericInterfaceDecl ::= <Original:TypeDecl>;
-//ClassDeclSubstituted : ClassDecl ::= <Original:TypeDecl> /BodyDecl*/;
-//InterfaceDeclSubstituted : InterfaceDecl ::= <Original:TypeDecl> /BodyDecl*/;
-//GenericClassDeclSubstituted : GenericClassDecl ::= <Original:TypeDecl> /BodyDecl*/;
-//GenericInterfaceDeclSubstituted : GenericInterfaceDecl ::= <Original:TypeDecl> /BodyDecl*/;
+ClassDeclSubstituted : ClassDecl ::= <Original:TypeDecl> /BodyDecl*/;
+InterfaceDeclSubstituted : InterfaceDecl ::= <Original:TypeDecl> /BodyDecl*/;
+GenericClassDeclSubstituted : GenericClassDecl ::= <Original:TypeDecl> /BodyDecl*/;
+GenericInterfaceDeclSubstituted : GenericInterfaceDecl ::= <Original:TypeDecl> /BodyDecl*/;
 
-//LUBType : ReferenceType ::= Modifiers <ID:String> BodyDecl* TypeBound:Access*;
-//GLBType : ReferenceType ::= Modifiers <ID:String> BodyDecl* TypeBound:Access*;
+LUBType : ReferenceType ::= Modifiers <ID:String> BodyDecl* TypeBound:Access*;
+GLBType : ReferenceType ::= Modifiers <ID:String> BodyDecl* TypeBound:Access*;
 
-//WildcardsCompilationUnit : CompilationUnit;
+WildcardsCompilationUnit : CompilationUnit;
 
-//BridgeMethodDecl : MethodDecl;
+BridgeMethodDecl : MethodDecl;
