@@ -1,0 +1,13 @@
+#/bin/bash
+
+if [ -f TypestateMain.class ];
+then
+	java TypestateMain $@
+else
+	if [ -f mungo.jar ];
+	then
+		java -jar mungo.jar $@
+	else
+		echo "Cannot find the mungo main class"
+	fi
+fi
