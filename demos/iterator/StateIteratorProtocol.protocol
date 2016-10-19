@@ -1,0 +1,23 @@
+package demos.iterator;
+
+
+typestate StateIteratorProtocol {
+	HasNext	= 	{
+					Boolean hasNext(): <True: Next, False: end>
+				}
+
+	Next	=	{
+					Object next(): Remove
+				}
+
+	Remove	=	{
+					Object remove(): HasNext,
+					Boolean hasNext(): <True: NextRemove, False: end>
+				}
+
+	NextRemove
+			=	{
+					Object remove(): Next,
+					Object next(): Remove
+				}
+}
