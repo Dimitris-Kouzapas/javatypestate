@@ -52,6 +52,7 @@
   "while"                        { return sym(Terminals.WHILE); }
 
   "typestate"                    { return sym(Terminals.TYPESTATE); }
+  "@Typestate"                    { return sym(Terminals.TYPESTATE_ANNOT); }
 /*  "start"                        { return sym(Terminals.START); }*/
 /*  "from"                         { return sym(Terminals.FROM); }*/
 /*  "session"                      { return sym(Terminals.SESSION); }*/

@@ -1,7 +1,8 @@
 package demos.file_example;
 import java.io.*;
 
-class File typestate FileProtocol {
+@Typestate("FileProtocol")
+class File {
 	private MyBufferedReader reader;
 	private String file;
 	private char[] readBuffer;
@@ -46,16 +47,16 @@ class File typestate FileProtocol {
 	}
 
 	public static void processFile(File myFile) {
-		switch(myFile.open().getEnum()) {
-			case Status.OK:
+		switch(myFile.open()) {
+			case OK:
 				if(true) {
 					loop:
 					while(true) {
-						switch(myFile.hasNext().getEnum()) {
-							case BooleanEnum.TRUE:
+						switch(myFile.hasNext()) {
+							case TRUE:
 								myFile.read();
 								break;
-							case BooleanEnum.FALSE:
+							case FALSE:
 								break loop;
 						}
 
