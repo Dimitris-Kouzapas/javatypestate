@@ -315,8 +315,8 @@ aspect PathPart {
 
     protected PathPart(boolean isSource) {
       this.isSource = isSource;
-//      this.fileSuffix = isSource ? ".java" : ".class";
-       this.fileSuffix = isSource ? ".mungo" : ".class"; // Mungo programming
+      this.fileSuffix = isSource ? ".java" : ".class";
+//       this.fileSuffix = isSource ? ".mungo" : ".class"; // Mungo programming
     }
 
     /**

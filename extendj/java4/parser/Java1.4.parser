@@ -160,13 +160,13 @@ Modifier modifier =
   | STRICTFP                {: return new Modifier("strictfp"); :}
   ;
 
-  Access typestate_type		=
+/*Access typestate_type		=
   					TYPESTATE simple_name.n		{: return n; :}
   					;
-
+*/
 
 ClassDecl class_declaration =
-    modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? typestate_type.t? class_body.b
+    modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? /*typestate_type.t?*/ class_body.b
                             {: return new ClassDecl(new Modifiers(m), IDENTIFIER, s, i, b); :}
   ;
 Opt super =

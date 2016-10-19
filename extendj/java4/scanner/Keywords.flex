@@ -50,7 +50,7 @@
   "volatile"        { return sym(Terminals.VOLATILE); }
   "while"           { return sym(Terminals.WHILE); }
 /* Mungo stuff
-*/
   "typestate"       { return sym(Terminals.TYPESTATE); }
+*/
 }
 
