@@ -51,9 +51,9 @@
         <!-- compose the scanner -->
         <concat destfile="${gen.dir}/JavaTypestate/scanner/JavaScanner.flex" binary="true" force="false">
             <filelist dir="scanner">
-                <file name="preamble.flex"/>
-                <file name="macros.flex"/>
-                <file name="rules_preamble.flex"/>
+                <file name="Preamble.flex"/>
+                <file name="Macros.flex"/>
+                <file name="Rules_Preamble.flex"/>
                 <file name="WhiteSpace.flex"/>
                 <file name="Comments.flex"/>
                 <file name="Keywords.flex"/>
@@ -61,7 +61,7 @@
                 <file name="Separators.flex"/>
                 <file name="Operators.flex"/>
                 <file name="Identifiers.flex"/>
-                <file name="postamble.flex"/>
+                <file name="Postamble.flex"/>
             </filelist>
         </concat>
         <concat destfile="${gen.dir}/JavaTypestate/scanner/Unicode.java" binary="true" force="false">
@@ -79,10 +79,10 @@
              fragments -->
         <concat destfile="${gen.dir}/JavaTypestate/parser/JavaParser.all" binary="true" force="false">
             <filelist dir=".">
-                <file name="parser/preamble.parser"/>
-                <file name="parser/java14.parser"/>
-                <file name="parser/errorrecovery.parser"/>
-                <file name="parser/typestate.parser"/>
+                <file name="parser/Preamble.parser"/>
+                <file name="parser/Java14.parser"/>
+                <file name="parser/Errorrecovery.parser"/>
+                <file name="parser/Typestate.parser"/>
                 <file name="parser/Enums.parser"/>
 
             </filelist>
