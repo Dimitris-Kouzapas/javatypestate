@@ -1,42 +1,61 @@
-package demos.file_example;
+package demos.exceptions.file;
+
 import java.io.*;
 
-@Typestate("FileProtocol")
-class File {
-	private MyBufferedReader reader;
+class File typestate FileProtocol {
 	private String file;
 	private char[] readBuffer;
 	private int i;
 
+	private BufferedReader reader;
+
 	File(String file) {
 		this.file = file;
-		reader = new MyBufferedReader(file);
 		readBuffer = new char[1024];
 		i = 0;
 	}
 
 	Status open() {
-		if(reader.open())
+		try {
+			reader = new BufferedReader(new FileReader(file));
 			return Status.OK;
-		return Status.ERROR;
+		}
+		catch(FileNotFoundException e) {
+			return Status.Error;
+		}
 	}
 
 	void close() {
-		reader.close();
+		try {
+			reader.close();
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
 	}
 
 	BooleanEnum hasNext() {
-		if(reader.ready())
-			return BooleanEnum.TRUE;
-		return BooleanEnum.FALSE;
+		try {
+			if(reader.ready())
+				return TRUE;
+		}catch(IOException e) {
+			return FALSE;
+		}
+
 	}
-//	@SuppressWarning("unchecked")//working
-//	@SuppressWarnings("unchecked")//not working
-	@SuppressWarnings({"unchecked", "deprecation"})
-//	@Override //working
-	//@Deprecated //working
+
 	void read() {
-		readBuffer[i++] = reader.read();
+
+		int c = -1;
+		try {
+			c = reader.read();
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		readBuffer[i++] = (char) c;
 	}
 
 	//The next two methods demonstrate that

@@ -1,9 +1,9 @@
 aspect JavaSemanticCheck {
 
 protected void ClassDecl.semanticCheck() {
-	if(hasSuperClassAccess()) {
+	if(hasSuperClass()) {
 		System.out.println(getID());
-		Access a = getSuperClassAccess();
+		Access a = getSuperClass();
 		if (a.lookupType().isTypestateClassDeclType())
 			addSemanticError("Class " + this.getID() + " cannot extend a class with a typestate.");
 	}
