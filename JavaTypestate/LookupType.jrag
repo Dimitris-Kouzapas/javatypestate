@@ -7,6 +7,9 @@ aspect LookupType {
 		if(new File(type + Program.fileSuffix()).exists())
 			compile(type + Program.fileSuffix());
 
+		if(new File(type + Program.protocolSuffix()).exists())
+			compile(type + Program.protocolSuffix());
+
 		for(int i = 0; i < getNumCompilationUnit(); i++)
 			if(getCompilationUnit(i).localLookupType(type))
 				return getCompilationUnit(i);

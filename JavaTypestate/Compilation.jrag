@@ -47,8 +47,13 @@ aspect Compilation {
 
 	private ArrayList<String> Program.compiledPaths = new ArrayList<String>();
 
+	protected static String Program.protocolSuffix() {
+		return ".protocol";
+	}
+
 	protected static String Program.fileSuffix() {
-		return ".mungo";
+		//return ".mungo";
+		return javaFileSuffix();
 	}
 
 	protected static String Program.javaFileSuffix() {
@@ -61,6 +66,9 @@ aspect Compilation {
 		for(int i = 0; i < compiledPaths.size(); i++)
 			if(compiledPaths.get(i).equals(path))
 				return null;
+
+		if(verbose)
+			outStream().println("Compiling file " + path);
 
 		compiledPaths.add(path);
 
@@ -112,8 +120,8 @@ aspect Compilation {
 	public boolean Program.compile(String[] args) {
 		for(int i = 0; i < args.length; i++)
 			if(new File(args[i]).exists())
-				if(!args[i].endsWith(fileSuffix()))
-					errorStream().println("File " + args[i] + " should have suffix: " + fileSuffix());
+				if(!args[i].endsWith(fileSuffix()) && !args[i].endsWith(protocolSuffix()))
+					errorStream().println("File " + args[i] + " should have suffix " + fileSuffix() + " or suffix " + protocolSuffix());
 				else
 					compile(args[i]);
 			else
