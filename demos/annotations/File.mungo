@@ -1,12 +1,13 @@
-package demos.file_example;
+package demos.annotations;
 import java.io.*;
+import java.util.List;
 
-@Typestate("FileProtocol")
-class File {
+class File typestate FileProtocol {
 	private MyBufferedReader reader;
 	private String file;
 	private char[] readBuffer;
 	private int i;
+	private List<E> list;
 
 	File(String file) {
 		this.file = file;
@@ -16,9 +17,16 @@ class File {
 	}
 
 	Status open() {
+//		try{
+//			return Status.OK;
+//		}catch(Exception e){
+//			return Status(ERROR);
+//		}
 		if(reader.open())
 			return Status.OK;
 		return Status.ERROR;
+//			return new Status(OK);
+//		return new Status(ERROR);
 	}
 
 	void close() {
@@ -29,12 +37,13 @@ class File {
 		if(reader.ready())
 			return BooleanEnum.TRUE;
 		return BooleanEnum.FALSE;
+//			return new BooleanEnum(TRUE);
+//		return new BooleanEnum(FALSE);
 	}
-//	@SuppressWarning("unchecked")//working
-//	@SuppressWarnings("unchecked")//not working
-	@SuppressWarnings({"unchecked", "deprecation"})
-//	@Override //working
-	//@Deprecated //working
+
+	public @interface Twizzle {
+	}
+
 	void read() {
 		readBuffer[i++] = reader.read();
 	}
@@ -51,19 +60,16 @@ class File {
 	}
 
 	public static void processFile(File myFile) {
-		switch(myFile.open()) {
+		switch(myFile.open()) {//.getEnum()) {
 			case OK:
-				if(true) {
-					loop:
-					while(true) {
-						switch(myFile.hasNext()) {
-							case TRUE:
-								myFile.read();
-								break;
-							case FALSE:
-								break loop;
-						}
-
+				loop:
+				while(true) {
+					switch(myFile.hasNext()) {//.getEnum()) {
+						case TRUE:
+							myFile.read();
+							break;
+						case FALSE:
+							break loop;
 					}
 				}
 				myFile.close();

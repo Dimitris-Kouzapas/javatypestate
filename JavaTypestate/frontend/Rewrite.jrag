@@ -638,13 +638,13 @@ aspect Rewrite {
 	protected void InterfaceDecl.Rewrite(TypestateStream stream) {
 		getModifiers().Rewrite(stream);
 		stream.print("interface " + getID() + " ");
-		if (getNumSuperInterfaceId() > 0) {
+		if (getNumSuperInterface() > 0) {
 			stream.print("extends ");
 		}
-		for(int i = 0; i < getNumSuperInterfaceId(); i++) {
+		for(int i = 0; i < getNumSuperInterface(); i++) {
 			if (i != 0)
 				stream.print(", ");
-			getSuperInterfaceId(i).Rewrite(stream);
+			getSuperInterface(i).Rewrite(stream);
 		}
 		stream.println(" {");
 		stream.pushIndent();
@@ -658,9 +658,9 @@ aspect Rewrite {
 	protected void ClassDecl.Rewrite(TypestateStream stream) {
 		getModifiers().Rewrite(stream);
 		stream.print("class " + getID() + " ");
-		if (hasSuperClassAccess()) {			//Deprecated
+		if (hasSuperClass()) {			//Deprecated
 			stream.print("extends " );
-			getSuperClassAccess().Rewrite(stream);
+			getSuperClass().Rewrite(stream);
 			stream.print(" ");
 		}
 		if (getNumImplements() > 0) {			//Deprecated

@@ -12,8 +12,8 @@ aspect LookupConstructor {
 	syn ConstructorDecl ConstructorAccess.getTarget() = getClassDeclAncestor().lookupConstructor(getParameterTypes());
 	//For future work
 	syn ConstructorDecl SuperConstructorAccess.getTarget() {
-		if(getClassDeclAncestor().hasSuperClassAccess())
-			return getClassDeclAncestor().getSuperClassAccess().lookupType().lookupConstructor(getParameterTypes());
+		if(getClassDeclAncestor().hasSuperClass())
+			return getClassDeclAncestor().getSuperClass().lookupType().lookupConstructor(getParameterTypes());
 		return null;
 	}
 
