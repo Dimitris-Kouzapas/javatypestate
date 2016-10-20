@@ -1,5 +1,6 @@
 %left LBRACK, RBRACK, DOT, LPAREN, RPAREN;
 %right PLUSPLUS, MINUSMINUS, NOT, COMP;
+%right NEW, CAST;
 %left MULT, DIV, MOD;
 %left PLUS, MINUS;
 %left LSHIFT, RSHIFT, URSHIFT;
@@ -15,6 +16,8 @@
 %right EQ, PLUSEQ, MINUSEQ, MULTEQ, DIVEQ, MODEQ, ANDEQ,
 		XOREQ, OREQ, LSHIFTEQ, RSHIFTEQ, URSHIFTEQ;
 
+%nonassoc BOTTOM;
+
 
 %goal goal;
 
@@ -22,7 +25,7 @@
 CompilationUnit goal		=
 					compilation_unit.cu		{: return cu; :}
 				;
-      
+
 Expr literal			=
 					INTEGER_LITERAL			{: return new IntegerLiteral(INTEGER_LITERAL); :}
 				|	LONG_LITERAL			{: return new LongLiteral(LONG_LITERAL); :}
@@ -201,12 +204,11 @@ ClassDecl class_declaration	=
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), new List(), b);
 					:}
 */
-					modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b 
+					modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b
 					{:
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, s, i, b);
 					:}
-				|	typestate_annotation.t
-					modifiers.m? CLASS IDENTIFIER /*super.s?*/ interfaces.i? class_body.b 
+				|	modifiers.m? CLASS IDENTIFIER /*super.s?*/ interfaces.i? typestate_type.t class_body.b
 					{:
 						return new TypestateClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), i, b, t);
 					:}
@@ -220,15 +222,9 @@ Opt super			=
 					EXTENDS class_type.c		{: return new Opt(c); :}
 				;
 
-List interfaces		=
+List interfaces			=
 					IMPLEMENTS interface_type_list.i	{: return i; :}
 				;
-
-Access typestate_annotation
-					=
-					TYPESTATE_ANNOT LPAREN STRING_LITERAL.s RPAREN  {: return new ParseName(s); :}
-					;
-
 
 List interface_type_list	=
 					interface_type.i		{: return new List().add(i); :}
@@ -238,10 +234,9 @@ List interface_type_list	=
 					:}
 				;
 
-/*Access typestate_type		=
+Access typestate_type		=
 					TYPESTATE simple_name.n		{: return n; :}
 				;
-*/
 
 List class_body			=
 					LBRACE class_body_declarations.c? RBRACE
