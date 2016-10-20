@@ -36,7 +36,7 @@
         <antcall target="javatypestate"/>
         <antcall target="extendj"/>
         <javac srcdir="${src.dir}" destdir="${bin.dir}"
-               includes="TypestateMain.java" />
+               includes="TypestateMain.java,Typestate.java" />
     </target>
 
     <target name="clean"
