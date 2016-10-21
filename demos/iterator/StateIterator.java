@@ -1,7 +1,6 @@
 package demos.iterator;
 
 import java.util.Iterator;
-import lib.Typestate;
 
 @Typestate("StateIteratorProtocol")
 class StateIterator /*typestate StateIteratorProtocol*/ {
