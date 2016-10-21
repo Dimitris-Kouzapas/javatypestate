@@ -226,7 +226,7 @@ List interfaces		=
 
 Access typestate_annotation
 					=
-					TYPESTATE_ANNOT LPAREN STRING_LITERAL.s RPAREN  {: return new ParseName(s); :}
+					AT TYPESTATE_ANNOT LPAREN STRING_LITERAL.s RPAREN  {: return new ParseName(s); :}
 					;
 
 
