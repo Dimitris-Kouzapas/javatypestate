@@ -3,31 +3,23 @@ package demos.iterator;
 import java.util.Iterator;
 
 @Typestate("StateIteratorProtocol")
-class StateIterator /*typestate StateIteratorProtocol*/ {
-	private int head;
-	private int current;
-	private MyArray a;
-
-	public StateIterator(MyArray a) {
-		this.a = a;
-		head = 0;
-		current = 0;
+class StateIterator {
+	Iterator iter;
+	public StateIterator(Iterator i) {
+		iter = i;
 	}
 
 	public Object next() {
-		current = head;
-		return a.get(head++);
+		return iter.next();
 	}
 
 	public Boolean hasNext() {
-		for(;head < a.size() && a.get(head) == null; head++);
-
-		if(head >= a.size())
-			return Boolean.False;
-		return Boolean.True;
+		if(iter.hasNext())
+			return Boolean.True;
+		return Boolean.False;
 	}
 
-	public Object remove() {
-		return a.remove(current);
+	public void remove() {
+		iter.remove();
 	}
 }

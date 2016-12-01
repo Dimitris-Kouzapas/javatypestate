@@ -11,13 +11,13 @@ typestate StateIteratorProtocol {
 				}
 
 	Remove	=	{
-					Object remove(): HasNext,
+					void remove(): HasNext,
 					Boolean hasNext(): <True: NextRemove, False: end>
 				}
 
 	NextRemove
 			=	{
-					Object remove(): Next,
+					void remove(): Next,
 					Object next(): Remove
 				}
 }
