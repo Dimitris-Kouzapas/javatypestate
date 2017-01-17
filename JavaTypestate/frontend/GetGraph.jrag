@@ -734,23 +734,24 @@ protected int BodyDecl.getGraphCounter() {
 		//TODO another file
 		inh MethodDecl Stmt.getMethodDeclAncestor();
 
-		//TODO implement me
-		eq ReturnStmt.getGraph(Set<TypestateVar> env) {
+	//TODO implement me
+	//TODO What if a new Typestate Object is return, e.g. return new TypestateObject()
+	eq ReturnStmt.getGraph(Set<TypestateVar> env) {
 		if(!hasResult())
-		return true;
+			return true;
 
 		TypestateVar t = getResult().getTypestateVar();
 		if(t != null)
-		if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType()) {
-		t.checkError(getResult()/*, getBodyDeclAncestor()*/);
+			if(getMethodDeclAncestor().getTypeAccess().lookupType().isTypestateClassDeclType()) {
+				t.checkError(getResult()/*, getBodyDeclAncestor()*/);
 //				t.current = new ReturnNode(getMethodDeclAncestor().typestate);
-		t.current = new ReturnPlug().addNext(getMethodDeclAncestor().typestate.current);
-		}
+				t.current = new ReturnPlug().addNext(getMethodDeclAncestor().typestate.current);
+			}
 
 		getResult().getGraph(env);
 
 		return true;
-		}
+	}
 
 		eq VarDeclStmt.getGraph(Set<TypestateVar> env) {
 		for(int i = getNumVariableDecl() - 1; i >= 0; i--)
@@ -759,63 +760,63 @@ protected int BodyDecl.getGraphCounter() {
 		}
 
 		//TODO implement me
-		syn boolean VariableDecl.getGraph(Set<TypestateVar> env) {
+	syn boolean VariableDecl.getGraph(Set<TypestateVar> env) {
 		boolean isTypestate = getTypeAccess().lookupType().isTypestateClassDeclType();
 
 		if(isTypestate)
-		env.remove(typestate);
+			env.remove(typestate);
 
 		if(!hasInit())
-		return true;
+			return true;
 
 		TypestateVar t;
 		if(isTypestate) {
-		if(getInit() instanceof ClassInstanceExpr) {
-		typestate.current = new InitNode(getInit()).addNext(typestate.current);
-		typestate.addTypestate(getInit()/*, getBodyDeclAncestor()*/);
-		}
-		else if((t = getInit().getTypestateVar()) != null) {
-		t.checkError(getInit()/*, getBodyDeclAncestor()*/);
-		t.current = typestate.current;
-		//Typestate should be reset
-		typestate.resetCurrent();
-		}
+			if(getInit() instanceof ClassInstanceExpr) {
+				typestate.current = new InitNode(getInit()).addNext(typestate.current);
+				typestate.addTypestate(getInit()/*, getBodyDeclAncestor()*/);
+			}
+			else if((t = getInit().getTypestateVar()) != null) {
+				t.checkError(getInit()/*, getBodyDeclAncestor()*/);
+				t.current = typestate.current;
+				//Typestate should be reset
+				typestate.resetCurrent();
+			}
 		}
 
 		getInit().getGraph(env);
 
 		return true;
-		}
+	}
 
 /********************************************************************************************/
-		syn boolean Expr.getGraph(Set<TypestateVar> env);
+	syn boolean Expr.getGraph(Set<TypestateVar> env);
 
-		//Not used
-		eq AmbiguousAccess.getGraph(Set<TypestateVar> env) = false;
-		eq VarAccess.getGraph(Set<TypestateVar> env) = false;
-		eq SuperAccess.getGraph(Set<TypestateVar> env) = false;
-		eq PackageOrTypeAccess.getGraph(Set<TypestateVar> env) = false;
-		eq PackageAccess.getGraph(Set<TypestateVar> env) = false;
+	//Not used
+	eq AmbiguousAccess.getGraph(Set<TypestateVar> env) = false;
+	eq VarAccess.getGraph(Set<TypestateVar> env) = false;
+	eq SuperAccess.getGraph(Set<TypestateVar> env) = false;
+	eq PackageOrTypeAccess.getGraph(Set<TypestateVar> env) = false;
+	eq PackageAccess.getGraph(Set<TypestateVar> env) = false;
 
-		//TODO implement me
-		eq AssignExpr.getGraph(Set<TypestateVar> env) {
+	//TODO implement me
+	eq AssignExpr.getGraph(Set<TypestateVar> env) {
 		getDest().getGraph(env);
 		TypestateVar d = getDest().getTypestateVar();
 		TypestateVar s;
 		if(d != null) {
-		if(getSource() instanceof ClassInstanceExpr) {
-		d.current = new InitNode(getSource()).addNext(d.current);
-		d.addTypestate(getSource()/*, getBodyDeclAncestor()*/);
-		}
-		else if((s = getSource().getTypestateVar()) != null) {
-		s.checkError(getSource()/*, getBodyDeclAncestor()*/);
-		s.current = d.current;
-		d.resetCurrent();
-		}
+			if(getSource() instanceof ClassInstanceExpr) {
+				d.current = new InitNode(getSource()).addNext(d.current);
+				d.addTypestate(getSource()/*, getBodyDeclAncestor()*/);
+			}
+			else if((s = getSource().getTypestateVar()) != null) {
+				s.checkError(getSource()/*, getBodyDeclAncestor()*/);
+				s.current = d.current;
+				d.resetCurrent();
+			}
 		}
 		getSource().getGraph(env);
 		return true;
-		}
+	}
 
 		eq Literal.getGraph(Set<TypestateVar> env) = false;
 
@@ -879,18 +880,18 @@ protected int BodyDecl.getGraphCounter() {
 		return true;
 		}
 
-		eq ParseName.getGraph(Set<TypestateVar> env) = true;
-		eq ThisAccess.getGraph(Set<TypestateVar> env) = true;
-		eq TypeAccess.getGraph(Set<TypestateVar> env) = true;
-		eq ClassAccess.getGraph(Set<TypestateVar> env) = true;
-		//Used when array access is qualified
-		eq ArrayAccess.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
-		eq ArrayTypeAccess.getGraph(Set<TypestateVar> env) = getAccess().getGraph(env);
-		eq ArrayTypeWithSizeAccess.getGraph(Set<TypestateVar> env) {
+	eq ParseName.getGraph(Set<TypestateVar> env) = true;
+	eq ThisAccess.getGraph(Set<TypestateVar> env) = true;
+	eq TypeAccess.getGraph(Set<TypestateVar> env) = true;
+	eq ClassAccess.getGraph(Set<TypestateVar> env) = true;
+	//Used when array access is qualified
+	eq ArrayAccess.getGraph(Set<TypestateVar> env) = getExpr().getGraph(env);
+	eq ArrayTypeAccess.getGraph(Set<TypestateVar> env) = getAccess().getGraph(env);
+	eq ArrayTypeWithSizeAccess.getGraph(Set<TypestateVar> env) {
 		getAccess().getGraph(env);
 		getExpr().getGraph(env);
 		return true;
-		}
+	}
 
 		eq AbstractDot.getGraph(Set<TypestateVar> env) {
 		getRight().getGraph(env);
@@ -1023,6 +1024,12 @@ protected int BodyDecl.getGraphCounter() {
 				for(int i = md.getNumParameter() - 1; i >=0; i--)
 				if(md.getParameter(i).typestate != null)
 					parameters[i] = md.getParameterTypestate(i);//.plugGraph();
+			}
+			else {
+				//TODO there is something reduntand or missing here
+				if(md.getTypeAccess().lookupType().isTypestateClassDeclType() /*|| sessionParameter == true*/) {
+					md.getGraph();
+				}
 			}
 
 			for(int i = md.getNumParameter() - 1; i >= 0; i--) {
