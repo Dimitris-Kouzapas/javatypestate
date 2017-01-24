@@ -55,6 +55,7 @@ aspect JavaSemanticCheck {
 //				);
 //		}
 
+		//TODO cannot really check if container class is inherited
 		if(!isTypestateMethod() && !getUsedTypestateFields().isEmpty()) {
 			if(!getModifiers().isPrivate())
 				addSemanticError(
@@ -90,6 +91,7 @@ aspect JavaSemanticCheck {
 			}
 		}
 
+		//TODO cannot really check if the container class is inherited
 		if(isThisAccess()) {
 			MethodDecl md = lookupMethod(getQualifiedType());
 			if(md != null && !md.getUsedTypestateFields().isEmpty() && getMethodDeclAncestor() != null && !getMethodDeclAncestor().isTypestateMethod())
@@ -99,10 +101,10 @@ aspect JavaSemanticCheck {
 		}
 	}
 
-protected void ClassInstanceExpr.semanticCheck() {
+	protected void ClassInstanceExpr.semanticCheck() {
 		if(getAccessNoTransform() != null)
-		getAccessNoTransform().lookupType();		//Check all new objects created
-		}
+			getAccessNoTransform().lookupType();		//Check all new objects created
+	}
 //
 //	protected void ClassInstanceExpr.semanticCheck() {
 //		if(getAccess().lookupType().isMungoEnumDeclType()) {
@@ -112,18 +114,18 @@ protected void ClassInstanceExpr.semanticCheck() {
 //		}
 //	}
 
-protected void SwitchStmt.semanticCheck() {
+	protected void SwitchStmt.semanticCheck() {
 		if(getExpr().isAccess()) {
-		Access a = ((Access)getExpr()).getLastAccess();
-		if (a.getQualifiedType().isEnumDeclType()) {
-		EnumDecl e = a.getQualifiedType().getEnumDecl();
-		for(String s : e.getEnumLabels())
-		if(!getCaseLabels().contains(s))
-		addSemanticError("Enumeration type " + s + " should be a switch case.");
+			Access a = ((Access)getExpr()).getLastAccess();
+			if (a.getQualifiedType().isEnumDeclType()) {
+				EnumDecl e = a.getQualifiedType().getEnumDecl();
+				for(String s : e.getEnumLabels())
+					if(!getCaseLabels().contains(s))
+					addSemanticError("Enumeration type " + s + " should be a switch case.");
 //				for(String s : getCaseLabels())
 //					if(!e.getEnumLabels().contains(s))
 //						addSemanticError("Case " + s.toString() + " should be an enumeration with type: " + e.getID() +".");
+			}
 		}
-		}
-		}
-		}
+	}
+}

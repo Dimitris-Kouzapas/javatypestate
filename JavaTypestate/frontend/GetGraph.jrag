@@ -998,7 +998,9 @@ protected int BodyDecl.getGraphCounter() {
 					}
 
 				//when md is in the typestate methods
-				if(md.isTypestateMethod()) {
+//				if(md.isTypestateMethod()) {
+				//when the target of the MethodAccess is in the typestate methods
+				if(isTypestateMethod()) {
 					if(md.getTypeAccess().lookupType().isTypestateClassDeclType() || sessionParameter == true) {
 						ClassDecl c = ((ClassDecl) getQualifiedType());
 						GraphNode tmp = md.typestate.current;
