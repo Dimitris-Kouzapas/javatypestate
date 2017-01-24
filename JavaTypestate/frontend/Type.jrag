@@ -20,9 +20,9 @@
 aspect Type {
 	syn lazy TypeDecl Expr.getType();
 
-	eq VarAccess.getType() = null;						//not used
+	eq VarAccess.getType() = null;							//not used
 	eq PackageOrTypeAccess.getType() = null;				//not used
-	eq PackageAccess.getType() = null;					//not used
+	eq PackageAccess.getType() = null;						//not used
 	eq AmbiguousAccess.getType() = null;					//not used
 
 	eq AssignExpr.getType() = getDest().getType();
@@ -60,7 +60,10 @@ aspect Type {
 	eq ConstructorAccess.getType() =					//equals(super) deprecated -> will never return null
 			getID().equals("this") ? getCompilationUnitAncestor().getTypeDecl() : null;
 	eq ThisAccess.getType() = getCompilationUnitAncestor().getTypeDecl();
-	eq SuperAccess.getType() = null;					//deprecated
+	eq SuperAccess.getType() {
+		ClassDecl cd = (ClassDecl) getCompilationUnitAncestor().getTypeDecl();
+		return cd.hasSuperClass() ? cd.getSuperClass().getType() : null;
+	}//null;					//deprecated
 	syn lazy TypeDecl TypeAccess.getType() = null;				//inherited by PrimitiveType and ArrayTypeAccess
 	eq PrimitiveTypeAccess.getType() =
 			CompilationUnit.getPrimitiveType(getName());		//PrimitiveTypeAccess inherits from TypeAccess 

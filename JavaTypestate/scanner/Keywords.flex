@@ -2,7 +2,7 @@
 <YYINITIAL> {
   // 3.9 Keywords
   "assert"                       { return sym(Terminals.ASSERT); }
-/*  "abstract"                     { return sym(Terminals.ABSTRACT); }*/
+  "abstract"                     { return sym(Terminals.ABSTRACT); }
   "boolean"                      { return sym(Terminals.BOOLEAN); }
   "break"                        { return sym(Terminals.BREAK); }
   "byte"                         { return sym(Terminals.BYTE); }

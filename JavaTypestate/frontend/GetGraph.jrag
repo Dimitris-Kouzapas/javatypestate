@@ -29,18 +29,18 @@ aspect GetGraph {
 		eq PackageOrTypeAccess.getTypestateVar() = null;
 		eq PackageAccess.getTypestateVar() = null;
 
-		eq Binary.getTypestateVar() = null;				//Binary results in PrimitiveType
-		eq Unary.getTypestateVar() = null;				//Unary results in PrimitiveTypes
-		eq Literal.getTypestateVar() = null;				//Literals are also non typestate
-		eq InstanceOfExpr.getTypestateVar() = null;			//Boolean type
-		eq ClassInstanceExpr.getTypestateVar() = null;			//ClassInstanceoOfExpr should give null
+		eq Binary.getTypestateVar() = null;								//Binary results in PrimitiveType
+		eq Unary.getTypestateVar() = null;								//Unary results in PrimitiveTypes
+		eq Literal.getTypestateVar() = null;							//Literals are also non typestate
+		eq InstanceOfExpr.getTypestateVar() = null;						//Boolean type
+		eq ClassInstanceExpr.getTypestateVar() = null;					//ClassInstanceoOfExpr should give null
 		eq CastExpr.getTypestateVar() = getExpr().getTypestateVar();	//expect CastExpr not to have typestate type
-		eq ArrayInit.getTypestateVar() = null;				//Typestate types are not arrays
-		eq ArrayCreationExpr.getTypestateVar() = null;			//Typestate types are not arrays
+		eq ArrayInit.getTypestateVar() = null;							//Typestate types are not arrays
+		eq ArrayCreationExpr.getTypestateVar() = null;					//Typestate types are not arrays
 		eq ParExpr.getTypestateVar() = getExpr().getTypestateVar();
 		eq AssignExpr.getTypestateVar() = getDest().getTypestateVar();	//TODO is this ok?
 
-		eq ConditionalExpr.getTypestateVar() = null;			//TODO This is actually a problem... Maybe need to be dealt
+		eq ConditionalExpr.getTypestateVar() = null;					//TODO This is actually a problem... Maybe need to be dealt
 		//TODO as a case when assignment takes place.
 
 		eq ConstructorAccess.getTypestateVar() = null;
@@ -50,40 +50,40 @@ aspect GetGraph {
 		eq AbstractDot.getTypestateVar() = getRight().getTypestateVar();
 
 		eq ThisAccess.getTypestateVar() {
-		if(isAbstractDotParent())				//Qualified "this" is not supposed to be used as a right child of the Dot
-		//because we do not have internal classes
-		return null;
-		return null;						//TODO the case with code like Obj o = this; ??. Avoid this case ??
+			if(isAbstractDotParent())				//Qualified "this" is not supposed to be used as a right child of the Dot
+			//because we do not have internal classes
+				return null;
+			return null;						//TODO the case with code like Obj o = this; ??. Avoid this case ??
 		}
 
 		eq ArrayAccess.getTypestateVar() = null;			//Typestate types are not arrays
 		eq MethodAccess.getTypestateVar() = getType().isTypestateClassDeclType() ?  getTarget().typestate : null;	//TODO is that it?
 
 		eq ParseName.getTypestateVar() {
-		if(!getType().isTypestateClassDeclType())
-		return null;
-		if(getQualifiedAccess() != null)
-		return lookupVariable(getQualifiedType()).getTypestateVar();
-		return lookupVariable().getTypestateVar();
+			if(!getType().isTypestateClassDeclType())
+				return null;
+			if(getQualifiedAccess() != null)
+				return lookupVariable(getQualifiedType()).getTypestateVar();
+			return lookupVariable().getTypestateVar();
 		}
 
 		syn lazy TypestateVar Access.getQualifiedTypestateVar() =
-		getQualifiedAccess() != null ?
-		getQualifiedAccess().getLeft().getTypestateVar() :
-		null;							//TODO this means that the caller object is this
+				getQualifiedAccess() != null ?
+					getQualifiedAccess().getLeft().getTypestateVar() :
+					null;							//TODO this means that the caller object is this
 
 
 /*****************************************************************************************************/
 
 		syn lazy boolean MethodAccess.isThisAccess() {
-		if(getQualifiedAccess() == null)
-		return true;
+			if(getQualifiedAccess() == null)
+				return true;
 
-		//TODO find a way for no instanceof
-		if(getQualifiedAccess().getLeft() instanceof ThisAccess)
-		return true;
+			//TODO find a way for no instanceof
+			if(getQualifiedAccess().getLeft() instanceof ThisAccess)
+				return true;
 
-		return false;
+			return false;
 		}
 
 /*****************************************************************************************************/

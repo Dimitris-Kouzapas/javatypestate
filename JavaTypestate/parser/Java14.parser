@@ -182,8 +182,8 @@ Modifier modifier		=
 				|	PROTECTED			{: return new Modifier("protected"); :}
 				|	PRIVATE				{: return new Modifier("private"); :}
 				|	STATIC				{: return new Modifier("static"); :}
-/*				|	ABSTRACT			{: return new Modifier("abstract"); :}
-*/				|	FINAL				{: return new Modifier("final"); :}
+				|	ABSTRACT			{: return new Modifier("abstract"); :}
+				|	FINAL				{: return new Modifier("final"); :}
 /*				|	NATIVE				{: return new Modifier("native"); :}
 				|	SYNCHRONIZED		{: return new Modifier("synchronized"); :}
 				|	TRANSIENT			{: return new Modifier("transient"); :}
@@ -206,9 +206,9 @@ ClassDecl class_declaration	=
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, s, i, b);
 					:}
 				|	typestate_annotation.t
-					modifiers.m? CLASS IDENTIFIER /*super.s?*/ interfaces.i? class_body.b 
+					modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b 
 					{:
-						return new TypestateClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), i, b, t);
+						return new TypestateClassDecl(new Modifiers(m), IDENTIFIER, s, i, b, t);
 					:}
 /*				|	modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b
 					{:

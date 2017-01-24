@@ -32,15 +32,12 @@ aspect LookupMethod {
 	eq ClassDecl.lookupMethod(String method, TypeDecl[] parameters) {
 		ArrayList<MethodDecl> a = lookupMethodTargets(method, parameters);
 
-		//For possible future work
-		if((a.size() == 0) && hasSuperClass())
-			return getSuperClass().lookupType().lookupMethod(method, parameters);
-
 		return (a.size() == 1) ? a.get(0) : null;
 	}
 
 	coll Set<MethodDecl> ClassDecl.getMethodDecls() [new HashSet<MethodDecl>()] with add root ClassDecl;
 	MethodDecl contributes this to ClassDecl.getMethodDecls() for getClassDeclAncestor();
+
 
 	syn boolean MethodDecl.isTarget(String method, TypeDecl[] parameters) {
 		if(!getID().equals(method) || getNumParameter() != parameters.length)
@@ -59,14 +56,21 @@ aspect LookupMethod {
 		return true;
 	}
 
-	syn ArrayList<MethodDecl> TypeDecl.lookupMethodTargets(String method, TypeDecl[] parameters) =
-										new ArrayList<MethodDecl>();
+	syn ArrayList<MethodDecl> TypeDecl.lookupMethodTargets(String method, TypeDecl[] parameters) = new ArrayList<MethodDecl>();
 
 	eq ClassDecl.lookupMethodTargets(String method, TypeDecl[] parameters) {
 		ArrayList<MethodDecl> a = new ArrayList<MethodDecl>();
+
 		for(MethodDecl m : getMethodDecls())
 			if(m.isTarget(method, parameters))
 				a.add(m);
+
+		//Implementing super class access
+		if((a.size() == 0) && hasSuperClass()) {
+			//TODO check if lookupType() really exists
+			return getSuperClass().lookupType().lookupMethodTargets(method, parameters);
+		}
+
 		return a;	
 	}
 

@@ -182,8 +182,8 @@ Modifier modifier		=
 				|	PROTECTED			{: return new Modifier("protected"); :}
 				|	PRIVATE				{: return new Modifier("private"); :}
 				|	STATIC				{: return new Modifier("static"); :}
-/*				|	ABSTRACT			{: return new Modifier("abstract"); :}
-*/				|	FINAL				{: return new Modifier("final"); :}
+				|	ABSTRACT			{: return new Modifier("abstract"); :}
+				|	FINAL				{: return new Modifier("final"); :}
 /*				|	NATIVE				{: return new Modifier("native"); :}
 				|	SYNCHRONIZED		{: return new Modifier("synchronized"); :}
 				|	TRANSIENT			{: return new Modifier("transient"); :}

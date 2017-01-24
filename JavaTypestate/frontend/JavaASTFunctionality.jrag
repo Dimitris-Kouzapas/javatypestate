@@ -26,11 +26,13 @@ aspect javaASTFunctionality {
 	syn lazy boolean TypeDecl.isClassDeclType() = false;
 	syn lazy boolean TypeDecl.isEnumDeclType() = false;
 	syn lazy boolean TypeDecl.isTypestateClassDeclType() = false;
+	syn lazy boolean TypeDecl.isInterfaceDeclType() = false;
 
 	syn lazy TypestateDecl TypeDecl.getTypestateDecl() = null;
 	syn lazy ClassDecl TypeDecl.getClassDecl() = null;
 	syn lazy EnumDecl TypeDecl.getEnumDecl() = null;
 	syn lazy TypestateClassDecl TypeDecl.getTypestateClassDecl() = null;
+	syn lazy InterfaceDecl TypeDecl.getInterfaceDecl() = null;
 
 	eq TypeDecl.getBodyDecl(int i).getClassDeclAncestor() = null;
 
@@ -58,6 +60,10 @@ aspect javaASTFunctionality {
 	syn lazy TypestateDecl TypestateClassDecl.getTypestateDecl() =
 		getTypestateArg().lookupType().isTypestateDeclType() ? getTypestateArg().lookupType().getTypestateDecl() : null;
 
+	/*	InterfaceDeclType							*/
+	eq InterfaceDecl.isInterfaceDeclType() = true;
+	eq InterfaceDecl.getInterfaceDecl() = this;
+
 	/*	MethodDecl								*/
 	//inh ClassDecl MethodDecl.getClassDeclAncestor();
 
@@ -68,8 +74,14 @@ aspect javaASTFunctionality {
 	coll Set<VariableDecl> MethodDecl.getUsedTypestateFields() [new HashSet<VariableDecl>()] with add root MethodDecl;
 
 	syn lazy boolean MethodDecl.isTypestateMethod() = getTypestateMethod() != null;
-	syn lazy TypestateMethod MethodDecl.getTypestateMethod() {
-		ClassDecl cd = getClassDeclAncestor();
+	syn lazy TypestateMethod MethodDecl.getTypestateMethod() = getTypestateMethod(getClassDeclAncestor());
+
+	syn boolean MethodDecl.isTypestateMethod(ClassDecl cd) = getTypestateMethod(cd) != null;
+	syn TypestateMethod MethodDecl.getTypestateMethod(ClassDecl cd) {
+		//In the case where the method is declared inside an interface
+		if (cd == null)
+			return null;
+
 		if(cd.isTypestateClassDeclType()) {
 			TypestateDecl t = ((TypestateClassDecl) cd).getTypestateDecl();
 			if(t != null)
