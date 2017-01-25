@@ -55,7 +55,6 @@ aspect JavaSemanticCheck {
 //				);
 //		}
 
-		//TODO cannot really check if container class is inherited
 		if(!isTypestateMethod() && !getUsedTypestateFields().isEmpty()) {
 			if(!getModifiers().isPrivate())
 				addSemanticError(
@@ -91,7 +90,6 @@ aspect JavaSemanticCheck {
 			}
 		}
 
-		//TODO cannot really check if the container class is inherited
 		if(isThisAccess()) {
 			MethodDecl md = lookupMethod(getQualifiedType());
 			if(md != null && !md.getUsedTypestateFields().isEmpty() && getMethodDeclAncestor() != null && !getMethodDeclAncestor().isTypestateMethod())
