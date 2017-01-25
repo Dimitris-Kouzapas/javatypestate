@@ -146,7 +146,7 @@ aspect javaASTFunctionality {
 		for(int i = 0; i < getNumArg(); i++) {
 			if(i != 0)
 				s += ", ";
-			s += getArg(i).getType().toString();
+			s += getArg(i).getType().getID();
 		}
 
 		return s + ")";
