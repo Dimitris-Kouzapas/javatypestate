@@ -183,37 +183,37 @@ protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it i
 		return s;
 		}
 
-		syn lazy boolean ClassDecl.getGraph() {
+	syn lazy boolean ClassDecl.getGraph() {
 
 //		for(VariableDecl vd : getTypestateFields())
 //			if(vd.typestate == null)
 //				vd.typestate = new TypestateField(/*getMethods()*/);
 
 		if(isTypestateClassDeclType()) {
-		TypestateClassDecl cd = (TypestateClassDecl) this;
-		if(cd.existsTypestateDecl()) {
-		GraphNode r = cd.getTypestateDecl().createTypestate().normalise();
-		TypestateVar.addTypestate = true; //TODO better implementation here
-		getFieldGraph(r);
+			TypestateClassDecl cd = (TypestateClassDecl) this;
+			if(cd.existsTypestateDecl()) {
+				GraphNode r = cd.getTypestateDecl().createTypestate().normalise();
+				TypestateVar.addTypestate = true; //TODO better implementation here
+				getFieldGraph(r);
 //				cd.getFieldGraph(r, new HashMap<GraphNode, Map<VariableDecl, GraphNode>>());
 
-		for(ConstructorDecl c: getConstructorDecls())
-		c.getGraph();
+				for(ConstructorDecl c: getConstructorDecls())
+					c.getGraph();
 
-		if(getConstructorDecls().isEmpty())
-		for(VariableDecl vd: getTypestateFields())
-		if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
-		vd.typestate.checkError(vd/*, getBodyDeclAncestor()*/);
-		}
+				if(getConstructorDecls().isEmpty())
+					for(VariableDecl vd: getTypestateFields())
+						if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
+							vd.typestate.checkError(vd/*, getBodyDeclAncestor()*/);
+			}
 		}
 
 		TypestateVar.addTypestate = true; //TODO better implementation here
 		for(MethodDecl md: getMethodDecls())
-		if(md.isGraph() == false)
-		md.getGraph();
+			if(md.isGraph() == false)
+				md.getGraph();
 
 		return true;
-		}
+	}
 
 		syn Set<TypestateVar> ClassDecl.getFieldGraph(GraphNode r) {
 		for(VariableDecl vd : getTypestateFields())
@@ -298,39 +298,39 @@ protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it i
 /*****************************************************************************************************/
 
 
-		//TODO another file
-		inh ClassDecl BodyDecl.getClassDeclAncestor();
-		syn lazy Set<VariableDecl> BodyDecl.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
+	//TODO another file
+	inh ClassDecl BodyDecl.getClassDeclAncestor();
+	syn lazy Set<VariableDecl> BodyDecl.getTypestateFields() = getClassDeclAncestor().getTypestateFields();
 
-		//TODO we do not need BodyDecl.getMethods() anymore
+	//TODO we do not need BodyDecl.getMethods() anymore
 //	syn Set<BodyDecl> BodyDecl.getMethods() = getClassDeclAncestor().getMethods();
 
 //	coll Set<BodyDecl> ClassDecl.getMethods() [new HashSet<BodyDecl>()] with add root ClassDecl;
 //	ConstructorDecl contributes this to ClassDecl.getMethods() for getClassDeclAncestor();
 //	MethodDecl contributes this to ClassDecl.getMethods() for getClassDeclAncestor();
 
-		inh ClassDecl ConstructorDecl.getClassDeclAncestor();
+	inh ClassDecl ConstructorDecl.getClassDeclAncestor();
 
-protected boolean BodyDecl.isGraph = false;
-protected boolean BodyDecl.isGraph() {
+	protected boolean BodyDecl.isGraph = false;
+	protected boolean BodyDecl.isGraph() {
 		return isGraph;
-		}
+	}
 
-protected boolean BodyDecl.isRec = false;
-protected boolean BodyDecl.isRec() {
+	protected boolean BodyDecl.isRec = false;
+	protected boolean BodyDecl.isRec() {
 		return isRec;
-		}
+	}
 
-protected int BodyDecl.checkGraphCounter = 0;
-protected int BodyDecl.getGraphCounter() {
+	protected int BodyDecl.checkGraphCounter = 0;
+	protected int BodyDecl.getGraphCounter() {
 		return checkGraphCounter;
-		}
+	}
 
-		syn boolean MethodDecl.getGraph() {
+	syn boolean MethodDecl.getGraph() {
 		isGraph = true;
 		isRec = true;
 
-		//TODO getGraph when needed. check for recursion
+	//TODO getGraph when needed. check for recursion
 //		for(MethodDecl md : selfSuccessors())
 //			if(md.isGraph() == false)
 //				md.getGraph();
@@ -340,40 +340,43 @@ protected int BodyDecl.getGraphCounter() {
 		for(VariableDecl vd : getTypestateFields()) {
 //			if(vd.typestate == null)
 //				vd.typestate = new TypestateField(getMethods());
-		vd.typestate.resetConnectionGraph(this);
-		env.add(vd.typestate);
+			vd.typestate.resetConnectionGraph(this);
+			env.add(vd.typestate);
 		}
 
 		for(int i = 0; i < getNumParameter(); i++)
-		if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
-		if(getParameter(i).typestate == null)
-		getParameter(i).typestate = new TypestatePar();
+			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
+				if(getParameter(i).typestate == null)
+					getParameter(i).typestate = new TypestatePar();
 
-		getParameter(i).typestate.resetConnectionGraph(null);
-		env.add(getParameter(i).typestate);
-		}
+				getParameter(i).typestate.resetConnectionGraph(null);
+				env.add(getParameter(i).typestate);
+			}
 
-		getBlock().getGraph(env);
+
+		//In the case where it is an abstract method
+		if(getBlock() != null)
+			getBlock().getGraph(env);
 
 		for(int i = 0; i < getNumParameter(); i++)
-		if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
-		getParameter(i).typestate.connectGraph(null);
-		env.remove(getParameter(i).typestate);
-		}
+			if(getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
+				getParameter(i).typestate.connectGraph(null);
+				env.remove(getParameter(i).typestate);
+			}
 
 		for(TypestateVar tv : env)
-		tv.connectGraph(this);
+			tv.connectGraph(this);
 
 		isRec = false;
 		checkGraphCounter++;
 		return true;
-		}
+	}
 
-		syn GraphNode MethodDecl.getParameterTypestate(int i) {
-		if(getParameter(i).typestate == null)
-		getParameter(i).typestate = new TypestatePar();
-		return getParameter(i).typestate.getConnectionGraph(null);
-		}
+	syn GraphNode MethodDecl.getParameterTypestate(int i) {
+	if(getParameter(i).typestate == null)
+	getParameter(i).typestate = new TypestatePar();
+	return getParameter(i).typestate.getConnectionGraph(null);
+	}
 
 /*****************************************************************************************************/
 
@@ -1019,8 +1022,9 @@ protected int BodyDecl.getGraphCounter() {
 								md.addSemanticError("Cannot infer return type for method call.");
 					}
 
-					if (t != null)
+					if (t != null) {
 						t.current = new MethodNode(lookupMethod(getQualifiedType()).getTypeAccess(), getID(), getParameterTypes(), this).addNext(t.current);
+					}
 				}
 
 				for(int i = md.getNumParameter() - 1; i >=0; i--)

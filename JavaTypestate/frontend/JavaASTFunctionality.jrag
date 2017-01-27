@@ -76,8 +76,7 @@ aspect javaASTFunctionality {
 	syn lazy boolean MethodDecl.isTypestateMethod() = getTypestateMethod() != null;
 	syn lazy TypestateMethod MethodDecl.getTypestateMethod() = getTypestateMethod(getClassDeclAncestor());
 
-//	syn boolean MethodDecl.isTypestateMethod(ClassDecl cd) = getTypestateMethod(cd) != null;
-	syn TypestateMethod MethodDecl.getTypestateMethod(ClassDecl cd) {
+	syn TypestateMethod MethodDecl.getTypestateMethod(TypeDecl cd) {
 		//In the case where the method is declared inside an interface
 		if (cd == null)
 			return null;
@@ -154,17 +153,7 @@ aspect javaASTFunctionality {
 
 	syn lazy boolean MethodAccess.isTypestateMethod() {
 		MethodDecl md = getTarget();
-		ClassDecl cd = getClassDeclAncestor();
-		return (md != null) ? md.getTypestateMethod(cd) != null : false; 
-
-//		if(cd.isTypestateClassDeclType()) {
-//			TypestateDecl t = ((TypestateClassDecl) cd).getTypestateDecl();
-//			if(t != null)
-//				for(TypestateMethod m : t.getMethods())
-//					if(md.isTarget(m.getID(), m.getParameterTypes()))
-//						return true;
-//		}
-//		return false;
+		return (md != null) ? md.getTypestateMethod(getQualifiedType()) != null : false; 
 	}
 
 	/*	Access								*/
