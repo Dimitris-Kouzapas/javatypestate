@@ -518,9 +518,22 @@ aspect GraphNode {
 				//noname type should be matched with any type
 				//t can never be instanceof NullType
 				//overriden equals(Object o) method
-				if(!getParameters()[i].equals(t) && !(t instanceof NoNameType))
+//				if(!getParameters()[i].equals(t) && !(t instanceof NoNameType))
+				if(!t.equals(getParameters()[i]) && !(getParameters()[i] instanceof NoNameType))
 					return false;
 			}
+
+
+/*			for(int i = 0; i < getParameters().length; i++) {
+				TypeDecl t = getParameters()[i];//.getTypeAccess().lookupType();
+				//null type should not be matched with primitive type
+				//noname type should be matched with any type
+				//t can never be instanceof NullType
+				//overriden equals(Object o) method
+				if(!n.getParameters()[i].equals(t) && !(getParameters()[i] instanceof NoNameType))
+					return false;
+			}
+*/
 
 			return true;
 		}

@@ -139,8 +139,8 @@ aspect Type {
 
 	eq ParseName.getTypeNoQualified() =
 		lookupVariable() != null ?
-		lookupVariable().getTypeAccess().lookupType() :
-		CompilationUnit.getNoNameType();
+			lookupVariable().getTypeAccess().lookupType() :
+			CompilationUnit.getNoNameType();
 
 	eq PackageParseName.getTypeNoQualified() = lookupType(getPackage(), getID());
 

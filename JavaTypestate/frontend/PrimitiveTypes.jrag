@@ -18,6 +18,7 @@ aspect PrimitiveTypes {
 	static private final TypeDecl CompilationUnit.nullType = new NullType(new Modifiers(), "null", new List());
 	static private final TypeDecl CompilationUnit.unknownType = new NoNameType(new Modifiers(), "unknown", new List());
 	static private final TypeDecl CompilationUnit.classType = new ClassType(new Modifiers(), "class", new List());
+	static private final TypeDecl CompilationUnit.ObjectType = new ObjectType(new Modifiers(), "Object", new List());
 
 	static private final TypeDecl CompilationUnit.stringType =
 		new UnknownTypeDecl(new Modifiers(), "String", new List<BodyDecl>());
@@ -29,6 +30,9 @@ aspect PrimitiveTypes {
 
 		if(type.equals("void"))
 			return voidType;
+
+		if(type.equals("Object"))
+			return ObjectType;
 
 		return null;
 	}
@@ -76,6 +80,9 @@ aspect PrimitiveTypes {
 	}
 
 	public boolean UnknownTypeDecl.equals(Object o) {
+		if((o instanceof ObjectType) == true)
+			return true;
+
 		if((o instanceof UnknownTypeDecl) && (getID().equals(((UnknownTypeDecl) o).getID())))
 			return true;
 		return false;
@@ -92,15 +99,18 @@ aspect PrimitiveTypes {
 	}
 
 	public boolean ClassDecl.equals(Object o) {
+		if((o instanceof ObjectType) == true)
+			return true;
+
 		if((o instanceof ClassDecl) != true)
 			return false;
 
 		if(super.equals(o))
 			return true;
 
-		if(hasSuperClass() && getSuperClass().getType().equals(o)) {
+		if(hasSuperClass() && getSuperClass().getType().equals(o))
 			return true;
-		}
+
 		return false;
 	}
 
