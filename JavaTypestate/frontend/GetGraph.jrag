@@ -816,6 +816,7 @@ protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it i
 				s.current = d.current;
 				d.resetCurrent();
 			}
+			//TODO: What if you assign a typestate variable with a null
 		}
 		getSource().getGraph(env);
 		return true;
