@@ -1,19 +1,17 @@
-<project name="javatypestate" default="mungo">
+<project name="javatypestate" default="release">
     <property name="jj.root" location="${basedir}"/>
     <property file="${jj.root}/build.properties"/>
 
     <description>
-        1. Generate ExtendJ for a target Java version:
+        1. Generate modules:
 
-        $ ant java4
-        java5
-        java6
-        java7
+        $ ant extendj
+        $ ant javatypestate
+        $ ant mungo
 
-        2. Build a jar file or documentation based on generated compiler:
+        2. Build a jar file based on generated compiler:
 
         $ ant jar
-        doc
 
         -- OR --
 
@@ -23,6 +21,13 @@
 
     </description>
 
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${bin.dir}"/>
+
+      </target>
 
     <target name="extendj" description="generate extendj">
         <ant antfile="${extendj.dir}/build.xml" target="java8" inheritAll="false"/>
@@ -32,64 +37,17 @@
         <ant antfile="${javatypestate.dir}/build.xml" target="build" inheritAll="false"/>
     </target>
 
-    <target name="mungo" description="generate mungo">
-        <antcall target="javatypestate"/>
-        <antcall target="extendj"/>
+    <target name="mungo" depends="extendj, javatypestate" description="generate mungo">
         <javac srcdir="${src.dir}" destdir="${bin.dir}"
-               includes="TypestateMain.java,Typestate.java" />
+               includes="TypestateMain.java,Typestate.java" includeantruntime="false" />
     </target>
 
-    <target name="clean"
-            description="remove all generated (java, class, etc.) files">
+    <target name="clean" description="remove all generated (java, class, etc.) files">
         <delete dir="${gen.dir}"/>
         <delete dir="${genres.dir}"/>
         <delete dir="${tmp.dir}"/>
         <delete dir="${bin.dir}"/>
-        <delete dir="${basedir}/doc"/>
-    </target>
-
-    <target name="build-dist" description="build Mungo distribution files"
-            depends="update-version-string,clean">
-        <property file="${res.dir}/Version.properties" prefix="jj"/>
-        <echo message="Building source zip"/>
-        <zip destfile="mungo-${jj.version}.zip">
-            <zipfileset dir="." prefix="Mungo">
-                <include name="README.md"/>
-                <include name="LICENSE"/>
-                <include name="build.xml"/>
-                <include name="ChangeLog"/>
-                <include name="src/frontend/**/*"/>
-                <include name="src/backend/**/*"/>
-                <include name="${res.dir}/**/*"/>
-                <include name="${genres.dir}/**/*"/>
-                <!--<include name="${java4.dir}/**/*"/>-->
-                <!--<include name="${java5.dir}/**/*"/>-->
-                <!--<include name="${java6.dir}/**/*"/>-->
-                <!--<include name="${java7.dir}/**/*"/>-->
-                <include name="${extendj.dir}/**/*"/>
-                <include name="${javatypestate.dir}/**/*"/>
-
-            </zipfileset>
-        </zip>
-        <echo message="Building mungo"/>
-        <antcall target="mungo"/>
-        <antcall target="jar"/>
-    </target>
-
-    <target name="doc" description="generate ReRAG documentation">
-        <mkdir dir="${basedir}/doc"/>
-        <javadoc
-                destdir="${basedir}/doc"
-                docletpath="${tools.dir}/RagDoll.jar"
-                doclet="ragdoll.RagDollDoclet">
-            <classpath>
-                <pathelement location="${bin.dir}"/>
-            </classpath>
-            <arg value="-linksource"/>
-            <packageset dir="${gen.dir}" defaultexcludes="yes">
-                <include name="${ast.dir}"/>
-            </packageset>
-        </javadoc>
+        <delete file="${jj.root}/mungo.jar"/>
     </target>
 
     <target name="jar" description="build mungo.jar">
@@ -97,33 +55,12 @@
             <manifest>
                 <attribute name="Main-Class" value="TypestateMain"/>
             </manifest>
-            <fileset dir=".">
-                <include name="LICENSE"/>
-            </fileset>
             <fileset dir="${bin.dir}">
                 <include name="**/*"/>
             </fileset>
         </jar>
     </target>
 
-    <target name="-get-current-version" unless="version">
-        <!-- Get a new version string using git describe if possible. -->
-        <echo message="Updating ExtendJ version string..."/>
-        <exec executable="git" outputproperty="version"
-              failifexecutionfails="false">
-            <arg value="describe"/>
-        </exec>
-        <!-- Ensure the version property is set. -->
-        <property file="${res.dir}/Version.properties"/>
-    </target>
-
-    <target name="update-version-string" depends="-get-current-version">
-        <!-- Store the new  version string in the generated version property file. -->
-        <echo message="version=${version}"/>
-        <mkdir dir="${genres.dir}"/>
-        <propertyfile file="${genres.dir}/Version.properties">
-            <entry key="version" value="${version}"/>
-        </propertyfile>
-    </target>
+    <target name="release" depends="clean, mungo, jar" description="build mungo"/>
 
 </project>
