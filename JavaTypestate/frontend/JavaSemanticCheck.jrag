@@ -112,6 +112,7 @@ aspect JavaSemanticCheck {
 //	}
 
 	protected void SwitchStmt.semanticCheck() {
+		//TODO check directly for MethodAccess
 		if(getExpr().isAccess()) {
 			Access a = ((Access)getExpr()).getLastAccess();
 			if (a.getQualifiedType().isEnumDeclType()) {
