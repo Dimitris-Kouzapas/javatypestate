@@ -39,7 +39,7 @@
 
     <target name="mungo" depends="extendj, javatypestate" description="generate mungo">
         <javac srcdir="${src.dir}" destdir="${bin.dir}"
-               includes="TypestateMain.java,Typestate.java" includeantruntime="false" />
+               includes="TypestateMain.java,Typestate.java,Boolean.java" includeantruntime="false" />
     </target>
 
     <target name="clean" description="remove all generated (java, class, etc.) files">

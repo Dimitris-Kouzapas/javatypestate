@@ -1,15 +1,17 @@
 import JavaTypestate.AST.TypestateChecker;
 import org.extendj.JavaChecker;
 
-import java.util.ArrayList;
-import java.io.PrintStream;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 class TypestateMain {
 	JavaChecker jc;
 	TypestateChecker tc;
 
 	private String[] files;
+	private String[] mungoFiles;
 
 	private boolean printErrors = true;
 	private boolean semantic = false;
@@ -41,7 +43,7 @@ class TypestateMain {
 		if((mode & TYPESTATE) != 0) {
 			if(verbose == true)
 				System.out.println("Typestate check.");
-			t = tc.compile(files);
+			t = tc.compile(mungoFiles);
 			if((tc.hasErrors() || tc.hasWarnings()) && printErrors) {
 				if(verbose == true)
 					System.out.println("Print errors and Warnings.");
@@ -54,7 +56,7 @@ class TypestateMain {
 
 //	private void createJavaFiles() {
 //		tc.createJavaFiles();
-//		;//TODO compile with javac ?? 
+//		;//TODO compile with javac ??
 //	}
 
 	private void setMode(int m) {
@@ -65,7 +67,7 @@ class TypestateMain {
 	}
 
 	void processArgs(String[] args) {
-		ArrayList<String> files = new ArrayList<String>();
+		ArrayList<String> arguments = new ArrayList<String>();
 
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equals("-Verbose") || args[i].equals("-verbose") || args[i].equals("-v")) {
@@ -95,12 +97,23 @@ class TypestateMain {
 				tc.setPrintInference();
 			}
 			else
-				files.add(args[i]);
+				arguments.add(args[i]);
 		}
 
-		this.files = new String[files.size()];
-		for(int i = 0; i < files.size(); i++)
-			this.files[i] = files.get(i);
+//		this.files = new String[files.size()];
+
+		this.files = arguments.toArray(new String[arguments.size()]);
+		if(arguments.contains("-cp")) {
+			arguments.remove(arguments.indexOf("-cp") + 1);
+			arguments.remove(arguments.indexOf("-cp"));
+		}
+		if(arguments.contains("-classpath")) {
+			arguments.remove(arguments.indexOf("-classpath") + 1);
+			arguments.remove(arguments.indexOf("-classpath"));
+		}
+
+		this.mungoFiles = arguments.toArray(new String[arguments.size()]);
+
 	}
 
 	public static void main(String [] args) {
