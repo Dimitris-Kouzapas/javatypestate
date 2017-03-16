@@ -1,10 +1,10 @@
 package demos.iterator;
 
-// import mungo.lib.Typestate;
+import mungo.lib.Typestate;
 import mungo.lib.Boolean;
 import java.util.Iterator;
 
-// @Typestate("StateIteratorProtocol")
+@Typestate(value="StateIteratorProtocol")
 class StateIterator {
 	Iterator iter;
 	public StateIterator(Iterator i) {

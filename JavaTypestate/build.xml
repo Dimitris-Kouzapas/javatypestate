@@ -24,7 +24,6 @@
 
     <!-- compile sources -->
     <target name="build" depends="gen">
-        <mkdir dir="${bin.dir}"/>
         <javac debug="true" nowarn="true" srcdir="${gen.dir}" includes="**/*.java"
                excludes="test/**"
                includeantruntime="false"
@@ -82,9 +81,9 @@
                 <file name="parser/ErrorRecovery.parser"/>
                 <file name="parser/Typestate.parser"/>
                 <file name="parser/Enums.parser"/>
-                <!--<file name="parser/Annotations.parser"/>-->
-                <!--<file name="parser/Generics.parser"/>-->
-                <!--<file name="parser/GenericMethods.parser"/>-->
+                <file name="parser/Annotations.parser"/>
+                <file name="parser/Generics.parser"/>
+                <file name="parser/GenericMethods.parser"/>
 
             </filelist>
         </concat>
@@ -128,5 +127,3 @@
     </target>
 
 </project>
-
-
