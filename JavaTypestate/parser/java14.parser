@@ -22,7 +22,7 @@
 CompilationUnit goal		=
 					compilation_unit.cu		{: return cu; :}
 				;
-
+      
 Expr literal			=
 					INTEGER_LITERAL			{: return new IntegerLiteral(INTEGER_LITERAL); :}
 				|	LONG_LITERAL			{: return new LongLiteral(LONG_LITERAL); :}
@@ -201,17 +201,15 @@ ClassDecl class_declaration	=
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), new List(), b);
 					:}
 */
-					modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b
+					modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b 
 					{:
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, s, i, b);
 					:}
-
-//				|	typestate_annotation.t
-//					modifiers.m? CLASS IDENTIFIER /*super.s?*/ interfaces.i? class_body.b
-//					{:
-//						return new TypestateClassDecl(new Modifiers(m), IDENTIFIER, new Opt(), i, b, t);
-//					:}
-
+				|	typestate_annotation.t
+					modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b 
+					{:
+						return new TypestateClassDecl(new Modifiers(m), IDENTIFIER, s, i, b, t);
+					:}
 /*				|	modifiers.m? CLASS IDENTIFIER super.s? interfaces.i? class_body.b
 					{:
 						return new ClassDecl(new Modifiers(m), IDENTIFIER, s, i, new ParseName(""), b);
@@ -226,10 +224,10 @@ List interfaces		=
 					IMPLEMENTS interface_type_list.i	{: return i; :}
 				;
 
-// Access typestate_annotation
-// 					=
-// 					TYPESTATE_ANNOT LPAREN STRING_LITERAL.s RPAREN  {: return new ParseName(s); :}
-// 					;
+Access typestate_annotation
+					=
+					AT TYPESTATE_ANNOT LPAREN STRING_LITERAL.s RPAREN  {: return new ParseName(s); :}
+					;
 
 
 List interface_type_list	=
@@ -319,7 +317,7 @@ MethodDecl method_declaration	=
 						return m;
 					:}
 				;
-
+      
 MethodDecl method_header	=
 					modifiers.m? type.t IDENTIFIER LPAREN formal_parameter_list.l? RPAREN dims.d? throws.tl?
 					{:
@@ -333,7 +331,7 @@ MethodDecl method_header	=
 									l, tl, new Opt());
 					:}
 				;
-
+                                                                
 List formal_parameter_list	=
 					formal_parameter.f		{: return new List().add(f); :}
 				|	formal_parameter_list.l COMMA formal_parameter.f
@@ -376,13 +374,13 @@ InstanceInitializer instance_initializer
 */
 ConstructorDecl constructor_declaration
 				=
-					modifiers.m? IDENTIFIER LPAREN formal_parameter_list.pl? RPAREN throws.tl?
+					modifiers.m? IDENTIFIER LPAREN formal_parameter_list.pl? RPAREN throws.tl? 
 					LBRACE explicit_constructor_invocation.c? block_statements.l? RBRACE
-					{:
-						Block b = new Block(l);
-						/*	l.setStart(LBRACE.getStart() + 1);
+					{: 
+						Block b = new Block(l); 
+						/*	l.setStart(LBRACE.getStart() + 1); 
 						*/
-						b.setStart(LBRACE.getStart());
+						b.setStart(LBRACE.getStart()); 
 						/*	b.setEnd(RBRACE.getEnd());
 						*/
 						return new ConstructorDecl(new Modifiers(m), IDENTIFIER, pl, tl, c, b);
@@ -391,7 +389,7 @@ ConstructorDecl constructor_declaration
 
 ExprStmt explicit_constructor_invocation
 				=
-					THIS LPAREN argument_list.l? RPAREN SEMICOLON
+					THIS LPAREN argument_list.l? RPAREN SEMICOLON 
 					{:
 						ConstructorAccess c = new ConstructorAccess("this", l);
 						c.setStart(THIS.getStart());
@@ -400,7 +398,7 @@ ExprStmt explicit_constructor_invocation
 						return new ExprStmt(c);
 					:}
 
-				|	SUPER LPAREN argument_list.l? RPAREN SEMICOLON
+				|	SUPER LPAREN argument_list.l? RPAREN SEMICOLON 
 					{:
 						SuperConstructorAccess c = new SuperConstructorAccess("super", l);
 							c.setStart(SUPER.getStart());
@@ -443,7 +441,7 @@ List interface_body		=
 List interface_member_declarations
 				=
 					interface_member_declaration.i			{: return new List().add(i); :}
-				|	interface_member_declarations.l interface_member_declaration.i
+				|	interface_member_declarations.l interface_member_declaration.i 
 					{:
 						return l.add(i);
 					:}
@@ -591,7 +589,7 @@ SwitchStmt switch_statement	=
 				;
 
 Block switch_block		=
-					LBRACE switch_block_statement_groups.l switch_labels.s RBRACE
+					LBRACE switch_block_statement_groups.l switch_labels.s RBRACE 
 					{:
 						for(int ii = 0; ii < s.getNumChildNoTransform(); ii++)
 							l.add(s.getChildNoTransform(ii));
@@ -605,7 +603,7 @@ Block switch_block		=
 List switch_block_statement_groups
 				=
 					switch_block_statement_group.g				{: return g; :}
-				|	switch_block_statement_groups.l switch_block_statement_group.g
+				|	switch_block_statement_groups.l switch_block_statement_group.g 
 					{:
 						for(int ii = 0; ii < g.getNumChildNoTransform(); ii++)
 							l.add(g.getChildNoTransform(ii));
@@ -615,7 +613,7 @@ List switch_block_statement_groups
 
 List switch_block_statement_group
 				=
-					switch_labels.l block_statements.bl
+					switch_labels.l block_statements.bl 
 					{:
 						for(int ii = 0; ii < bl.getNumChildNoTransform(); ii++)
 							l.add(bl.getChildNoTransform(ii));
@@ -763,7 +761,7 @@ Expr primary_no_new_array	=
 
 Expr class_instance_creation_expression
 				=
-					NEW class_or_interface_type.t LPAREN argument_list.l? RPAREN
+					NEW class_or_interface_type.t LPAREN argument_list.l? RPAREN 
 					{:
 						return new ClassInstanceExpr(t, l, new Opt());
 					:}
@@ -830,7 +828,7 @@ Expr array_creation_uninit	=
 					{:
 						return new ArrayCreationExpr(t.addArrayDims(d).addArrayDims(e), new Opt());
 					:}
-				|	NEW class_or_interface_type.t dim_exprs.d
+				|	NEW class_or_interface_type.t dim_exprs.d 
 					{:
 						return new ArrayCreationExpr(t.addArrayDims(d), new Opt());
 					:}
@@ -881,7 +879,7 @@ List dims			=
 
 Access field_access		=
 					primary.p DOT simple_name.id		{: return p.qualifiesAccess(id); :}
-				|	SUPER DOT simple_name.id
+				|	SUPER DOT simple_name.id 
 					{:
 						SuperAccess s = new SuperAccess("super");
 							s.setStart(SUPER.getStart());
@@ -899,9 +897,9 @@ Access field_access		=
 
 Access method_invocation	=
 					name.n LPAREN argument_list.l? RPAREN
-					{:
-						if(n instanceof AbstractDot) {
-							AbstractDot d = (AbstractDot)n;
+					{: 
+						if(n instanceof AbstractDot) {    
+							AbstractDot d = (AbstractDot)n; 
 							ParseName pn = (ParseName) d.extractLast();
 							MethodAccess m = new MethodAccess(pn.getID(), l);
 							m.setStart(pn.getStart()); // add location information
@@ -923,7 +921,7 @@ Access method_invocation	=
 							return m;
 						}
 					:}
-				|	primary.p DOT IDENTIFIER LPAREN argument_list.l? RPAREN
+				|	primary.p DOT IDENTIFIER LPAREN argument_list.l? RPAREN 
 					{:
 						MethodAccess m = new MethodAccess(IDENTIFIER, l);
 						m.setStart(IDENTIFIER.getStart()); // add location information
@@ -1159,3 +1157,4 @@ Expr expression			=
 Expr constant_expression	=
 					expression.e			{: return e; :}
 				;
+
