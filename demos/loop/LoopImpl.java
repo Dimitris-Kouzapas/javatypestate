@@ -1,12 +1,15 @@
 package demos.loop;
+import lib.*;
 
 /**
  * Arguably the loop typestate itself is inhabited (since we can create an object that
- * implements it), but its (informal) dual is uninhabited, in that we cannot define a 
+ * implements it), but its (informal) dual is uninhabited, in that we cannot define a
  * client that consumes the loop.
  */
-class LoopImpl typestate Loop {
+
+@Typestate ("Loop")
+class LoopImpl{
   	Bool finished() {
-  		return new Bool(Bool.TRUE);
+  		return Bool.TRUE;
   	}
 }
