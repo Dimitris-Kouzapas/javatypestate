@@ -9,66 +9,84 @@ aspect Generics{
 //        }
         ArrayList<TypeDecl> args = new ArrayList<TypeDecl>();
         for (int i = 0; i < getNumTypeArgument(); i++) {
-        args.add(getTypeArgument(i).getType());
+          args.add(getTypeArgument(i).getType());
         }
         return ((GenericTypeDecl) typeDecl).lookupParTypeDecl(args);
         }
         return typeDecl;
         }
 
+        // syn nta WildcardsCompilationUnit Program.wildcards() {
+        //   return new WildcardsCompilationUnit(
+        //     "wildcards",
+        //     new List(),
+        //     new List()
+        //   );
+        // }
 
-//        eq Wildcard.getType() = typeWildcard();
-//        eq Wildcard.getType() = null;
-////        eq WildcardExtends.getType() = lookupWildcardExtends(getAccess().getType());
-////        eq WildcardSuper.getType() = lookupWildcardSuper(getAccess().getType());
-//        eq WildcardExtends.getType() = null;
-//        eq WildcardSuper.getType() = null;
+       eq Wildcard.getType() = typeWildcard();
+      //  eq Wildcard.getType() = null;
+       eq WildcardExtends.getType() = lookupWildcardExtends(getAccess().getType());
+       eq WildcardSuper.getType() = lookupWildcardSuper(getAccess().getType());
+
+       inh TypeDecl WildcardSuper.lookupWildcardSuper(TypeDecl typeDecl);
+       inh TypeDecl WildcardExtends.lookupWildcardExtends(TypeDecl typeDecl);
+       inh TypeDecl Wildcard.typeWildcard();
+       syn nta TypeDecl WildcardsCompilationUnit.lookupWildcardExtends(TypeDecl bound) =
+           new WildcardExtendsType(
+               new Modifiers(new List().add(new Modifier("public"))),
+               "? extends " + bound.getID(),
+               new List(),
+               new PrimitiveTypeAccess(bound.getID()));
+               //bound.createBoundAccess());
+
+       eq Program.getChild().lookupWildcardExtends(TypeDecl typeDecl) =
+           wildcards().lookupWildcardExtends(typeDecl);
+
+       inh TypeDecl TypeDecl.lookupWildcardExtends(TypeDecl typeDecl);
+
+       syn TypeDecl TypeDecl.asWildcardExtends() = lookupWildcardExtends(this);
+       syn nta TypeDecl WildcardsCompilationUnit.lookupWildcardSuper(TypeDecl bound) =
+           new WildcardSuperType(
+               new Modifiers(new List().add(new Modifier("public"))),
+               "? super " + bound.getID(),
+               new List(),
+               new PrimitiveTypeAccess(bound.getID()));
+
+       eq Program.getChild().lookupWildcardSuper(TypeDecl typeDecl) =
+           wildcards().lookupWildcardSuper(typeDecl);
+
+       inh TypeDecl TypeDecl.lookupWildcardSuper(TypeDecl typeDecl);
+
+       syn TypeDecl TypeDecl.asWildcardSuper() = lookupWildcardSuper(this);
+      //  eq WildcardExtends.getType() = null;
+      //  eq WildcardSuper.getType() = null;
 
         eq ParTypeAccess.getType(TypeDecl t) = null;
-//        eq Wildcard.getType(TypeDecl t) = null;
-//        eq WildcardExtends.getType(TypeDecl t) = null;
-//        eq WildcardSuper.getType(TypeDecl t) = null;
+        eq Wildcard.getType(TypeDecl t) = null;
+        eq WildcardExtends.getType(TypeDecl t) = null;
+        eq WildcardSuper.getType(TypeDecl t) = null;
 
 
-//        inh TypeDecl Wildcard.typeWildcard();
-
-//        syn nta TypeDecl WildcardsCompilationUnit.typeWildcard() =
-//        new WildcardType(
-//        new Modifiers(new List().add(new Modifier("public"))),
-//        "?",
-//        new List());
-
-//        inh TypeDecl TypeDecl.typeWildcard();
+       syn nta TypeDecl WildcardsCompilationUnit.typeWildcard() =
+       new WildcardType(
+       new Modifiers(new List().add(new Modifier("public"))),
+       "?",
+       new List());
 
 
+        eq Program.getChild().typeWildcard() = wildcards().typeWildcard();
+
+
+        syn nta WildcardsCompilationUnit Program.wildcards() {
+          return new WildcardsCompilationUnit(
+            "wildcards",
+            new List(),
+            new EmptyType()
+          );
+        }
         syn TypeDecl ParTypeAccess.genericDecl() = getTypeAccess().getType();
 
-//        inh TypeDecl WildcardSuper.lookupWildcardSuper(TypeDecl typeDecl);
-//        syn nta TypeDecl WildcardsCompilationUnit.lookupWildcardExtends(TypeDecl bound) = null;
-//        new WildcardExtendsType(
-//        new Modifiers(new List().add(new Modifier("public"))),
-//        "? extends " + bound.name(),//fullName(),
-//        new List(),
-//        new Opt());/*bound.createBoundAccess());*/
-
-//        eq Program.getChild().lookupWildcardExtends(TypeDecl typeDecl) = null;
-        //wildcards().lookupWildcardExtends(typeDecl);
-
-//        inh TypeDecl TypeDecl.lookupWildcardExtends(TypeDecl typeDecl);
-
-//        syn TypeDecl TypeDecl.asWildcardExtends() = lookupWildcardExtends(this);
-
-/*  syn nta TypeDecl WildcardsCompilationUnit.lookupWildcardSuper(TypeDecl bound) =
-      new WildcardSuperType(
-          new Modifiers(new List().add(new Modifier("public"))),
-          "? super " + bound.fullName(),
-          new List(),
-          bound.createBoundAccess());
-*/
-        //eq Program.getChild().lookupWildcardSuper(TypeDecl typeDecl) =
-        //  wildcards().lookupWildcardSuper(typeDecl);
-
-//        inh TypeDecl TypeDecl.lookupWildcardSuper(TypeDecl typeDecl);
 
         eq Program.getChild().inExtendsOrImplements() = false;
         eq ClassDecl.getSuperClass().inExtendsOrImplements() = true;
@@ -78,14 +96,14 @@ aspect Generics{
 
 
         eq ParTypeAccess.getGraph(Set<TypestateVar> env) = false;
-//        eq Wildcard.getGraph(Set<TypestateVar> env) = false;
-//        eq WildcardExtends.getGraph(Set<TypestateVar> env) = false;
-//        eq WildcardSuper.getGraph(Set<TypestateVar> env) = false;
+        eq Wildcard.getGraph(Set<TypestateVar> env) = false;
+        eq WildcardExtends.getGraph(Set<TypestateVar> env) = false;
+        eq WildcardSuper.getGraph(Set<TypestateVar> env) = false;
 
         eq ParTypeAccess.getTypestateVar() = null;
-//        eq Wildcard.getTypestateVar() = null;
-//        eq WildcardExtends.getTypestateVar() = null;
-//        eq WildcardSuper.getTypestateVar() = null;
+        eq Wildcard.getTypestateVar() = null;
+        eq WildcardExtends.getTypestateVar() = null;
+        eq WildcardSuper.getTypestateVar() = null;
 
 
 interface GenericTypeDecl {

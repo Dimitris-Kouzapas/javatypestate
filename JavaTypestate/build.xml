@@ -82,8 +82,9 @@
                 <file name="parser/Typestate.parser"/>
                 <file name="parser/Enums.parser"/>
                 <file name="parser/Annotations.parser"/>
-                <file name="parser/Generics.parser"/>
                 <file name="parser/GenericMethods.parser"/>
+                <file name="parser/Generics.parser"/>
+                <file name="parser/VariableArityParameters.parser"/>
 
             </filelist>
         </concat>

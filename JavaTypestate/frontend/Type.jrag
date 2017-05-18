@@ -13,7 +13,7 @@
  *   Note that in the case a ParseName does not have a qualified
  *   type it searches the hierarchy as the unqualified parse name.
  * - MethodAccess searches the qualifiedType for matching method
- *   signatures. 
+ *   signatures.
 */
 
 //TODO consider changing the name from getType() to getExprType()
@@ -48,7 +48,7 @@ aspect Type {
 	eq ClassInstanceExpr.getType() = getAccess().lookupType();
 	eq ArrayCreationExpr.getType() = getTypeAccess().lookupType();
 	eq ArrayInit.getType() {
-		for(int i = 0; i < getNumInit(); i++) 
+		for(int i = 0; i < getNumInit(); i++)
 			if(getInit(i).getType() != null)
 				return getInit(i).getType();
 		return  CompilationUnit.getNoNameType();
@@ -66,7 +66,7 @@ aspect Type {
 	}//null;					//deprecated
 	syn lazy TypeDecl TypeAccess.getType() = null;				//inherited by PrimitiveType and ArrayTypeAccess
 	eq PrimitiveTypeAccess.getType() =
-			CompilationUnit.getPrimitiveType(getName());		//PrimitiveTypeAccess inherits from TypeAccess 
+			CompilationUnit.getPrimitiveType(getName());		//PrimitiveTypeAccess inherits from TypeAccess
 	eq ArrayTypeAccess.getType() = getAccess().getType();			//inherited by ArrayTypeWithSizeAccess
 	eq ArrayTypeWithSizeAccess.getType() = getAccess().getType();
 	eq ArrayAccess.getType() = null;					//Only used in Qualified
@@ -81,7 +81,7 @@ aspect Type {
 
 	/******************************************************/ 		//TODO consider in another file!!
 
-	syn TypeDecl Expr.getType(TypeDecl t) = getType();			//For the left child of AbstractDot 
+	syn TypeDecl Expr.getType(TypeDecl t) = getType();			//For the left child of AbstractDot
 										//TODO What if the right child is an expression
 										//TODO is getType() correct??
 	syn TypeDecl Access.getType(TypeDecl t);
@@ -123,7 +123,7 @@ aspect Type {
 
 	/****************Qualified Type**************************/
 
-	syn lazy TypeDecl Access.getQualifiedType() = 
+	syn lazy TypeDecl Access.getQualifiedType() =
 		getQualifiedAccess() != null ?
 		getQualifiedAccess().__getQualifiedType():
 		getTypeNoQualified();
