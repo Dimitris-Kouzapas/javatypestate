@@ -3,7 +3,8 @@ package demos.Traversal;
 import java.net.ServerSocket;
 import java.io.IOException;
 
-class ARole typestate AProtocol {
+@mungo.lib.Typestate("AProtocol")
+class ARole{
 	SessionSocket b, c;
 
 	ARole(int Bport, int Cport) {

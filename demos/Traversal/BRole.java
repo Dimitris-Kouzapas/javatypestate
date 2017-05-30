@@ -1,10 +1,12 @@
 package demos.Traversal;
 
+import mungo.lib.Typestate;
+
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.io.IOException;
-
-class BRole typestate BProtocol {
+@Typestate("BProtocol")
+class BRole{
 	SessionSocket a, c;
 
 	BRole(int Aport, int Cport) {

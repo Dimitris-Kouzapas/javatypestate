@@ -1,4 +1,0 @@
-package demos.annotations;
-enum Status {
-	OK, ERROR;
-}

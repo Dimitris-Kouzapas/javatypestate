@@ -5,4 +5,4 @@ To install the javatypestate
 2) build the project:			ant
 3) build the jar          ant jar
 4) run the typechecker:			java -jar mungo.jar [OPTIONS] [FILENAME]
-                            e.g. java -jar mungo.jar demos/Traversal/Run.mungo
+                            e.g. java -jar mungo.jar demos/Traversal/Run.java

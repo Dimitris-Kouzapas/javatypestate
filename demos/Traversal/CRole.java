@@ -1,10 +1,12 @@
 package demos.Traversal;
 
-import java.net.Socket;
-import java.net.ServerSocket;
-import java.io.IOException;
+import mungo.lib.Typestate;
 
-class CRole typestate CProtocol {
+import java.io.IOException;
+import java.net.Socket;
+
+@Typestate("CProtocol")
+class CRole{
 	SessionSocket a, b;
 
 	CRole(int Aport, int Bport) {

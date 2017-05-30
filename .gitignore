@@ -1,19 +1,11 @@
 # build
-/build/
-/bin/
 /ant-bin/
 /src/gen/
 /src/gen-res/
 /src/tmp/
 /doc/
-/jastaddj-*.zip
-/jastaddj*.jar
-/fileset.tmp
-JavaTypestate/AST/
-JavaTypestate/scanner/JavaScanner*
-JavaTypestate/parser/JavaParser*
 
-# eclipse
+
 /.classpath
 /.project
 /.settings/
@@ -28,5 +20,8 @@ JavaTypestate/parser/JavaParser*
 # intelliJ
 /.idea/
 /*.iml
+
+*.class
+
 
 

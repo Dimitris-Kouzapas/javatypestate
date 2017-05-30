@@ -1,5 +1,4 @@
 package demos.file_example;
-import java.io.*;
 
 @Typestate("FileProtocol")
 class File {

@@ -1,4 +1,0 @@
-package demos.annotations;
-enum BooleanEnum {
-	TRUE, FALSE;
-}
