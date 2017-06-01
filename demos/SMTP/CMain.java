@@ -1,16 +1,11 @@
 package demos.SMTP;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Console;
-import java.net.Socket;
-import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import sun.misc.BASE64Encoder;
 
-import javax.net.ssl.*;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import java.io.*;
+import java.net.UnknownHostException;
 
 public class CMain {
 	static final String CRLF = "\\r\\n";
@@ -37,26 +32,26 @@ public class CMain {
 		System.out.println("Received from S: " + payload1);
 		System.out.print("Choose a label among EHLO, or QUIT: ");
 		String label1 = safeRead(readerC).equals("EHLO") ? "1" : "2";
-		switch(currentC.send_Choice1LabelToS(label1).getEnum()) {
-			case Choice1.EHLO:
+		switch(currentC.send_Choice1LabelToS(label1)) {
+			case EHLO:
 			System.out.print("Send to S text for EHLO: ");
 			String payload2 = safeRead(readerC);
 			currentC.send_ehloStringToS((new SMTPMessage("EHLO", payload2)).toString());
 			_X: do{
-				switch(currentC.receive_Choice2LabelFromS().getEnum()) {
-					case Choice2._250DASH:
+				switch(currentC.receive_Choice2LabelFromS()) {
+					case _250DASH:
 					String payload3 = currentC.receive_250dashStringFromS();
 					// System.out.println("Received from S: " + payload3);
 					continue _X;
 
-					case Choice2._250:
+					case _250:
 					String payload4 = currentC.receive_250StringFromS();
 					// System.out.println("Received from S: " + payload4);
 					System.out.print("Choose a label among STARTTLS, or QUIT: ");
 					String label2 = safeRead(readerC).equals("STARTTLS") ? "1" : "2";
 
-					switch(currentC.send_Choice3LabelToS(label2).getEnum()) {
-						case Choice3.STARTTLS:
+					switch(currentC.send_Choice3LabelToS(label2)) {
+						case STARTTLS:
 						// System.out.print("Send to S text for STARTTLS: ");
 						// String payload5 = safeRead(readerC);
 						currentC.send_starttlsStringToS((new SMTPMessage("STARTTLS")).toString());
@@ -86,26 +81,26 @@ public class CMain {
 						System.out.print("Choose a label among EHLO, or QUIT: ");
 						String label3 = safeRead(readerC).equals("EHLO") ? "1" : "2";
 
-						switch(currentC.send_Choice1LabelToS(label3).getEnum()) {
-							case Choice1.EHLO:
+						switch(currentC.send_Choice1LabelToS(label3)) {
+							case EHLO:
 							System.out.print("Send to S text for EHLO: ");
 							String payload7 = safeRead(readerC);
 							currentC.send_ehloStringToS((new SMTPMessage("EHLO", payload7)).toString());
 							_X1: do{
-								switch(currentC.receive_Choice2LabelFromS().getEnum()) {
-									case Choice2._250DASH:
+								switch(currentC.receive_Choice2LabelFromS()) {
+									case _250DASH:
 									String payload8 = currentC.receive_250dashStringFromS();
 									// System.out.println("Received from S: " + payload8);
 									continue _X1;
 
-									case Choice2._250:
+									case _250:
 									String payload9 = currentC.receive_250StringFromS();
 									// System.out.println("Received from S: " + payload9);
 									_Y: do{
 										System.out.print("Choose a label among AUTH, QUIT: ");
 										String label4 = safeRead(readerC).equals("AUTH") ? "1" : "2";
-										switch(currentC.send_Choice4LabelToS(label4).getEnum()) {
-											case Choice4.AUTH:
+										switch(currentC.send_Choice4LabelToS(label4)) {
+											case AUTH:
 											System.out.print("Username: ");
 											String username = safeRead(readerC);
 
@@ -123,44 +118,44 @@ public class CMain {
 
 											currentC.send_authStringToS((new SMTPMessage("AUTH PLAIN", token)).toString());
 
-											switch(currentC.receive_Choice5LabelFromS().getEnum()) {
-												case Choice5._235:
+											switch(currentC.receive_Choice5LabelFromS()) {
+												case _235:
 												String payload11 = currentC.receive_235StringFromS();
 												// System.out.println("Received from S: " + payload11);
 												_Z1: do{
 													System.out.print("Choose a label among MAIL, or QUIT: ");
 													String label5 = safeRead(readerC).equals("MAIL") ? "1" : "2";
-													switch(currentC.send_Choice6LabelToS(label5).getEnum()) {
-														case Choice6.MAIL:
+													switch(currentC.send_Choice6LabelToS(label5)) {
+														case MAIL:
 														System.out.print("Email from: ");
 														String payload12 = safeRead(readerC);
 														currentC.send_mailStringToS((new SMTPMessage("MAIL FROM:<"+payload12+">")).toString());
 
-														switch(currentC.receive_Choice7LabelFromS().getEnum()) {
-															case Choice7._501:
+														switch(currentC.receive_Choice7LabelFromS()) {
+															case _501:
 															String payload13 = currentC.receive_501StringFromS();
 															// System.out.println("Received from S: " + payload13);
 															continue _Z1;
 
-															case Choice7._250:
+															case _250:
 															String payload14 = currentC.receive_250StringFromS();
 															System.out.println("Received from S: " + payload14);
 															_Z2: do{
 																System.out.print("Choose a label among RCPT, or DATA: ");
 																String label6 = safeRead(readerC).equals("RCPT") ? "1" : "2";
-																switch(currentC.send_Choice8LabelToS(label6).getEnum()) {
-																	case Choice8.RCPT:
+																switch(currentC.send_Choice8LabelToS(label6)) {
+																	case RCPT:
 																	System.out.print("Send to S text for RCPT: ");
 																	String payload15 = safeRead(readerC);
 																	currentC.send_rcptStringToS((new SMTPMessage("RCPT TO:<"+payload15+">")).toString());
-																	switch(currentC.receive_Choice9LabelFromS().getEnum()) {
-																		case Choice9._250:
+																	switch(currentC.receive_Choice9LabelFromS()) {
+																		case _250:
 																		String payload16 = currentC.receive_250StringFromS();
 																		// System.out.println("Received from S: " + payload16);
 																		continue _Z2;
 																	}
 																	break _Z2;
-																	case Choice8.DATA:
+																	case DATA:
 																	// System.out.print("Send to S text for DATA: ");
 																	// String payload17 = safeRead(readerC);
 																	currentC.send_dataStringToS((new SMTPMessage("DATA")).toString());
@@ -177,18 +172,18 @@ public class CMain {
 																		} else {
 																			label7 = "3";
 																		}
-																		switch(currentC.send_Choice10LabelToS(label7).getEnum()) {
-																			case Choice10.DATALINE:
+																		switch(currentC.send_Choice10LabelToS(label7)) {
+																			case DATALINE:
 																			System.out.print("Send to S text for DATALINE: ");
 																			String payload19 = safeRead(readerC);
 																			currentC.send_datalineStringToS(payload19 + CRLF);
 																			continue _Z3;
-																			case Choice10.SUBJECT:
+																			case SUBJECT:
 																			System.out.print("Send to S text for SUBJECT: ");
 																			String payload20 = safeRead(readerC);
 																			currentC.send_subjectStringToS((new SMTPMessage("SUBJECT:"+payload20, CRLF)).toString());
 																			continue _Z3;
-																			case Choice10.ATAD:
+																			case ATAD:
 																			// System.out.print("Send to S text for ATAD: ");
 																			// String payload21 = safeRead(readerC);
 																			currentC.send_atadStringToS("." + CRLF);
@@ -205,7 +200,7 @@ public class CMain {
 															break _Z1;
 														}
 														break _Z1;
-														case Choice6.QUIT:
+														case QUIT:
 														//System.out.print("Send to S text for QUIT: ");
 														String payload23 = "";
 														currentC.send_quitStringToS(payload23);
@@ -214,13 +209,13 @@ public class CMain {
 												}
 												while(true);
 												break _Y;
-												case Choice5._535:
+												case _535:
 												String payload24 = currentC.receive_535StringFromS();
 												System.out.println("Received from S: " + payload24);
 												continue _Y;
 											}
 											break _Y;
-											case Choice4.QUIT:
+											case QUIT:
 											//System.out.print("Send to S text for QUIT: ");
 											String payload25 = "";
 											currentC.send_quitStringToS(payload25);
@@ -233,14 +228,14 @@ public class CMain {
 							}
 							while(true);
 							break _X;
-							case Choice1.QUIT:
+							case QUIT:
 							//System.out.print("Send to S text for QUIT: ");
 							String payload26 = "";
 							currentC.send_quitStringToS(payload26);
 							break _X;
 						}
 						break _X;
-						case Choice3.QUIT:
+						case QUIT:
 						//System.out.print("Send to S text for QUIT: ");
 						String payload27 = "";
 						currentC.send_quitStringToS(payload27);
@@ -251,7 +246,7 @@ public class CMain {
 			}
 			while(true);
 			break;
-			case Choice1.QUIT:
+			case QUIT:
 			//System.out.print("Send to S text for QUIT: ");
 			String payload28 = "";
 			currentC.send_quitStringToS(payload28);
