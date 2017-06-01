@@ -1,16 +1,17 @@
 package demos.Final_demos.SMTP;
 
+import mungo.lib.Typestate;
+
+import javax.net.ssl.SSLSocket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.ServerSocket;
 import java.net.UnknownHostException;
 
-import javax.net.ssl.*;
-
-public class CRole typestate CProtocol {
+@Typestate("CProtocol")
+public class CRole{
 	public BufferedReader socketSIn = null;
 	public PrintWriter socketSOut = null;
 	public Socket socketS = null;
@@ -48,10 +49,10 @@ public class CRole typestate CProtocol {
 		int intLabelChoice1 = Integer.parseInt(payload);
 		switch(intLabelChoice1) {
 			case 1:
-			return new Choice1(Choice1.EHLO);
+			return Choice1.EHLO;
 			case 2:
 			default:
-			return new Choice1(Choice1.QUIT);
+			return Choice1.QUIT;
 		}
 	}
 	public void send_ehloStringToS(String payload) {
@@ -73,12 +74,12 @@ public class CRole typestate CProtocol {
 		switch(intLabelChoice2) {
 			case 250:
 				if (message.getIsDashed()) {
-					return new Choice2(Choice2._250DASH);
+					return Choice2._250DASH;
 				} else {
-					return new Choice2(Choice2._250);
+					return Choice2._250;
 				}
 			default:
-			return new Choice2(Choice2._250);
+			return Choice2._250;
 		}
 	}
 	public String receive_250dashStringFromS() {
@@ -91,10 +92,10 @@ public class CRole typestate CProtocol {
 		int intLabelChoice3 = Integer.parseInt(payload);
 		switch(intLabelChoice3) {
 			case 1:
-			return new Choice3(Choice3.STARTTLS);
+			return Choice3.STARTTLS;
 			case 2:
 			default:
-			return new Choice3(Choice3.QUIT);
+			return Choice3.QUIT;
 		}
 	}
 	public void send_starttlsStringToS(String payload) {
@@ -106,10 +107,10 @@ public class CRole typestate CProtocol {
 		int intLabelChoice4 = Integer.parseInt(payload);
 		switch(intLabelChoice4) {
 			case 1:
-			return new Choice4(Choice4.AUTH);
+			return Choice4.AUTH;
 			case 2:
 			default:
-			return new Choice4(Choice4.QUIT);
+			return Choice4.QUIT;
 		}
 	}
 	public void send_authStringToS(String payload) {
@@ -129,10 +130,10 @@ public class CRole typestate CProtocol {
 		int intLabelChoice5 = Integer.parseInt(message.getCommand());
 		switch(intLabelChoice5) {
 			case 235:
-			return new Choice5(Choice5._235);
+			return Choice5._235;
 			case 535:
 			default:
-			return new Choice5(Choice5._535);
+			return Choice5._535;
 		}
 	}
 	public String receive_235StringFromS() {
@@ -143,10 +144,10 @@ public class CRole typestate CProtocol {
 		int intLabelChoice6 = Integer.parseInt(payload);
 		switch(intLabelChoice6) {
 			case 1:
-			return new Choice6(Choice6.MAIL);
+			return Choice6.MAIL;
 			case 2:
 			default:
-			return new Choice6(Choice6.QUIT);
+			return Choice6.QUIT;
 		}
 	}
 	public void send_mailStringToS(String payload) {
@@ -166,10 +167,10 @@ public class CRole typestate CProtocol {
 		int intLabelChoice7 = Integer.parseInt(message.getCommand());
 		switch(intLabelChoice7) {
 			case 501:
-			return new Choice7(Choice7._501);
+			return Choice7._501;
 			case 250:
 			default:
-			return new Choice7(Choice7._250);
+			return Choice7._250;
 		}
 	}
 	public String receive_501StringFromS() {
@@ -180,10 +181,10 @@ public class CRole typestate CProtocol {
 		int intLabelChoice8 = Integer.parseInt(payload);
 		switch(intLabelChoice8) {
 			case 1:
-			return new Choice8(Choice8.RCPT);
+			return Choice8.RCPT;
 			case 2:
 			default:
-			return new Choice8(Choice8.DATA);
+			return Choice8.DATA;
 		}
 	}
 	public void send_rcptStringToS(String payload) {
@@ -204,7 +205,7 @@ public class CRole typestate CProtocol {
 		switch(intLabelChoice9) {
 			case 250:
 			default:
-			return new Choice9(Choice9._250);
+			return Choice9._250;
 		}
 	}
 	public void send_dataStringToS(String payload) {
@@ -227,12 +228,12 @@ public class CRole typestate CProtocol {
 		int intLabelChoice10 = Integer.parseInt(payload);
 		switch(intLabelChoice10) {
 			case 1:
-			return new Choice10(Choice10.DATALINE);
+			return Choice10.DATALINE;
 			case 2:
-			return new Choice10(Choice10.SUBJECT);
+			return Choice10.SUBJECT;
 			case 3:
 			default:
-			return new Choice10(Choice10.ATAD);
+			return Choice10.ATAD;
 		}
 	}
 	public void send_datalineStringToS(String payload) {
