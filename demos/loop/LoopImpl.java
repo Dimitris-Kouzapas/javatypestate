@@ -1,5 +1,6 @@
 package demos.loop;
-import lib.*;
+
+import mungo.lib.Typestate;
 
 /**
  * Arguably the loop typestate itself is inhabited (since we can create an object that
@@ -7,7 +8,7 @@ import lib.*;
  * client that consumes the loop.
  */
 
-@Typestate ("Loop")
+@Typestate("Loop")
 class LoopImpl{
   	Bool finished() {
   		return Bool.TRUE;

@@ -6,10 +6,10 @@ class ClientTest3 {
 	}
 
   	void test (LoopImpl loop) {
-		switch(loop.finished().getEnum()) {
-			case Bool.FALSE:
+		switch(loop.finished()) {
+			case FALSE:
 				test(loop);
-			case Bool.TRUE:
+			case TRUE:
 				break;
 		}
   	}

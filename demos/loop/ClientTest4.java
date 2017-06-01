@@ -4,10 +4,10 @@ class ClientTest4 {
   	void test () {
   		LoopImpl loop = new LoopImpl();
   		out: do {
-  			switch (loop.finished().getEnum()) {
-  			case Bool.FALSE:
+  			switch (loop.finished()) {
+  			case FALSE:
   				continue out;
-  			case Bool.TRUE:
+  			case TRUE:
   				break out;
   			}
   		} while(false);

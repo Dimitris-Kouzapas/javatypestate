@@ -5,11 +5,11 @@ class ClientTest1 {
   		LoopImpl loop = new LoopImpl();
   		out: do {
   			switch (loop.finished()) {
-  			case Bool.FALSE:
-  				continue out
-  			case Bool.TRUE:
-  				*
+  			case FALSE:
+  				continue out;
+  			case TRUE:
+  				;
   			}
-  		} while(false)
+  		} while(false);
   	}
 }

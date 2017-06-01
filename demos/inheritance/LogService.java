@@ -1,6 +1,9 @@
 package demos.inheritance;
 
-public class LogService typestate LogServiceProtocol {
+import mungo.lib.Typestate;
+
+@Typestate("LogServiceProtocol")
+public class LogService{
    void start () {
    }
 
