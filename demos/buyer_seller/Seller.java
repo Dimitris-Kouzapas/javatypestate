@@ -1,6 +1,9 @@
 package demos.buyer_seller;
 
-public class Seller typestate SellerProtocol {
+import mungo.lib.Typestate;
+
+@Typestate("SellerProtocol")
+public class Seller{
 	private final Socket socketBuyer1;
 	private final Socket socketBuyer2;
 
@@ -21,9 +24,9 @@ public class Seller typestate SellerProtocol {
 	public AgreementLabel receiveLabelFromBuyer2() {
 		String label = this.socketBuyer2.receive(this);
 		if (label.equals("AGREE")) {
-			return new AgreementLabel(AgreementLabel.AGREE);
+			return AgreementLabel.AGREE;
 		}
-		return new AgreementLabel(AgreementLabel.QUIT);	
+		return AgreementLabel.QUIT;
 	}
 
 	public String receiveMoneyFromBothBuyers() {

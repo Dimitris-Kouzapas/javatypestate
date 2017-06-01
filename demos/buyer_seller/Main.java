@@ -1,6 +1,5 @@
 package demos.buyer_seller;
 
-import java.io.*;
 
 public class Main {
 	
@@ -27,29 +26,29 @@ public class Main {
 		buyer1.sendQuoteToBuyer2("£42");
 		String quote = buyer2.receiveQuoteFromBuyer1();
 		
-		switch (buyer2.sendToSellerBuyer1("AGREE").getEnum()) {
-			case AgreementLabel.AGREE:
+		switch (buyer2.sendToSellerBuyer1("AGREE")) {
+			case AGREE:
 				buyer2.transferMoneyToSeller("£42");
 				break;
-			case AgreementLabel.QUIT:
+			case QUIT:
 				break;
 		}
 
-		switch (buyer1.receiveLabelFromBuyer2().getEnum()) {
-			case AgreementLabel.AGREE:
+		switch (buyer1.receiveLabelFromBuyer2()) {
+			case AGREE:
 				buyer1.transferMoneyToSeller("£38");
 				break;
-			case AgreementLabel.QUIT:
+			case QUIT:
 				break;
 		}
 
-		switch (seller.receiveLabelFromBuyer2().getEnum()) {
-			case AgreementLabel.AGREE:
+		switch (seller.receiveLabelFromBuyer2()) {
+			case AGREE:
 				String money;
 				money = seller.receiveMoneyFromBothBuyers();
 				System.out.println("Seller: I received a total amount of " + money);
 				break;
-			case AgreementLabel.QUIT:
+			case QUIT:
 				System.out.println("Seller: We end the communication!");
 				break;
 		}

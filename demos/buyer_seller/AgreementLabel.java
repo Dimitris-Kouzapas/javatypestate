@@ -1,5 +1,5 @@
 package demos.buyer_seller;
 
-enumeration AgreementLabel {
+enum AgreementLabel {
 	AGREE, QUIT;
 }

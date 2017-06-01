@@ -1,7 +1,7 @@
 package demos.buyer_seller.socket;
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class SellerMain{
 	public static String safeRead(BufferedReader sl) {
@@ -31,8 +31,8 @@ public class SellerMain{
             int price = Integer.parseInt(safeRead(sl));
             seller.sendPriceToBuyer1(price);
 
-            switch (seller.receiveLabelFromBuyer2().getEnum()) {
-                case AgreementLabel.AGREE:
+            switch (seller.receiveLabelFromBuyer2()) {
+                case AGREE:
                     System.out.println("Buyer2 agrees to contribute");
                     System.out.print("Seller to Buyer1 and Buyer2: I am receiveing the amount of £");
                     int total = seller.receiveMoneyFromBothBuyers();
@@ -42,7 +42,7 @@ public class SellerMain{
                     }
                     System.out.println("Bye!");
                     break;
-                case AgreementLabel.QUIT:
+                case QUIT:
                     System.out.println("Buyer2 does not want to contribute");
                     break;
             }

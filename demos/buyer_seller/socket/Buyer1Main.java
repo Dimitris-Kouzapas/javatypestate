@@ -2,9 +2,6 @@ package demos.buyer_seller.socket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Buyer1Main {
 
@@ -38,14 +35,14 @@ public class Buyer1Main {
         buyer1.sendQuoteToBuyer2(quote);
 
         //AgreementLabel label = buyer1.receiveLabelFromBuyer2();
-        switch (buyer1.receiveLabelFromBuyer2().getEnum()) {
-            case AgreementLabel.AGREE:
+        switch (buyer1.receiveLabelFromBuyer2()) {
+            case AGREE:
                 System.out.println("Buyer2 agrees to contribute");
                 System.out.print("Buyer1 to Seller: I am transfering you £");
                 int mypart = Integer.parseInt(safeRead(br));
                 buyer1.transferMoneyToSeller(mypart);
                 break;
-            case AgreementLabel.QUIT:
+            case QUIT:
                 System.out.println("Buyer2 does not want to contribute");
                 break;
         }

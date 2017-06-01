@@ -1,6 +1,10 @@
 package demos.buyer_seller;
 
-public class Buyer2 typestate Buyer2Protocol {
+
+import mungo.lib.Typestate;
+
+@Typestate("Buyer2Protocol")
+public class Buyer2{
 	private final Socket socketSeller;
 	private final Socket socketBuyer1;
 
@@ -19,10 +23,10 @@ public class Buyer2 typestate Buyer2Protocol {
 
 		if (agreement.equals("AGREE")) {
 			System.out.println("Buyer2 to Seller and Buyer1: I agree to pay the quote");
-			return new AgreementLabel(AgreementLabel.AGREE);
+			return AgreementLabel.AGREE;
 		}
 		System.out.println("Buyer2 to Seller and Buyer1: I do not agree to pay the quote");
-		return new AgreementLabel(AgreementLabel.QUIT);
+		return AgreementLabel.QUIT;
 	}
 
 	public void transferMoneyToSeller(String money) {

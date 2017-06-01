@@ -1,4 +1,6 @@
 package demos.buyer_seller.socket;
+import mungo.lib.Typestate;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -6,7 +8,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Buyer1Role typestate Buyer1Protocol {
+@Typestate("Buyer1Protocol")
+public class Buyer1Role{
     private BufferedReader socketSellerIn = null;
     private PrintWriter socketSellerOut = null;
 
@@ -66,9 +69,9 @@ public class Buyer1Role typestate Buyer1Protocol {
         }
 
         if (label.equals("AGREE")) {
-            return new AgreementLabel(AgreementLabel.AGREE);
+            return AgreementLabel.AGREE;
         }
-        return new AgreementLabel(AgreementLabel.QUIT);
+        return AgreementLabel.QUIT;
     }
 
     public void transferMoneyToSeller(int money) {

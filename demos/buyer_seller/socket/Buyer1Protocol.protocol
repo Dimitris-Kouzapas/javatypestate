@@ -1,11 +1,9 @@
 package demos.buyer_seller.socket;
 
 typestate Buyer1Protocol {
-	session
 		InitSession = 	{
 							void sendTitleToSeller(String): TitleSent
 						}
-	where
 		TitleSent =		{
 							int receivePriceFromSeller(): PriceReceived
 						}

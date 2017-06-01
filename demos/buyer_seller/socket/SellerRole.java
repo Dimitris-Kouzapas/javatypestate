@@ -1,9 +1,12 @@
 package demos.buyer_seller.socket;
+import mungo.lib.Typestate;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class SellerRole typestate SellerProtocol {
+@Typestate("SellerProtocol")
+public class SellerRole{
     private BufferedReader socketBuyer1In = null;
     private PrintWriter socketBuyer1Out = null;
 
@@ -76,9 +79,9 @@ public class SellerRole typestate SellerProtocol {
         }
 
         if (label.equals("AGREE")) {
-            return new AgreementLabel(AgreementLabel.AGREE);
+            return AgreementLabel.AGREE;
         }
-        return new AgreementLabel(AgreementLabel.QUIT);
+        return AgreementLabel.QUIT;
     }
 
     public int receiveMoneyFromBothBuyers() {
