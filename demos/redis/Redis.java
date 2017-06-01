@@ -1,7 +1,9 @@
 package demos.redis;
 
+import mungo.lib.Typestate;
 
-public class Redis typestate RedisServer {
+@Typestate("RedisServer")
+public class Redis{
     void WATCH(String[] keys) {
     }
 

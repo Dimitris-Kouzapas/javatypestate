@@ -1,6 +1,9 @@
 package demos.redis.channeloriented;
 
-public class RedisClientRole typestate RedisClientProtocol {
+import mungo.lib.Typestate;
+
+@Typestate("RedisClientProtocol")
+public class RedisClientRole{
     void sendWATCH(String[] ks) {
 	}
 	

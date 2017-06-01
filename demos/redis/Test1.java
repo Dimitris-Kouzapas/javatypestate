@@ -11,12 +11,12 @@ public class Test1 {
 	   redis.SET("address", "Milton Keynes");
 	   // Adding watches after MULTI is not allowed
        // redis.WATCH(new String[]{ "address" });
-	   switch (redis.EXEC().getEnum()) {
-	   case Result.OK:
+	   switch (redis.EXEC()) {
+	   case OK:
 	      // Can't exec again:
 	      // redis.EXEC();
 	      break;
-	   case Result.FAIL:
+	   case FAIL:
 	      // On fail I can do extra stuff (presumably pointlessly):
      	  redis.SET("name", "Turing");
 	      redis.DISCARD();

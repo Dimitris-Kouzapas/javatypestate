@@ -8,28 +8,28 @@ public class RedisServerImpl {
 		RedisServerRole redis = new RedisServerRole();
 		String[] ks = redis.receiveWATCH();
 		WATCHING: do {
-			switch (redis.receiveLabel_Watching().getEnum()) {
-				case WatchingLabel.GET:
+			switch (redis.receiveLabel_Watching()) {
+				case GET:
 					String k = redis.receiveArg_GET();
 					redis.sendGET_response(""); // TODO
 					continue WATCHING;
-				case WatchingLabel.WATCH:
+				case WATCH:
 					String[] ks2 = redis.receiveArg_WATCH();
 					continue WATCHING;
-				case WatchingLabel.MULTI:
+				case MULTI:
 					QUEUED: do {
-						switch (redis.receiveLabel_Queued().getEnum()) {
-							case QueuedLabel.SET:
+						switch (redis.receiveLabel_Queued()) {
+							case SET:
 								String k2 = redis.receiveArg0_SET();
 								String v = redis.receiveArg1_SET();
 								continue QUEUED;
-							case QueuedLabel.DISCARD:
+							case DISCARD:
 								break WATCHING;
-							case QueuedLabel.EXEC:
-								switch (redis.sendEXEC_response(0).getEnum()) { // TODO
-									case ResultLabel.OK:
+							case EXEC:
+								switch (redis.sendEXEC_response(0)) { // TODO
+									case OK:
 										break WATCHING;
-									case ResultLabel.FAIL:
+									case FAIL:
 										continue QUEUED;
 								}
 						}

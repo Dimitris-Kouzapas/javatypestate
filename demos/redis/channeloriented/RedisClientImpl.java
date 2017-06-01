@@ -5,28 +5,28 @@ public class RedisClientImpl {
 		RedisClientRole redis = new RedisClientRole();
 		redis.sendWATCH(new String[] {}); // TODO
 		WATCHING: do {
-			switch (redis.sendLabel_Watching(0).getEnum()) { // TODO
-				case WatchingLabel.GET:
+			switch (redis.sendLabel_Watching(0)) { // TODO
+				case GET:
 					redis.sendArg_GET(""); // TODO
 					String v = redis.receiveGET_response();
 					continue WATCHING;
-				case WatchingLabel.WATCH:
+				case WATCH:
 					redis.sendArg_WATCH(new String[] {}); // TODO
 					continue WATCHING;
-				case WatchingLabel.MULTI:
+				case MULTI:
 					QUEUED: do {
-						switch (redis.sendLabel_Queued(0).getEnum()) { // TODO
-							case QueuedLabel.SET:
+						switch (redis.sendLabel_Queued(0)) { // TODO
+							case SET:
 								redis.sendArg0_SET(""); // TODO
 								redis.sendArg1_SET(""); // TODO
 								continue QUEUED;
-							case QueuedLabel.DISCARD:
+							case DISCARD:
 								break WATCHING;
-							case QueuedLabel.EXEC:
-								switch (redis.receiveEXEC_response().getEnum()) {
-									case ResultLabel.OK:
+							case EXEC:
+								switch (redis.receiveEXEC_response()) {
+									case OK:
 										break WATCHING;
-									case ResultLabel.FAIL:
+									case FAIL:
 										continue QUEUED;
 								}
 						}

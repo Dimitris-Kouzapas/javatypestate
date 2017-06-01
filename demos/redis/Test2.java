@@ -16,10 +16,10 @@ public class Test2 {
     // These methods seem to have a useful type inferred. We don't allow
     // inheritance, which simplifies things.
 	void doTransaction (Redis redis) {
-	   	switch (redis.EXEC().getEnum()) {
-	   	case Result.OK:
+	   	switch (redis.EXEC()) {
+	   	case OK:
 	      	break;
-	   	case Result.FAIL:
+	   	case FAIL:
   			discardTransaction(redis);
 			break;
 	   	}
