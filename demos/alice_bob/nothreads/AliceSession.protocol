@@ -1,6 +1,5 @@
 package demos.alice_bob.nothreads;
 
 typestate AliceSession {
-	session
 		Init = {void sendStringToBob(String) : {}}
 }

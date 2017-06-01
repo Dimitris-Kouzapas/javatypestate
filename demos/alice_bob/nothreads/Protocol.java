@@ -1,6 +1,9 @@
 package demos.alice_bob.nothreads;
 
-class Protocol typestate ProtocolSession {
+import mungo.lib.Typestate;
+
+@Typestate("ProtocolSession")
+class Protocol{
 	private Alice a;
 	private Bob b;
 

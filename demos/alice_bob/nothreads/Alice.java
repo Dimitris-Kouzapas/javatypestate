@@ -1,6 +1,9 @@
 package demos.alice_bob.nothreads;
 
-class Alice typestate AliceSession {
+import mungo.lib.Typestate;
+
+@Typestate("AliceSession")
+class Alice{
 	String channel;
 
 	public void sendStringToBob(String s) {

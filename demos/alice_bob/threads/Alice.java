@@ -1,6 +1,9 @@
 package demos.alice_bob.threads;
 
-public class Alice typestate AliceProtocol{
+import mungo.lib.Typestate;
+
+@Typestate("AliceProtocol")
+public class Alice{
 	Session s;
 
 	public Alice(Session s) {
