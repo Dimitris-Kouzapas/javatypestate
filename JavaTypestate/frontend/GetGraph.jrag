@@ -175,13 +175,13 @@ protected TypestateVar VariableDecl.typestate = null;
 protected TypestateVar ParameterDeclaration.typestate = null;
 protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it is a typestate method
 
-		syn lazy Set<VariableDecl> ClassDecl.getTypestateFields() {
+	syn lazy Set<VariableDecl> ClassDecl.getTypestateFields() {
 		Set<VariableDecl> s = new HashSet<VariableDecl>();
 		for(VariableDecl vd: getFieldDecls())
-		if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
-		s.add(vd);
+			if(vd.getTypeAccess().lookupType().isTypestateClassDeclType())
+				s.add(vd);
 		return s;
-		}
+	}
 
 	syn lazy boolean ClassDecl.getGraph() {
 
@@ -215,10 +215,10 @@ protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it i
 		return true;
 	}
 
-		syn Set<TypestateVar> ClassDecl.getFieldGraph(GraphNode r) {
+	syn Set<TypestateVar> ClassDecl.getFieldGraph(GraphNode r) {
 		for(VariableDecl vd : getTypestateFields())
-		if(vd.typestate == null)
-		vd.typestate = new TypestateField(/*getMethods()*/);
+			if(vd.typestate == null)
+				vd.typestate = new TypestateField(/*getMethods()*/);
 
 		getFieldGraph(r, new HashMap<GraphNode, Map<VariableDecl, GraphNode>>());
 
@@ -231,27 +231,27 @@ protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it i
 		Set<TypestateVar> env = new HashSet<TypestateVar>();
 
 		for(VariableDecl vd : getTypestateFields())
-		env.add(vd.typestate);
+			env.add(vd.typestate);
 
 		return env;
-		}
+	}
 
-		syn boolean ClassDecl.getFieldGraph(GraphNode r, Map<GraphNode, Map<VariableDecl, GraphNode>> visited) {
+	syn boolean ClassDecl.getFieldGraph(GraphNode r, Map<GraphNode, Map<VariableDecl, GraphNode>> visited) {
 		//Check for recursion
 		if(visited.get(r) != null) {
-		for(VariableDecl vd: getTypestateFields())
-		vd.typestate.current = visited.get(r).get(vd);
-//			return true;
+			for(VariableDecl vd: getTypestateFields())
+				vd.typestate.current = visited.get(r).get(vd);
+	//			return true;
 		}
 		else {
-		Map<VariableDecl, GraphNode> s = new HashMap<VariableDecl, GraphNode>();
-		visited.put(r, s);
+			Map<VariableDecl, GraphNode> s = new HashMap<VariableDecl, GraphNode>();
+			visited.put(r, s);
 
-		if(r instanceof EndNode) {
-		for(VariableDecl vd: getTypestateFields())
-		vd.typestate.current = new EndNode();
-		return true;
-		}
+			if(r instanceof EndNode) {
+				for(VariableDecl vd: getTypestateFields())
+					vd.typestate.current = new EndNode();
+				return true;
+			}
 
 //			if(r.next.isEmpty()) {
 //				for(VariableDecl vd: getTypestateFields()) {
@@ -260,40 +260,40 @@ protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it i
 //				return true;
 //			}
 
-		for(VariableDecl vd: getTypestateFields())
-		s.put(vd, new LoopNode());
+			for(VariableDecl vd: getTypestateFields())
+				s.put(vd, new LoopNode());
 
-		GraphNode []tmp = new GraphNode[getTypestateFields().size()];
+			GraphNode []tmp = new GraphNode[getTypestateFields().size()];
 
-		int i = 0;
-		for(VariableDecl vd: getTypestateFields())
-		tmp[i++] = vd.typestate.current;
+			int i = 0;
+			for(VariableDecl vd: getTypestateFields())
+				tmp[i++] = vd.typestate.current;
 
-		for(GraphNode n: r.next) {
-		getFieldGraph(n, visited);
-		i = 0;
-		for(VariableDecl vd: getTypestateFields()) {
-		s.get(vd).addNext(vd.typestate.current);
-		vd.typestate.current = tmp[i++];
-		}
-		}
+			for(GraphNode n: r.next) {
+				getFieldGraph(n, visited);
+				i = 0;
+				for(VariableDecl vd: getTypestateFields()) {
+					s.get(vd).addNext(vd.typestate.current);
+					vd.typestate.current = tmp[i++];
+				}
+			}
 
-		for(VariableDecl vd: getTypestateFields())
-		vd.typestate.current = s.get(vd);
+			for(VariableDecl vd: getTypestateFields())
+				vd.typestate.current = s.get(vd);
 		}
 
 		MethodDecl md = null;
 		if(r.getId() != null && r.getParameters() != null)
-		md = lookupMethod(r.getId(), r.getParameters());
+			md = lookupMethod(r.getId(), r.getParameters());
 
 		if(md != null) {
-		md.typestate.current = new ReturnNode();	//TODO if the return type is typestate type
-		md.getGraph();
+			md.typestate.current = new ReturnNode();	//TODO if the return type is typestate type
+			md.getGraph();
 		}
 
 //		visited.remove(r);
 		return true;
-		}
+	}
 
 /*****************************************************************************************************/
 
@@ -373,9 +373,9 @@ protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it i
 	}
 
 	syn GraphNode MethodDecl.getParameterTypestate(int i) {
-	if(getParameter(i).typestate == null)
-	getParameter(i).typestate = new TypestatePar();
-	return getParameter(i).typestate.getConnectionGraph(null);
+		if(getParameter(i).typestate == null)
+			getParameter(i).typestate = new TypestatePar();
+		return getParameter(i).typestate.getConnectionGraph(null);
 	}
 
 /*****************************************************************************************************/
@@ -995,11 +995,13 @@ protected TypestateVar MethodDecl.typestate = new TypestateVar();	//TODO if it i
 				//TODO better implementation here
 				//only call c.getFieldGraph when return type or parameter type is a session typestate.
 				Boolean sessionParameter = false;
-				for(int i = md.getNumParameter() - 1; i >=0; i--)
-					if(md.getParameter(i).typestate != null) {
+				for(int i = md.getNumParameter() - 1; i >= 0; i--) {
+//					if(md.getParameter(i).typestate != null) {
+					if(md.getParameter(i).getTypeAccess().lookupType().isTypestateClassDeclType()) {
 						sessionParameter = true;
 						break;
 					}
+				}
 
 				//when md is in the typestate methods
 //				if(md.isTypestateMethod()) {
